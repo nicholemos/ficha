@@ -245,3 +245,12 @@
 .char-img-container:hover div {
     background-color: var(--t20-red) !important; /* Faixa inferior fica vermelha */
 }
+
+/* Deixa a espada mais visível */
+.bi-sword {
+    transform: rotate(-45deg); /* Deixa ela inclinada pronta pro combate */
+    display: inline-block;
+}
+.bi-sword:hover {
+    transform: rotate(0deg) scale(1.2); /* Animação de ataque ao passar o mouse */
+}
