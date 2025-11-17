@@ -1,5 +1,7 @@
 // --- DADOS E CONFIGURAÇÕES ---
 const attrs = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
+
+// Lista padrão de perícias
 const defaultSkills = [
     { n: 'Acrobacia', a: 'DES' }, { n: 'Adestramento', a: 'CAR' }, { n: 'Atletismo', a: 'FOR' },
     { n: 'Atuação', a: 'CAR' }, { n: 'Cavalgar', a: 'DES' }, { n: 'Conhecimento', a: 'INT' },
@@ -19,16 +21,18 @@ let currentSkills = [];
 
 // --- INICIALIZAÇÃO ---
 window.onload = () => {
-    currentSkills = JSON.parse(JSON.stringify(defaultSkills));
-    renderStructure();
-    loadData();
-    attachGlobalListeners();
-    updateCalculations();
+    try {
+        currentSkills = JSON.parse(JSON.stringify(defaultSkills));
+        renderStructure();
+        loadData();
+        attachGlobalListeners();
+    } catch(e) { console.error(e); }
+    setTimeout(updateCalculations, 100);
 };
 
 function renderStructure() {
     const attrContainer = document.getElementById('attributesArea');
-    if (attrContainer) {
+    if(attrContainer) {
         attrContainer.innerHTML = attrs.map(a => `
             <div class="col-2">
                 <div class="attr-box">
@@ -48,19 +52,20 @@ function renderSkills() {
     skillsContainer.innerHTML = currentSkills.map((s, i) => {
         const attrOptions = attrs.map(a => `<option value="${a}" ${s.a === a ? 'selected' : ''}>${a}</option>`).join('');
         const isDefault = defaultSkills.some(ds => ds.n === s.n && !s.isCustom);
-
-        const nameDisplay = isDefault
+        
+        const nameDisplay = isDefault 
             ? `<span class="fw-bold text-truncate d-block" title="${s.n}" style="font-size:0.9em; padding-top:2px;">${s.n}</span>`
             : `<input type="text" class="form-control form-control-sm p-0 fw-bold border-0 bg-transparent" value="${s.n}" onchange="updateSkillName(${i}, this.value)" placeholder="Nome">`;
 
-        const deleteBtn = !isDefault
-            ? `<i class="bi bi-x text-danger" style="cursor:pointer; margin-left:2px;" onclick="deleteSkill(${i})" title="Remover"></i>`
+        const deleteBtn = !isDefault 
+            ? `<i class="bi bi-x text-danger" style="cursor:pointer; margin-left:2px;" onclick="deleteSkill(${i})" title="Remover"></i>` 
             : ``;
 
         return `
         <div class="row g-0 align-items-center skill-row py-1 border-bottom">
             <div class="col-1 text-center"><input class="form-check-input border-dark" type="checkbox" id="skTrain${i}" ${s.trained ? 'checked' : ''}></div>
-            <div class="col-4 ps-1 d-flex align-items-center">
+            <div class="col-1 text-center"><i class="bi bi-dice-20-fill dice-roller text-secondary" onclick="rollSkill(${i})" title="Rolar Teste"></i></div>
+            <div class="col-3 ps-1 d-flex align-items-center">
                 <div style="flex: 1; overflow: hidden;">${nameDisplay}</div>
                 <select class="border-0 bg-transparent text-muted fw-bold ms-1 p-0" style="font-size: 0.65em; width: 40px; cursor:pointer;" onchange="updateSkillAttr(${i}, this.value)">${attrOptions}</select>
                 ${deleteBtn}
@@ -73,128 +78,77 @@ function renderSkills() {
             <div class="col-1 px-1"><input type="number" class="form-control form-control-sm p-0 text-center" id="skOther${i}" placeholder="0" value="${s.other || ''}"></div>
         </div>`;
     }).join('');
-
+    
     attachGlobalListeners();
 }
 
-// --- GERENCIAMENTO DE PERÍCIAS ---
-function addSkill() {
-    currentSkills.push({ n: 'Nova Perícia', a: 'INT', trained: false, other: 0, isCustom: true });
-    renderSkills(); saveData();
-}
-function deleteSkill(index) { if (confirm("Remover perícia?")) { currentSkills.splice(index, 1); renderSkills(); saveData(); } }
-function updateSkillAttr(index, newAttr) { currentSkills[index].a = newAttr; updateCalculations(); saveData(); }
-function updateSkillName(index, newName) { currentSkills[index].n = newName; saveData(); updateCalculations(); } // Recalcula pois o nome pode afetar ataques
+// --- FUNÇÕES DE ROLAGEM ---
+function roll20() { return Math.floor(Math.random() * 20) + 1; }
 
-// --- LISTENERS ---
-function attachGlobalListeners() {
-    document.body.oninput = (e) => {
-        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) {
-            updateCalculations();
-            if (e.target.id !== 'charImgInput') saveData();
-        }
-    };
-    document.body.onchange = (e) => {
-        if (e.target.type === 'checkbox' || e.target.tagName === 'SELECT') {
-            updateCalculations();
-            saveData();
-        }
-    };
+function showToast(title, result, total, isCrit = false, type = 'normal') {
+    const toastEl = document.getElementById('rollToast');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastBody = document.getElementById('toastBody');
+    const toastHeader = document.getElementById('toastHeader');
+
+    toastHeader.className = 'toast-header text-white';
+    if (isCrit) toastHeader.classList.add('bg-critical');
+    else if (type === 'skill') toastHeader.classList.add('bg-skill');
+    else toastHeader.classList.add('bg-attack');
+
+    toastTitle.innerText = title;
+    toastBody.innerHTML = `
+        <div class="display-4 fw-bold">${total}</div>
+        <div class="small opacity-75">Dado: <strong>${result}</strong> ${result === 20 ? '★' : ''}</div>
+        ${isCrit ? '<div class="fw-bold text-warning mt-1">CRÍTICO!</div>' : ''}
+    `;
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
 }
 
-// --- UI HELPERS ---
-function toggleDetail(btn) {
-    const row = btn.closest('.atk-row') || btn.closest('.def-row') || btn.closest('.ability-row') || btn.closest('.spell-row');
-    if (!row) return;
-    const details = row.querySelector('.atk-details') || row.querySelector('.def-details') || row.querySelector('.ability-details') || row.querySelector('.spell-details');
-    const icon = btn.querySelector('i');
-
-    if (details.classList.contains('d-none')) {
-        details.classList.remove('d-none');
-        icon.classList.replace('bi-chevron-down', 'bi-chevron-up');
-    } else {
-        details.classList.add('d-none');
-        icon.classList.replace('bi-chevron-up', 'bi-chevron-down');
-    }
+function rollAttack(btn) {
+    const row = btn.closest('.atk-row');
+    const name = row.querySelector('.inp-name').value || "Ataque";
+    const bonus = parseInt(row.querySelector('.inp-bonus').value) || 0;
+    const critRange = parseInt(row.querySelector('.inp-crit-range').value) || 20;
+    const roll = roll20();
+    const total = roll + bonus;
+    const isCrit = roll >= critRange;
+    showToast(`⚔️ ${name}`, roll, total, isCrit, 'attack');
 }
-function toggleFixedDetail(id) { const el = document.getElementById(id); if (el) el.classList.toggle('d-none'); }
-function uploadImage(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = new Image();
-            img.onload = function () {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const MAX_WIDTH = 300; const MAX_HEIGHT = 400;
-                let width = img.width; let height = img.height;
-                if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } }
-                else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
-                canvas.width = width; canvas.height = height;
-                ctx.drawImage(img, 0, 0, width, height);
-                const el = document.getElementById('charImgPreview');
-                if (el) el.src = canvas.toDataURL('image/jpeg', 0.7);
-                saveData();
-            }
-            img.src = e.target.result;
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-function getVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
-function getInt(id) { const v = parseInt(getVal(id)); return isNaN(v) ? 0 : v; }
 
-// --- ATAQUES (ATUALIZADO COM PERÍCIA) ---
+function rollSkill(index) {
+    const skill = currentSkills[index];
+    const total = parseInt(document.getElementById(`skTotal${index}`).innerText) || 0;
+    const roll = roll20();
+    showToast(`🎲 ${skill.n}`, roll, roll + total, false, 'skill');
+}
+
+// --- ADICIONAR ATAQUE (COM ESPADA ⚔️) ---
 function addAttack(data = null) {
-    const container = document.getElementById('attacksList');
-    if (!container) return;
-    const div = document.createElement('div');
-    div.className = 'border-bottom pb-2 mb-2 atk-row';
-
-    // Gera opções de perícia
-    const mainSkills = ['Luta', 'Pontaria', 'Atuação'];
-    let skillOptions = `<option value="Luta"></option>`;
+    const container = document.getElementById('attacksList'); if(!container) return;
+    const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 atk-row';
+    
+    const mainSkills = ['Luta', 'Pontaria', 'Atuação', 'Misticismo'];
+    let skillOptions = `<option value="">(Manual)</option>`;
     mainSkills.forEach(sn => skillOptions += `<option value="${sn}" ${data && data.skill === sn ? 'selected' : ''}>${sn}</option>`);
-
+    
     div.innerHTML = `
         <div class="row g-1 align-items-center text-center atk-summary mb-2">
-            <div class="col-1"><i class="bi bi-dice-20-fill fs-4"></i></div>
-            
-            <div class="col-4">
-                <input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Ataque" value="${data ? data.name : ''}">
-            </div>
-            
-            <div class="col-2">
-                <input type="text" class="form-control form-control-sm inp-bonus fw-bold" placeholder="+0" value="${data ? data.bonus : ''}">
-            </div>
-            
-            <div class="col-2">
-                <input type="text" class="form-control form-control-sm inp-dmg" placeholder="1d6" value="${data ? data.dmg : ''}">
-            </div>
-            
             <div class="col-1">
-                <input type="text" class="form-control form-control-sm text-center inp-crit-range p-0" placeholder="20" value="${data ? (data.critRange || '20') : '20'}" title="Margem de Ameaça">
+                <i class="bi bi-sword fs-4 dice-roller text-danger" onclick="rollAttack(this)" title="Rolar Ataque" style="cursor: pointer;"></i>
             </div>
-            
-            <div class="col-1">
-                <input type="text" class="form-control form-control-sm text-center inp-crit p-0" placeholder="x2" value="${data ? data.crit : 'x2'}" title="Multiplicador">
-            </div>
-            
-            <div class="col-1">
-                <button class="btn btn-sm btn-outline-dark border-0 w-100 p-0" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button>
-            </div>
+            <div class="col-4"><input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Ataque" value="${data ? data.name : ''}"></div>
+            <div class="col-2"><input type="text" class="form-control form-control-sm inp-bonus fw-bold" placeholder="+0" value="${data ? data.bonus : ''}"></div>
+            <div class="col-2"><input type="text" class="form-control form-control-sm inp-dmg" placeholder="1d6" value="${data ? data.dmg : ''}"></div>
+            <div class="col-1"><input type="text" class="form-control form-control-sm text-center inp-crit-range p-0" placeholder="20" value="${data ? (data.critRange || '20') : '20'}" title="Margem"></div>
+            <div class="col-1"><input type="text" class="form-control form-control-sm text-center inp-crit p-0" placeholder="x2" value="${data ? data.crit : 'x2'}" title="Multi"></div>
+            <div class="col-1"><button class="btn btn-sm btn-outline-dark border-0 w-100 p-0" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button></div>
         </div>
-
         <div class="atk-details p-2 rounded d-none">
             <div class="row g-2 mb-2">
-                <div class="col-4">
-                    <label class="form-label-sm">PERÍCIA</label>
-                    <select class="form-select form-select-sm border-0 border-bottom p-0 inp-atk-skill" onchange="updateCalculations()">${skillOptions}</select>
-                </div>
-                <div class="col-3">
-                    <label class="form-label-sm">BÔNUS ITEM</label>
-                    <input type="number" class="form-control form-control-sm border-0 border-bottom p-0 text-center inp-atk-mod" placeholder="+0" value="${data ? data.mod : ''}" oninput="updateCalculations()">
-                </div>
+                <div class="col-4"><label class="form-label-sm">PERÍCIA</label><select class="form-select form-select-sm border-0 border-bottom p-0 inp-atk-skill" onchange="updateCalculations()">${skillOptions}</select></div>
+                <div class="col-3"><label class="form-label-sm">BÔNUS ITEM</label><input type="number" class="form-control form-control-sm border-0 border-bottom p-0 text-center inp-atk-mod" placeholder="+0" value="${data ? data.mod : ''}" oninput="updateCalculations()"></div>
                 <div class="col-3"><label class="form-label-sm">TIPO</label><input type="text" class="form-control form-control-sm text-center border-0 border-bottom inp-type" placeholder="Corte" value="${data ? data.type : ''}"></div>
                 <div class="col-2"><label class="form-label-sm">ALCANCE</label><input type="text" class="form-control form-control-sm text-center border-0 border-bottom inp-range" placeholder="Curto" value="${data ? data.range : ''}"></div>
             </div>
@@ -203,17 +157,20 @@ function addAttack(data = null) {
                 <div class="col-2 d-flex align-items-end"><button class="btn btn-sm btn-danger w-100 py-0" onclick="removeAttack(this)"><i class="bi bi-trash"></i></button></div>
             </div>
         </div>`;
-
-    container.appendChild(div);
+    
+    container.appendChild(div); 
     if (!data) saveData();
 }
+function removeAttack(btn) { if(confirm('Remover ataque?')) { btn.closest('.atk-row').remove(); saveData(); } }
 
-function removeAttack(btn) { if (confirm('Remover ataque?')) { btn.closest('.atk-row').remove(); saveData(); } }
+// --- OUTRAS FUNÇÕES (Add/Remove) ---
+function addSkill() { currentSkills.push({ n: 'Nova Perícia', a: 'INT', trained: false, other: 0, isCustom: true }); renderSkills(); saveData(); }
+function deleteSkill(index) { if(confirm("Remover perícia?")) { currentSkills.splice(index, 1); renderSkills(); saveData(); } }
+function updateSkillAttr(index, newAttr) { currentSkills[index].a = newAttr; updateCalculations(); saveData(); }
+function updateSkillName(index, newName) { currentSkills[index].n = newName; saveData(); updateCalculations(); }
 
-// ... (Funções addDefenseItem, checkHeavyArmor, addInventoryItem, removeInventoryItem, addAbility, removeAbility, addSpell, removeSpell MANTIDAS IGUAIS AO ANTERIOR) ...
-// PARA ECONOMIZAR ESPAÇO, COPIE AS FUNÇÕES DA VERSÃO 10 AQUI (Defense, Inventory, Ability, Spell)
 function addDefenseItem(data = null) {
-    const container = document.getElementById('defenseList'); if (!container) return;
+    const container = document.getElementById('defenseList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 def-row';
     div.innerHTML = `
         <div class="row g-1 align-items-center text-center def-summary mb-2">
@@ -225,10 +182,11 @@ function addDefenseItem(data = null) {
         </div>`;
     container.appendChild(div); if (!data) saveData();
 }
-function removeDefenseItem(btn) { if (confirm('Remover item?')) { btn.closest('.def-row').remove(); updateCalculations(); saveData(); } }
-function checkHeavyArmor() { if (getVal('armorType') === 'heavy') { const chk = document.getElementById('applyDefAttr'); if (chk) chk.checked = false; } updateCalculations(); }
+function removeDefenseItem(btn) { if(confirm('Remover item?')) { btn.closest('.def-row').remove(); updateCalculations(); saveData(); } }
+function checkHeavyArmor() { if (getVal('armorType') === 'heavy') { const chk = document.getElementById('applyDefAttr'); if(chk) chk.checked = false; } updateCalculations(); }
+
 function addInventoryItem(data = null) {
-    const container = document.getElementById('inventoryList'); if (!container) return;
+    const container = document.getElementById('inventoryList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'row g-1 align-items-center mb-2 inv-row border-bottom pb-1';
     div.innerHTML = `
         <div class="col-6"><input type="text" class="form-control form-control-sm fw-bold inp-name" placeholder="Item" value="${data ? data.name : ''}"></div>
@@ -237,25 +195,29 @@ function addInventoryItem(data = null) {
         <div class="col-2 text-center"><button class="btn btn-sm btn-outline-danger border-0" onclick="removeInventoryItem(this)"><i class="bi bi-trash"></i></button></div>`;
     container.appendChild(div); if (!data) saveData();
 }
-function removeInventoryItem(btn) { if (confirm('Remover item?')) { btn.closest('.inv-row').remove(); updateCalculations(); saveData(); } }
+function removeInventoryItem(btn) { if(confirm('Remover item?')) { btn.closest('.inv-row').remove(); updateCalculations(); saveData(); } }
+
 function addAbility(data = null) {
-    const container = document.getElementById('abilitiesList'); if (!container) return;
-    const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 ability-row';
+    const container = document.getElementById('abilitiesList'); if(!container) return;
+    const div = document.createElement('div'); div.className = 'col-md-6 ability-row';
     div.innerHTML = `
-        <div class="row g-1 align-items-center ability-summary mb-1">
-            <div class="col-1 text-center fs-5"><i class="bi bi-lightning-charge-fill text-warning"></i></div>
-            <div class="col-9"><input type="text" class="form-control form-control-sm fw-bold inp-name" placeholder="Nome do Poder" value="${data ? data.name : ''}"></div>
-            <div class="col-2 text-end"><button class="btn btn-sm btn-light border" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button></div>
-        </div>
-        <div class="ability-details p-2 rounded bg-light border d-none">
-            <textarea class="form-control form-control-sm border-0 bg-transparent inp-desc" rows="3" placeholder="Descrição...">${data ? data.desc : ''}</textarea>
-            <div class="text-end mt-1"><button class="btn btn-sm btn-danger py-0" onclick="removeAbility(this)"><i class="bi bi-trash"></i></button></div>
+        <div class="border rounded p-2 h-100 position-relative" style="background-color: #fdfdfd;">
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
+                <input type="text" class="form-control form-control-sm fw-bold border-0 border-bottom p-0 inp-name" placeholder="Nome do Poder" value="${data ? data.name : ''}">
+                <button class="btn btn-sm btn-light border-0 p-0 ms-auto" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button>
+            </div>
+            <div class="ability-details d-none mt-2 pt-2 border-top">
+                <textarea class="form-control form-control-sm border-0 bg-light inp-desc" rows="4" placeholder="Descrição...">${data ? data.desc : ''}</textarea>
+                <div class="text-end mt-1"><button class="btn btn-sm btn-outline-danger border-0 py-0" onclick="removeAbility(this)">Excluir</button></div>
+            </div>
         </div>`;
     container.appendChild(div); if (!data) saveData();
 }
-function removeAbility(btn) { if (confirm('Excluir poder?')) { btn.closest('.ability-row').remove(); saveData(); } }
+function removeAbility(btn) { if(confirm('Excluir poder?')) { btn.closest('.ability-row').remove(); saveData(); } }
+
 function addSpell(circle, data = null) {
-    const container = document.getElementById(`spellsList${circle}`); if (!container) return;
+    const container = document.getElementById(`spellsList${circle}`); if(!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 spell-row';
     const defaultCost = spellCosts[circle]; const costValue = data ? data.pm : defaultCost;
     div.innerHTML = `
@@ -279,10 +241,9 @@ function addSpell(circle, data = null) {
         </div>`;
     container.appendChild(div); if (!data) saveData();
 }
-function removeSpell(btn) { if (confirm('Remover magia?')) { btn.closest('.spell-row').remove(); saveData(); } }
+function removeSpell(btn) { if(confirm('Remover magia?')) { btn.closest('.spell-row').remove(); saveData(); } }
 
-
-// --- CÁLCULOS (ATUALIZADO COM ATAQUES AUTOMÁTICOS) ---
+// --- CÁLCULOS ---
 function updateCalculations() {
     try {
         let level = getInt('charLevel');
@@ -298,7 +259,6 @@ function updateCalculations() {
         let trainBonus = 2;
         if (level >= 15) trainBonus = 6; else if (level >= 7) trainBonus = 4;
 
-        // Variável para guardar valores das perícias para uso nos ataques
         const skillValues = {};
 
         currentSkills.forEach((s, i) => {
@@ -312,18 +272,15 @@ function updateCalculations() {
             let appliedPenalty = (penaltySkills.includes(s.n) && totalPenalty > 0) ? totalPenalty : 0;
             let appliedSizeMod = (s.n === 'Furtividade') ? sizeVal : 0;
 
-            // UI Parciais
-            const elHalf = document.getElementById(`skHalfLevel${i}`); if (elHalf) elHalf.innerText = halfLevel;
-            const elAttr = document.getElementById(`skAttrVal${i}`); if (elAttr) elAttr.innerText = attrVal;
-            const elTrain = document.getElementById(`skTrainVal${i}`); if (elTrain && elTrain.tagName !== 'INPUT') elTrain.innerText = finalTrainBonus;
+            const elHalf = document.getElementById(`skHalfLevel${i}`); if(elHalf) elHalf.innerText = halfLevel;
+            const elAttr = document.getElementById(`skAttrVal${i}`); if(elAttr) elAttr.innerText = attrVal;
+            const elTrain = document.getElementById(`skTrainVal${i}`); if(elTrain) elTrain.innerText = finalTrainBonus;
 
             const total = halfLevel + attrVal + finalTrainBonus + s.other - appliedPenalty + appliedSizeMod;
-
-            // Guardar valor para ataques (nome da perícia -> valor total)
             skillValues[s.n] = total;
 
             const totalEl = document.getElementById(`skTotal${i}`);
-            if (totalEl) {
+            if(totalEl) {
                 totalEl.innerText = total;
                 if (appliedPenalty > 0 || appliedSizeMod !== 0) {
                     totalEl.style.color = (total < 0 || appliedPenalty > 0) ? '#d35400' : 'var(--t20-red)';
@@ -333,71 +290,72 @@ function updateCalculations() {
             }
         });
 
-        // CÁLCULO DOS ATAQUES (NOVO)
         document.querySelectorAll('.atk-row').forEach(row => {
             const skillSelect = row.querySelector('.inp-atk-skill');
             const modInput = row.querySelector('.inp-atk-mod');
             const mainInput = row.querySelector('.inp-bonus');
-
             if (skillSelect && skillSelect.value && skillValues[skillSelect.value] !== undefined) {
-                // Modo Automático
                 const base = skillValues[skillSelect.value];
                 const mod = parseInt(modInput.value) || 0;
                 const totalAtk = base + mod;
-
                 mainInput.value = (totalAtk >= 0 ? '+' : '') + totalAtk;
-                mainInput.classList.add('text-primary', 'bg-light'); // Indicador visual
-                mainInput.readOnly = true; // Evita edição manual se estiver automático
+                mainInput.classList.add('text-primary', 'bg-light');
+                mainInput.readOnly = true;
             } else {
-                // Modo Manual
                 mainInput.classList.remove('text-primary', 'bg-light');
                 mainInput.readOnly = false;
             }
         });
 
-        // Defesa
         const select = document.getElementById('defAttrSelect');
         const selectedAttr = select ? select.value : 'DES';
         const attrValDef = getInt(`attr-${selectedAttr}`);
         const checkDef = document.getElementById('applyDefAttr');
         const applyAttr = checkDef ? checkDef.checked : false;
-
-        const elDefAttrVal = document.getElementById('defAttrVal'); if (elDefAttrVal) elDefAttrVal.innerText = attrValDef;
+        const elDefAttrVal = document.getElementById('defAttrVal'); if(elDefAttrVal) elDefAttrVal.innerText = attrValDef;
         const armorBonus = getInt('armorBonus');
-        const elArmorB = document.getElementById('dispArmorBonus'); if (elArmorB) elArmorB.innerText = armorBonus;
+        const elArmorB = document.getElementById('dispArmorBonus'); if(elArmorB) elArmorB.innerText = armorBonus;
         const shieldBonus = getInt('shieldBonus');
-        const elShieldB = document.getElementById('dispShieldBonus'); if (elShieldB) elShieldB.innerText = shieldBonus;
-
+        const elShieldB = document.getElementById('dispShieldBonus'); if(elShieldB) elShieldB.innerText = shieldBonus;
         let othersBonus = 0;
         document.querySelectorAll('.def-row').forEach(row => { othersBonus += parseInt(row.querySelector('.inp-bonus').value) || 0; });
-        const elOtherB = document.getElementById('dispOtherBonus'); if (elOtherB) elOtherB.innerText = othersBonus;
+        const elOtherB = document.getElementById('dispOtherBonus'); if(elOtherB) elOtherB.innerText = othersBonus;
         const elDefTotal = document.getElementById('defenseTotal');
-        if (elDefTotal) elDefTotal.innerText = 10 + (applyAttr ? attrValDef : 0) + armorBonus + shieldBonus + othersBonus;
+        if(elDefTotal) elDefTotal.innerText = 10 + (applyAttr ? attrValDef : 0) + armorBonus + shieldBonus + othersBonus;
 
-        // Carga
         let currentLoad = 0;
         document.querySelectorAll('.inv-row').forEach(row => {
             const qtd = parseFloat(row.querySelector('.inp-qtd').value) || 0;
             const slots = parseFloat(row.querySelector('.inp-slots').value) || 0;
             currentLoad += (qtd * slots);
         });
-        const elLoadCurr = document.getElementById('loadCurrent'); if (elLoadCurr) elLoadCurr.innerText = currentLoad;
+        const elLoadCurr = document.getElementById('loadCurrent'); if(elLoadCurr) elLoadCurr.innerText = currentLoad;
         const str = getInt('attr-FOR');
         let baseLimit = 10;
-        if (str > 0) baseLimit += (str * 2); else baseLimit += str;
-        const elLoadLim = document.getElementById('loadLimit'); if (elLoadLim) elLoadLim.innerText = baseLimit;
-        if (elLoadCurr) {
-            if (currentLoad > baseLimit) { elLoadCurr.classList.add('bg-danger', 'text-white'); elLoadCurr.classList.remove('bg-white'); }
+        if (str > 0) baseLimit += (str * 2); else baseLimit += str; 
+        const elLoadLim = document.getElementById('loadLimit'); if(elLoadLim) elLoadLim.innerText = baseLimit;
+        if(elLoadCurr) {
+            if(currentLoad > baseLimit) { elLoadCurr.classList.add('bg-danger', 'text-white'); elLoadCurr.classList.remove('bg-white'); }
             else { elLoadCurr.classList.add('bg-white'); elLoadCurr.classList.remove('bg-danger', 'text-white'); }
         }
-
-    } catch (e) { console.log("Calc pendente..."); }
+    } catch(e) { console.log("Calc pendente..."); }
 }
+
+// --- HELPERS ---
+function attachGlobalListeners() {
+    document.body.oninput = (e) => { if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) { updateCalculations(); if(e.target.id !== 'charImgInput') saveData(); } };
+    document.body.onchange = (e) => { if (e.target.type === 'checkbox' || e.target.tagName === 'SELECT') { updateCalculations(); saveData(); } };
+}
+function toggleDetail(btn) { const row = btn.closest('.atk-row') || btn.closest('.def-row') || btn.closest('.ability-row') || btn.closest('.spell-row'); if (!row) return; const details = row.querySelector('.atk-details') || row.querySelector('.def-details') || row.querySelector('.ability-details') || row.querySelector('.spell-details'); const icon = btn.querySelector('i'); if (details.classList.contains('d-none')) { details.classList.remove('d-none'); icon.classList.replace('bi-chevron-down', 'bi-chevron-up'); } else { details.classList.add('d-none'); icon.classList.replace('bi-chevron-up', 'bi-chevron-down'); } }
+function toggleFixedDetail(id) { const el = document.getElementById(id); if(el) el.classList.toggle('d-none'); }
+function uploadImage(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const MAX_WIDTH = 300; const MAX_HEIGHT = 400; let width = img.width; let height = img.height; if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } } canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height); const el = document.getElementById('charImgPreview'); if(el) el.src = canvas.toDataURL('image/jpeg', 0.7); saveData(); }; img.src = e.target.result; }; reader.readAsDataURL(input.files[0]); } }
+function getVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+function getInt(id) { const v = parseInt(getVal(id)); return isNaN(v) ? 0 : v; }
 
 // --- SAVE / LOAD ---
 function saveData() {
     const data = {
-        version: 11, // Mantemos v11, mas atualizamos a estrutura interna
+        version: 13,
         header: {
             name: getVal('charName'), player: getVal('playerName'), race: getVal('charRace'),
             origin: getVal('charOrigin'), class: getVal('charClass'), level: getVal('charLevel'),
@@ -413,28 +371,25 @@ function saveData() {
             others: []
         },
         skills: currentSkills,
-        attacks: [],
-        inventory: [], abilities: [], spells: []
+        attacks: [], inventory: [], abilities: [], spells: []
     };
 
     attrs.forEach(a => data.attrs[a] = getVal(`attr-${a}`));
-
-    // LOOP DE ATAQUES (ATUALIZADO)
+    
     document.querySelectorAll('.atk-row').forEach(row => {
         data.attacks.push({
             name: row.querySelector('.inp-name').value,
             bonus: row.querySelector('.inp-bonus').value,
             dmg: row.querySelector('.inp-dmg').value,
-            crit: row.querySelector('.inp-crit').value,       // Multiplicador (x2)
-            critRange: row.querySelector('.inp-crit-range').value, // Margem (19) - NOVO
+            crit: row.querySelector('.inp-crit').value,
+            critRange: row.querySelector('.inp-crit-range').value,
             desc: row.querySelector('.inp-desc').value,
             type: row.querySelector('.inp-type').value,
-            range: row.querySelector('.inp-range').value,     // Alcance (Curto) - Cuidado com nome igual
+            range: row.querySelector('.inp-range').value,
             skill: row.querySelector('.inp-atk-skill') ? row.querySelector('.inp-atk-skill').value : '',
             mod: row.querySelector('.inp-atk-mod') ? row.querySelector('.inp-atk-mod').value : ''
         });
     });
-
     document.querySelectorAll('.def-row').forEach(row => { data.defense.others.push({ name: row.querySelector('.inp-name').value, bonus: row.querySelector('.inp-bonus').value }); });
     document.querySelectorAll('.inv-row').forEach(row => { data.inventory.push({ name: row.querySelector('.inp-name').value, qtd: row.querySelector('.inp-qtd').value, slots: row.querySelector('.inp-slots').value }); });
     document.querySelectorAll('.ability-row').forEach(row => { data.abilities.push({ name: row.querySelector('.inp-name').value, desc: row.querySelector('.inp-desc').value }); });
@@ -442,18 +397,19 @@ function saveData() {
         data.spells.push({ circle: row.querySelector('.inp-circle').value, name: row.querySelector('.inp-name').value, pm: row.querySelector('.inp-pm').value, school: row.querySelector('.inp-school').value, exec: row.querySelector('.inp-exec').value, range: row.querySelector('.inp-range').value, target: row.querySelector('.inp-target').value, dur: row.querySelector('.inp-dur').value, res: row.querySelector('.inp-res').value, desc: row.querySelector('.inp-desc').value });
     });
 
-    localStorage.setItem('t20_sheet_v11', JSON.stringify(data));
+    localStorage.setItem('t20_sheet_v13', JSON.stringify(data));
 }
 
 function loadData() {
-    let json = localStorage.getItem('t20_sheet_v11');
-    // Fallback v10 -> v11
+    let json = localStorage.getItem('t20_sheet_v13');
+    if (!json) json = localStorage.getItem('t20_sheet_v12');
+    if (!json) json = localStorage.getItem('t20_sheet_v11');
     if (!json) json = localStorage.getItem('t20_sheet_v10');
     if (!json) { addAttack(); renderSkills(); return; }
 
     try {
         const data = JSON.parse(json);
-        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+        const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
 
         setVal('charName', data.header.name); setVal('playerName', data.header.player);
         setVal('charRace', data.header.race); setVal('charOrigin', data.header.origin);
@@ -461,38 +417,38 @@ function loadData() {
         setVal('charDeity', data.header.deity);
         const imgEl = document.getElementById('charImgPreview'); if (data.header.image && imgEl) imgEl.src = data.header.image;
 
-        if (data.extras) { setVal('charProfs', data.extras.profs); setVal('charSize', data.extras.size || '0'); setVal('charSpeed', data.extras.speed); setVal('charXP', data.extras.xp); setVal('charCash', data.extras.cash); }
-        if (data.attrs) attrs.forEach(a => setVal(`attr-${a}`, data.attrs[a]));
-        if (data.status) { setVal('pvMax', data.status.pvM); setVal('pvCurrent', data.status.pvC); setVal('pmMax', data.status.pmM); setVal('pmCurrent', data.status.pmC); }
+        if(data.extras) { setVal('charProfs', data.extras.profs); setVal('charSize', data.extras.size || '0'); setVal('charSpeed', data.extras.speed); setVal('charXP', data.extras.xp); setVal('charCash', data.extras.cash); }
+        if(data.attrs) attrs.forEach(a => setVal(`attr-${a}`, data.attrs[a]));
+        if(data.status) { setVal('pvMax', data.status.pvM); setVal('pvCurrent', data.status.pvC); setVal('pmMax', data.status.pmM); setVal('pmCurrent', data.status.pmC); }
 
-        if (data.defense) {
-            if (data.defense.config) { setVal('defAttrSelect', data.defense.config.attr || 'DES'); const chk = document.getElementById('applyDefAttr'); if (chk) chk.checked = data.defense.config.apply; }
-            if (data.defense.armor) { setVal('armorName', data.defense.armor.name); setVal('armorBonus', data.defense.armor.bonus); setVal('armorPenalty', data.defense.armor.penalty); setVal('armorType', data.defense.armor.type || 'light'); setVal('armorDesc', data.defense.armor.desc); }
-            if (data.defense.shield) { setVal('shieldName', data.defense.shield.name); setVal('shieldBonus', data.defense.shield.bonus); setVal('shieldPenalty', data.defense.shield.penalty); setVal('shieldType', data.defense.shield.type || 'light'); setVal('shieldDesc', data.defense.shield.desc); }
-            const defList = document.getElementById('defenseList'); if (defList) defList.innerHTML = '';
-            if (data.defense.others) data.defense.others.forEach(item => addDefenseItem(item));
+        if(data.defense) {
+            if(data.defense.config) { setVal('defAttrSelect', data.defense.config.attr || 'DES'); const chk = document.getElementById('applyDefAttr'); if(chk) chk.checked = data.defense.config.apply; }
+            if(data.defense.armor) { setVal('armorName', data.defense.armor.name); setVal('armorBonus', data.defense.armor.bonus); setVal('armorPenalty', data.defense.armor.penalty); setVal('armorType', data.defense.armor.type || 'light'); setVal('armorDesc', data.defense.armor.desc); }
+            if(data.defense.shield) { setVal('shieldName', data.defense.shield.name); setVal('shieldBonus', data.defense.shield.bonus); setVal('shieldPenalty', data.defense.shield.penalty); setVal('shieldType', data.defense.shield.type || 'light'); setVal('shieldDesc', data.defense.shield.desc); }
+            const defList = document.getElementById('defenseList'); if(defList) defList.innerHTML = '';
+            if(data.defense.others) data.defense.others.forEach(item => addDefenseItem(item));
         }
 
         if (data.skills && Array.isArray(data.skills)) { currentSkills = data.skills; }
         renderSkills();
 
-        const atkList = document.getElementById('attacksList'); if (atkList) atkList.innerHTML = '';
-        if (data.attacks) data.attacks.forEach(atk => addAttack(atk)); else addAttack();
+        const atkList = document.getElementById('attacksList'); if(atkList) atkList.innerHTML = '';
+        if(data.attacks) data.attacks.forEach(atk => addAttack(atk)); else addAttack();
 
-        const invList = document.getElementById('inventoryList'); if (invList) invList.innerHTML = '';
-        if (data.inventory) data.inventory.forEach(item => addInventoryItem(item));
+        const invList = document.getElementById('inventoryList'); if(invList) invList.innerHTML = '';
+        if(data.inventory) data.inventory.forEach(item => addInventoryItem(item));
 
-        const abList = document.getElementById('abilitiesList'); if (abList) abList.innerHTML = '';
-        if (data.abilities) data.abilities.forEach(ab => addAbility(ab));
+        const abList = document.getElementById('abilitiesList'); if(abList) abList.innerHTML = '';
+        if(data.abilities) data.abilities.forEach(ab => addAbility(ab));
 
-        for (let i = 1; i <= 5; i++) { const el = document.getElementById(`spellsList${i}`); if (el) el.innerHTML = ''; }
-        if (data.spells) data.spells.forEach(spell => addSpell(spell.circle, spell));
+        for(let i=1; i<=5; i++) { const el = document.getElementById(`spellsList${i}`); if(el) el.innerHTML = ''; }
+        if(data.spells) data.spells.forEach(spell => addSpell(spell.circle, spell));
 
-    } catch (e) { console.error(e); }
-
+    } catch(e) { console.error(e); }
+    
     updateCalculations();
 }
 
-function clearSheet() { if (confirm("ATENÇÃO: Tem certeza que deseja APAGAR TODA a ficha?\n\nEssa ação é irreversível. Se quiser guardar este personagem, use o botão 'Baixar' antes.")) { localStorage.removeItem('t20_sheet_v11'); location.reload(); } }
-function exportSheet() { saveData(); const rawData = localStorage.getItem('t20_sheet_v11'); if (!rawData) return alert("Nenhum dado!"); const data = JSON.parse(rawData); const fileName = `Ficha_T20_${data.header.name || "Personagem"}.json`; const blob = new Blob([rawData], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
-function importSheet(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function (e) { try { localStorage.setItem('t20_sheet_v11', e.target.result); loadData(); alert("Ficha carregada!"); } catch (err) { alert("Erro ao carregar."); } }; reader.readAsText(file); input.value = ''; }
+function clearSheet() { if (confirm("ATENÇÃO: Apagar TODA a ficha?")) { localStorage.removeItem('t20_sheet_v13'); location.reload(); } }
+function exportSheet() { saveData(); const rawData = localStorage.getItem('t20_sheet_v13'); if (!rawData) return alert("Nenhum dado!"); const data = JSON.parse(rawData); const fileName = `Ficha_T20_${data.header.name || "Personagem"}.json`; const blob = new Blob([rawData], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+function importSheet(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function (e) { try { localStorage.setItem('t20_sheet_v13', e.target.result); loadData(); alert("Ficha carregada!"); } catch (err) { alert("Erro ao carregar."); } }; reader.readAsText(file); input.value = ''; }
