@@ -1,0 +1,216 @@
+:root {
+    --t20-red: #b22222;
+    --t20-bg: #fdfdfd;
+}
+
+/* Ajustes Gerais */
+.sheet {
+    max-width: 1100px;
+    border-top: 5px solid var(--t20-red);
+}
+
+/* Inputs Customizados T20 */
+.t20-label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--t20-red);
+    margin-left: 5px;
+}
+
+.t20-input {
+    border: 2px solid #333;
+    background-color: #f0f8ff;
+    font-weight: bold;
+    border-radius: 4px;
+    border-top-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.t20-input:focus {
+    border-color: var(--t20-red);
+    box-shadow: none;
+}
+
+/* Atributos (Escudos) */
+.attr-box {
+    position: relative;
+}
+
+.attr-label {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid black;
+    padding: 0 5px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+.attr-val {
+    width: 100%;
+    height: 80px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--t20-red);
+    border: 3px solid black;
+    border-radius: 5px 5px 50% 50%;
+    /* Formato de escudo */
+    padding-top: 10px;
+}
+
+.attr-val:focus {
+    outline: none;
+    border-color: var(--t20-red);
+    background-color: #fff0f0;
+}
+
+/* Labels flutuantes nas bordas */
+.t20-status-label,
+.t20-section-title {
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: white;
+    padding: 0 5px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: var(--t20-red);
+    text-transform: uppercase;
+}
+
+/* Escudo da Defesa */
+.def-shield {
+    width: 70px;
+    height: 80px;
+    background: #e9ecef;
+    border: 3px solid black;
+    border-radius: 5px 5px 50% 50%;
+    color: black;
+}
+
+/* Perícias (Tabela zebrada customizada) */
+.skill-row:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.skill-row {
+    font-size: 0.8rem;
+    /* Reduzi um pouco para caber melhor */
+    background-color: white;
+    /* Garante fundo limpo */
+}
+
+.skill-row input[type="number"] {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+    width: 100%;
+    height: 20px;
+    /* Altura fixa compacta */
+    font-size: 0.8rem;
+}
+
+/* Ataques (Accordion) */
+.atk-summary input {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    background: transparent;
+    text-align: center;
+    font-weight: 600;
+}
+
+.atk-summary input:focus {
+    outline: none;
+    border-bottom: 2px solid var(--t20-red);
+}
+
+.atk-details {
+    background-color: #f8f9fa;
+    border-left: 3px solid var(--t20-red);
+}
+
+.form-label-sm {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #666;
+    border-top: 1px solid #dee2e6;
+    display: block;
+    text-align: center;
+}
+
+/* Adicione ao seu CSS */
+
+.def-row .inp-bonus {
+    text-align: center;
+    background: #f0fff4;
+    /* Verdinho claro para bônus */
+    border: 1px solid #c3e6cb;
+}
+
+.def-row .inp-penalty {
+    text-align: center;
+    background: #fff5f5;
+    /* Vermelhinho claro para penalidade */
+    border: 1px solid #f5c6cb;
+}
+
+.def-details {
+    background-color: #e9ecef;
+    margin-top: 5px;
+    border-left: 4px solid #6c757d;
+}
+
+/* Ajuste visual do seletor de atributo na fórmula */
+#defAttrSelect {
+    font-size: 1.1rem;
+    /* Maior */
+    font-weight: 800;
+    /* Mais negrito */
+    color: var(--t20-red);
+    /* Vermelho T20 */
+    border: 2px solid #ddd;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+#defAttrSelect:hover {
+    color: var(--t20-red) !important;
+}
+
+
+#defAttrSelect:focus {
+    border-color: var(--t20-red);
+    box-shadow: 0 0 5px rgba(178, 34, 34, 0.3);
+}
+
+/* Estilo dos Slots Fixos (Armadura/Escudo) */
+.fixed-slot {
+    border: 1px solid #999;
+    border-left: 5px solid #333;
+    /* Faixa preta para indicar item base */
+    background-color: #fdfdfd;
+}
+
+.fixed-slot.armor {
+    border-left-color: var(--t20-red);
+}
+
+/* Faixa vermelha para armadura */
+.fixed-slot.shield {
+    border-left-color: #0d6efd;
+}
+
+/* Faixa azul para escudo */
+
+/* Ajuste para o botão de detalhe fixo */
+.btn-detail-fixed {
+    width: 100%;
+    padding: 2px;
+}
