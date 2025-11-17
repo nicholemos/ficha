@@ -214,3 +214,34 @@
     width: 100%;
     padding: 2px;
 }
+
+/* Estilo para Magias */
+.spell-row .inp-pm {
+    color: #6f42c1;
+    /* Roxo */
+    font-weight: bold;
+}
+
+.spell-details {
+    border-left: 4px solid #6f42c1;
+    background-color: #f8f4ff;
+    /* Fundo levemente lilás */
+}
+
+/* Labels específicos para os dados técnicos da magia */
+.spell-label {
+    font-size: 0.65em;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #6f42c1;
+    margin-bottom: 0;
+}
+
+/* Efeito na caixa de imagem */
+.char-img-container:hover {
+    border-color: var(--t20-red) !important;
+    opacity: 0.9;
+}
+.char-img-container:hover div {
+    background-color: var(--t20-red) !important; /* Faixa inferior fica vermelha */
+}
