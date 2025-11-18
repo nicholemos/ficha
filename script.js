@@ -32,15 +32,23 @@ window.onload = () => {
 
 function renderStructure() {
     const attrContainer = document.getElementById('attributesArea');
+    // Certifique-se de ter as imagens na pasta
+    const attrImages = { 'FOR': 'imagens/forca.png', 'DES': 'imagens/destreza.png', 'CON': 'imagens/constituicao.png', 'INT': 'imagens/inteligencia.png', 'SAB': 'imagens/sabedoria.png', 'CAR': 'imagens/carisma.png' };
+
     if(attrContainer) {
-        attrContainer.innerHTML = attrs.map(a => `
+        attrContainer.innerHTML = attrs.map(a => {
+            const bgImage = attrImages[a] ? `url('${attrImages[a]}')` : 'none';
+            return `
             <div class="col-2">
-                <div class="attr-box">
-                    <div class="attr-label">${a}</div>
-                    <input type="number" class="attr-val form-control" id="attr-${a}" value="0" min="-5">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="attr-token" style="background-image: ${bgImage};">
+                        <input type="number" class="attr-val attr-input-overlay form-control" id="attr-${a}" value="0" min="-5">
+                    </div>
+                    <div class="attr-footer-label">${a}</div>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
     renderSkills();
 }
@@ -65,13 +73,12 @@ function renderSkills() {
         <div class="row g-0 align-items-center skill-row py-1 border-bottom">
             <div class="col-1 text-center"><input class="form-check-input border-dark" type="checkbox" id="skTrain${i}" ${s.trained ? 'checked' : ''}></div>
             <div class="col-1 text-center"><i class="bi bi-dice-20-fill dice-roller text-secondary" onclick="rollSkill(${i})" title="Rolar Teste"></i></div>
-            <div class="col-3 ps-1 d-flex align-items-center">
+            <div class="col-4 ps-1 d-flex align-items-center">
                 <div style="flex: 1; overflow: hidden;">${nameDisplay}</div>
-                <select class="border-0 bg-transparent text-muted fw-bold ms-1 p-0" style="font-size: 0.65em; width: 40px; cursor:pointer;" onchange="updateSkillAttr(${i}, this.value)">${attrOptions}</select>
+                <select class="border-0 bg-transparent text-muted fw-bold ms-1 p-0" style="font-size: 0.65em; width: 35px; cursor:pointer;" onchange="updateSkillAttr(${i}, this.value)">${attrOptions}</select>
                 ${deleteBtn}
             </div>
             <div class="col-2 text-center fw-bold text-danger fs-6" id="skTotal${i}">0</div>
-            <div class="col-1 text-center text-muted small">=</div>
             <div class="col-1 text-center text-muted small" id="skHalfLevel${i}">0</div>
             <div class="col-1 text-center text-muted small" id="skAttrVal${i}">0</div>
             <div class="col-1 text-center text-muted small" id="skTrainVal${i}">0</div>
@@ -82,7 +89,7 @@ function renderSkills() {
     attachGlobalListeners();
 }
 
-// --- FUNÇÕES DE ROLAGEM ---
+// --- ROLAGEM DE DADOS ---
 function roll20() { return Math.floor(Math.random() * 20) + 1; }
 
 function showToast(title, result, total, isCrit = false, type = 'normal') {
@@ -124,20 +131,65 @@ function rollSkill(index) {
     showToast(`🎲 ${skill.n}`, roll, roll + total, false, 'skill');
 }
 
-// --- ADICIONAR ATAQUE (COM ESPADA ⚔️) ---
+// --- UI / HELPERS ---
+function attachGlobalListeners() {
+    document.body.oninput = (e) => { if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) { updateCalculations(); if(e.target.id !== 'charImgInput') saveData(); } };
+    document.body.onchange = (e) => { if (e.target.type === 'checkbox' || e.target.tagName === 'SELECT') { updateCalculations(); saveData(); } };
+}
+function toggleDetail(btn) {
+    const row = btn.closest('.atk-row') || btn.closest('.def-row') || btn.closest('.ability-row') || btn.closest('.spell-row');
+    if (!row) return;
+    const details = row.querySelector('.atk-details') || row.querySelector('.def-details') || row.querySelector('.ability-details') || row.querySelector('.spell-details');
+    const icon = btn.querySelector('i');
+    if (details.classList.contains('d-none')) { details.classList.remove('d-none'); icon.classList.replace('bi-chevron-down', 'bi-chevron-up'); } 
+    else { details.classList.add('d-none'); icon.classList.replace('bi-chevron-up', 'bi-chevron-down'); }
+}
+function toggleFixedDetail(id) { const el = document.getElementById(id); if(el) el.classList.toggle('d-none'); }
+function uploadImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const MAX_WIDTH = 300; const MAX_HEIGHT = 400;
+                let width = img.width; let height = img.height;
+                if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
+                else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
+                canvas.width = width; canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                const el = document.getElementById('charImgPreview');
+                if(el) el.src = canvas.toDataURL('image/jpeg', 0.7);
+                saveData();
+            }
+            img.src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+function getVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+function getInt(id) { const v = parseInt(getVal(id)); return isNaN(v) ? 0 : v; }
+function setText(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
+
+// --- FUNÇÕES DE ADIÇÃO ---
+
+// Gerenciamento de Perícias
+function addSkill() { currentSkills.push({ n: 'Nova Perícia', a: 'INT', trained: false, other: 0, isCustom: true }); renderSkills(); saveData(); }
+function deleteSkill(index) { if(confirm("Remover perícia?")) { currentSkills.splice(index, 1); renderSkills(); saveData(); } }
+function updateSkillAttr(index, newAttr) { currentSkills[index].a = newAttr; updateCalculations(); saveData(); }
+function updateSkillName(index, newName) { currentSkills[index].n = newName; saveData(); updateCalculations(); }
+
+// Ataques
 function addAttack(data = null) {
     const container = document.getElementById('attacksList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 atk-row';
-    
     const mainSkills = ['Luta', 'Pontaria', 'Atuação', 'Misticismo'];
     let skillOptions = `<option value="">(Manual)</option>`;
     mainSkills.forEach(sn => skillOptions += `<option value="${sn}" ${data && data.skill === sn ? 'selected' : ''}>${sn}</option>`);
-    
     div.innerHTML = `
         <div class="row g-1 align-items-center text-center atk-summary mb-2">
-            <div class="col-1">
-                <i class="bi bi-sword fs-4 dice-roller text-danger" onclick="rollAttack(this)" title="Rolar Ataque" style="cursor: pointer;"></i>
-            </div>
+            <div class="col-1"><i class="bi bi-sword fs-4 dice-roller text-danger" onclick="rollAttack(this)" title="Rolar Ataque" style="cursor: pointer;"></i></div>
             <div class="col-4"><input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Ataque" value="${data ? data.name : ''}"></div>
             <div class="col-2"><input type="text" class="form-control form-control-sm inp-bonus fw-bold" placeholder="+0" value="${data ? data.bonus : ''}"></div>
             <div class="col-2"><input type="text" class="form-control form-control-sm inp-dmg" placeholder="1d6" value="${data ? data.dmg : ''}"></div>
@@ -157,18 +209,11 @@ function addAttack(data = null) {
                 <div class="col-2 d-flex align-items-end"><button class="btn btn-sm btn-danger w-100 py-0" onclick="removeAttack(this)"><i class="bi bi-trash"></i></button></div>
             </div>
         </div>`;
-    
-    container.appendChild(div); 
-    if (!data) saveData();
+    container.appendChild(div); if (!data) saveData();
 }
 function removeAttack(btn) { if(confirm('Remover ataque?')) { btn.closest('.atk-row').remove(); saveData(); } }
 
-// --- OUTRAS FUNÇÕES (Add/Remove) ---
-function addSkill() { currentSkills.push({ n: 'Nova Perícia', a: 'INT', trained: false, other: 0, isCustom: true }); renderSkills(); saveData(); }
-function deleteSkill(index) { if(confirm("Remover perícia?")) { currentSkills.splice(index, 1); renderSkills(); saveData(); } }
-function updateSkillAttr(index, newAttr) { currentSkills[index].a = newAttr; updateCalculations(); saveData(); }
-function updateSkillName(index, newName) { currentSkills[index].n = newName; saveData(); updateCalculations(); }
-
+// Outros Itens
 function addDefenseItem(data = null) {
     const container = document.getElementById('defenseList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 def-row';
@@ -185,6 +230,7 @@ function addDefenseItem(data = null) {
 function removeDefenseItem(btn) { if(confirm('Remover item?')) { btn.closest('.def-row').remove(); updateCalculations(); saveData(); } }
 function checkHeavyArmor() { if (getVal('armorType') === 'heavy') { const chk = document.getElementById('applyDefAttr'); if(chk) chk.checked = false; } updateCalculations(); }
 
+// Inventário
 function addInventoryItem(data = null) {
     const container = document.getElementById('inventoryList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'row g-1 align-items-center mb-2 inv-row border-bottom pb-1';
@@ -197,6 +243,7 @@ function addInventoryItem(data = null) {
 }
 function removeInventoryItem(btn) { if(confirm('Remover item?')) { btn.closest('.inv-row').remove(); updateCalculations(); saveData(); } }
 
+// Poderes
 function addAbility(data = null) {
     const container = document.getElementById('abilitiesList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'col-md-6 ability-row';
@@ -216,6 +263,7 @@ function addAbility(data = null) {
 }
 function removeAbility(btn) { if(confirm('Excluir poder?')) { btn.closest('.ability-row').remove(); saveData(); } }
 
+// Magias
 function addSpell(circle, data = null) {
     const container = document.getElementById(`spellsList${circle}`); if(!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 spell-row';
@@ -246,27 +294,23 @@ function removeSpell(btn) { if(confirm('Remover magia?')) { btn.closest('.spell-
 // --- CÁLCULOS ---
 function updateCalculations() {
     try {
+        // 1. Nível
         let level = getInt('charLevel');
         if (level < 1) level = 1; if (level > 20) level = 20;
         const halfLevel = Math.floor(level / 2);
 
-        const armorPen = getInt('armorPenalty');
-        const shieldPen = getInt('shieldPenalty');
+        // 2. Penalidades
+        const armorPen = getInt('armorPenalty'); const shieldPen = getInt('shieldPenalty');
         const totalPenalty = Math.abs(armorPen) + Math.abs(shieldPen);
         const penaltySkills = ['Acrobacia', 'Furtividade', 'Ladinagem'];
         const sizeVal = getInt('charSize');
-
-        let trainBonus = 2;
-        if (level >= 15) trainBonus = 6; else if (level >= 7) trainBonus = 4;
-
+        let trainBonus = 2; if (level >= 15) trainBonus = 6; else if (level >= 7) trainBonus = 4;
         const skillValues = {};
 
         currentSkills.forEach((s, i) => {
             const attrVal = getInt(`attr-${s.a}`);
-            const check = document.getElementById(`skTrain${i}`);
-            if (check) s.trained = check.checked;
-            const otherInp = document.getElementById(`skOther${i}`);
-            if (otherInp) s.other = parseInt(otherInp.value) || 0;
+            const check = document.getElementById(`skTrain${i}`); if (check) s.trained = check.checked;
+            const otherInp = document.getElementById(`skOther${i}`); if (otherInp) s.other = parseInt(otherInp.value) || 0;
 
             const finalTrainBonus = s.trained ? trainBonus : 0;
             let appliedPenalty = (penaltySkills.includes(s.n) && totalPenalty > 0) ? totalPenalty : 0;
@@ -278,7 +322,6 @@ function updateCalculations() {
 
             const total = halfLevel + attrVal + finalTrainBonus + s.other - appliedPenalty + appliedSizeMod;
             skillValues[s.n] = total;
-
             const totalEl = document.getElementById(`skTotal${i}`);
             if(totalEl) {
                 totalEl.innerText = total;
@@ -291,71 +334,58 @@ function updateCalculations() {
         });
 
         document.querySelectorAll('.atk-row').forEach(row => {
-            const skillSelect = row.querySelector('.inp-atk-skill');
-            const modInput = row.querySelector('.inp-atk-mod');
-            const mainInput = row.querySelector('.inp-bonus');
+            const skillSelect = row.querySelector('.inp-atk-skill'); const modInput = row.querySelector('.inp-atk-mod'); const mainInput = row.querySelector('.inp-bonus');
             if (skillSelect && skillSelect.value && skillValues[skillSelect.value] !== undefined) {
-                const base = skillValues[skillSelect.value];
-                const mod = parseInt(modInput.value) || 0;
-                const totalAtk = base + mod;
-                mainInput.value = (totalAtk >= 0 ? '+' : '') + totalAtk;
-                mainInput.classList.add('text-primary', 'bg-light');
-                mainInput.readOnly = true;
-            } else {
-                mainInput.classList.remove('text-primary', 'bg-light');
-                mainInput.readOnly = false;
-            }
+                const base = skillValues[skillSelect.value]; const mod = parseInt(modInput.value) || 0;
+                const totalAtk = base + mod; mainInput.value = (totalAtk >= 0 ? '+' : '') + totalAtk;
+                mainInput.classList.add('text-primary', 'bg-light'); mainInput.readOnly = true;
+            } else { mainInput.classList.remove('text-primary', 'bg-light'); mainInput.readOnly = false; }
         });
 
-        const select = document.getElementById('defAttrSelect');
-        const selectedAttr = select ? select.value : 'DES';
-        const attrValDef = getInt(`attr-${selectedAttr}`);
-        const checkDef = document.getElementById('applyDefAttr');
-        const applyAttr = checkDef ? checkDef.checked : false;
+        // Defesa
+        const select = document.getElementById('defAttrSelect'); const selectedAttr = select ? select.value : 'DES';
+        const attrValDef = getInt(`attr-${selectedAttr}`); const checkDef = document.getElementById('applyDefAttr'); const applyAttr = checkDef ? checkDef.checked : false;
         const elDefAttrVal = document.getElementById('defAttrVal'); if(elDefAttrVal) elDefAttrVal.innerText = attrValDef;
-        const armorBonus = getInt('armorBonus');
-        const elArmorB = document.getElementById('dispArmorBonus'); if(elArmorB) elArmorB.innerText = armorBonus;
-        const shieldBonus = getInt('shieldBonus');
-        const elShieldB = document.getElementById('dispShieldBonus'); if(elShieldB) elShieldB.innerText = shieldBonus;
-        let othersBonus = 0;
-        document.querySelectorAll('.def-row').forEach(row => { othersBonus += parseInt(row.querySelector('.inp-bonus').value) || 0; });
+        const armorBonus = getInt('armorBonus'); const elArmorB = document.getElementById('dispArmorBonus'); if(elArmorB) elArmorB.innerText = armorBonus;
+        const shieldBonus = getInt('shieldBonus'); const elShieldB = document.getElementById('dispShieldBonus'); if(elShieldB) elShieldB.innerText = shieldBonus;
+        let othersBonus = 0; document.querySelectorAll('.def-row').forEach(row => { othersBonus += parseInt(row.querySelector('.inp-bonus').value) || 0; });
         const elOtherB = document.getElementById('dispOtherBonus'); if(elOtherB) elOtherB.innerText = othersBonus;
-        const elDefTotal = document.getElementById('defenseTotal');
-        if(elDefTotal) elDefTotal.innerText = 10 + (applyAttr ? attrValDef : 0) + armorBonus + shieldBonus + othersBonus;
+        const elDefTotal = document.getElementById('defenseTotal'); if(elDefTotal) elDefTotal.innerText = 10 + (applyAttr ? attrValDef : 0) + armorBonus + shieldBonus + othersBonus;
 
-        let currentLoad = 0;
-        document.querySelectorAll('.inv-row').forEach(row => {
-            const qtd = parseFloat(row.querySelector('.inp-qtd').value) || 0;
-            const slots = parseFloat(row.querySelector('.inp-slots').value) || 0;
-            currentLoad += (qtd * slots);
-        });
+        // Carga
+        let currentLoad = 0; document.querySelectorAll('.inv-row').forEach(row => { const qtd = parseFloat(row.querySelector('.inp-qtd').value) || 0; const slots = parseFloat(row.querySelector('.inp-slots').value) || 0; currentLoad += (qtd * slots); });
         const elLoadCurr = document.getElementById('loadCurrent'); if(elLoadCurr) elLoadCurr.innerText = currentLoad;
-        const str = getInt('attr-FOR');
-        let baseLimit = 10;
-        if (str > 0) baseLimit += (str * 2); else baseLimit += str; 
+        const str = getInt('attr-FOR'); let baseLimit = 10; if (str > 0) baseLimit += (str * 2); else baseLimit += str;
         const elLoadLim = document.getElementById('loadLimit'); if(elLoadLim) elLoadLim.innerText = baseLimit;
-        if(elLoadCurr) {
-            if(currentLoad > baseLimit) { elLoadCurr.classList.add('bg-danger', 'text-white'); elLoadCurr.classList.remove('bg-white'); }
-            else { elLoadCurr.classList.add('bg-white'); elLoadCurr.classList.remove('bg-danger', 'text-white'); }
-        }
-    } catch(e) { console.log("Calc pendente..."); }
+        if(elLoadCurr) { if(currentLoad > baseLimit) { elLoadCurr.classList.add('bg-danger', 'text-white'); elLoadCurr.classList.remove('bg-white'); } else { elLoadCurr.classList.add('bg-white'); elLoadCurr.classList.remove('bg-danger', 'text-white'); } }
+
+        // CD Magias
+        const spellAttr = document.getElementById('spellCDAttrSelect').value;
+        const spellAttrVal = getInt(`attr-${spellAttr}`);
+        setText('spellCDHalfLevel', halfLevel);
+        setText('spellCDAttrVal', spellAttrVal);
+        const cdPowers = getInt('spellCDPowers'); const cdItems = getInt('spellCDItems'); const cdOther = getInt('spellCDOther');
+        const totalCD = 10 + halfLevel + spellAttrVal + cdPowers + cdItems + cdOther;
+        setText('spellCDTotal', totalCD);
+
+        updateBars();
+    } catch(e) { console.log("Calc pendente...", e); }
 }
 
-// --- HELPERS ---
-function attachGlobalListeners() {
-    document.body.oninput = (e) => { if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) { updateCalculations(); if(e.target.id !== 'charImgInput') saveData(); } };
-    document.body.onchange = (e) => { if (e.target.type === 'checkbox' || e.target.tagName === 'SELECT') { updateCalculations(); saveData(); } };
-}
-function toggleDetail(btn) { const row = btn.closest('.atk-row') || btn.closest('.def-row') || btn.closest('.ability-row') || btn.closest('.spell-row'); if (!row) return; const details = row.querySelector('.atk-details') || row.querySelector('.def-details') || row.querySelector('.ability-details') || row.querySelector('.spell-details'); const icon = btn.querySelector('i'); if (details.classList.contains('d-none')) { details.classList.remove('d-none'); icon.classList.replace('bi-chevron-down', 'bi-chevron-up'); } else { details.classList.add('d-none'); icon.classList.replace('bi-chevron-up', 'bi-chevron-down'); } }
-function toggleFixedDetail(id) { const el = document.getElementById(id); if(el) el.classList.toggle('d-none'); }
-function uploadImage(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const MAX_WIDTH = 300; const MAX_HEIGHT = 400; let width = img.width; let height = img.height; if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } } canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height); const el = document.getElementById('charImgPreview'); if(el) el.src = canvas.toDataURL('image/jpeg', 0.7); saveData(); }; img.src = e.target.result; }; reader.readAsDataURL(input.files[0]); } }
-function getVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
-function getInt(id) { const v = parseInt(getVal(id)); return isNaN(v) ? 0 : v; }
+function updateBars() {
+    const pvMax = parseFloat(document.getElementById('pvMax').value) || 0; const pvCur = parseFloat(document.getElementById('pvCurrent').value) || 0;
+    let pvPct = 0; if (pvMax > 0) pvPct = (pvCur / pvMax) * 100; if (pvPct > 100) pvPct = 100; if (pvPct < 0) pvPct = 0;
+    const barPV = document.getElementById('barPV'); if(barPV) barPV.style.width = `${pvPct}%`;
 
-// --- SAVE / LOAD ---
+    const pmMax = parseFloat(document.getElementById('pmMax').value) || 0; const pmCur = parseFloat(document.getElementById('pmCurrent').value) || 0;
+    let pmPct = 0; if (pmMax > 0) pmPct = (pmCur / pmMax) * 100; if (pmPct > 100) pmPct = 100; if (pmPct < 0) pmPct = 0;
+    const barPM = document.getElementById('barPM'); if(barPM) barPM.style.width = `${pmPct}%`;
+}
+
+// --- PERSISTÊNCIA ---
 function saveData() {
     const data = {
-        version: 13,
+        version: 15,
         header: {
             name: getVal('charName'), player: getVal('playerName'), race: getVal('charRace'),
             origin: getVal('charOrigin'), class: getVal('charClass'), level: getVal('charLevel'),
@@ -370,6 +400,12 @@ function saveData() {
             shield: { name: getVal('shieldName'), bonus: getVal('shieldBonus'), penalty: getVal('shieldPenalty'), type: getVal('shieldType'), desc: getVal('shieldDesc') },
             others: []
         },
+        spellCD: {
+            attr: getVal('spellCDAttrSelect'),
+            powers: getVal('spellCDPowers'),
+            items: getVal('spellCDItems'),
+            other: getVal('spellCDOther')
+        },
         skills: currentSkills,
         attacks: [], inventory: [], abilities: [], spells: []
     };
@@ -378,16 +414,7 @@ function saveData() {
     
     document.querySelectorAll('.atk-row').forEach(row => {
         data.attacks.push({
-            name: row.querySelector('.inp-name').value,
-            bonus: row.querySelector('.inp-bonus').value,
-            dmg: row.querySelector('.inp-dmg').value,
-            crit: row.querySelector('.inp-crit').value,
-            critRange: row.querySelector('.inp-crit-range').value,
-            desc: row.querySelector('.inp-desc').value,
-            type: row.querySelector('.inp-type').value,
-            range: row.querySelector('.inp-range').value,
-            skill: row.querySelector('.inp-atk-skill') ? row.querySelector('.inp-atk-skill').value : '',
-            mod: row.querySelector('.inp-atk-mod') ? row.querySelector('.inp-atk-mod').value : ''
+            name: row.querySelector('.inp-name').value, bonus: row.querySelector('.inp-bonus').value, dmg: row.querySelector('.inp-dmg').value, crit: row.querySelector('.inp-crit').value, critRange: row.querySelector('.inp-crit-range').value, desc: row.querySelector('.inp-desc').value, type: row.querySelector('.inp-type').value, range: row.querySelector('.inp-range').value, skill: row.querySelector('.inp-atk-skill') ? row.querySelector('.inp-atk-skill').value : '', mod: row.querySelector('.inp-atk-mod') ? row.querySelector('.inp-atk-mod').value : ''
         });
     });
     document.querySelectorAll('.def-row').forEach(row => { data.defense.others.push({ name: row.querySelector('.inp-name').value, bonus: row.querySelector('.inp-bonus').value }); });
@@ -397,24 +424,33 @@ function saveData() {
         data.spells.push({ circle: row.querySelector('.inp-circle').value, name: row.querySelector('.inp-name').value, pm: row.querySelector('.inp-pm').value, school: row.querySelector('.inp-school').value, exec: row.querySelector('.inp-exec').value, range: row.querySelector('.inp-range').value, target: row.querySelector('.inp-target').value, dur: row.querySelector('.inp-dur').value, res: row.querySelector('.inp-res').value, desc: row.querySelector('.inp-desc').value });
     });
 
-    localStorage.setItem('t20_sheet_v13', JSON.stringify(data));
+    localStorage.setItem('t20_sheet_v15', JSON.stringify(data));
 }
 
 function loadData() {
-    let json = localStorage.getItem('t20_sheet_v13');
+    let json = localStorage.getItem('t20_sheet_v15');
+    if (!json) json = localStorage.getItem('t20_sheet_v14');
+    if (!json) json = localStorage.getItem('t20_sheet_v13');
     if (!json) json = localStorage.getItem('t20_sheet_v12');
     if (!json) json = localStorage.getItem('t20_sheet_v11');
     if (!json) json = localStorage.getItem('t20_sheet_v10');
-    if (!json) { addAttack(); renderSkills(); return; }
+    
+    // Se não tiver save, inicializa com itens básicos
+    if (!json) { 
+        addAttack(); 
+        renderSkills(); 
+        // ITENS INICIAIS AUTOMÁTICOS
+        addInventoryItem({ name: 'Mochila', qtd: 1, slots: 0 });
+        addInventoryItem({ name: 'Saco de Dormir', qtd: 1, slots: 1 });
+        addInventoryItem({ name: 'Traje de Viajante', qtd: 1, slots: 0 });
+        return; 
+    }
 
     try {
         const data = JSON.parse(json);
         const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
 
-        setVal('charName', data.header.name); setVal('playerName', data.header.player);
-        setVal('charRace', data.header.race); setVal('charOrigin', data.header.origin);
-        setVal('charClass', data.header.class); setVal('charLevel', data.header.level || '1');
-        setVal('charDeity', data.header.deity);
+        setVal('charName', data.header.name); setVal('playerName', data.header.player); setVal('charRace', data.header.race); setVal('charOrigin', data.header.origin); setVal('charClass', data.header.class); setVal('charLevel', data.header.level || '1'); setVal('charDeity', data.header.deity);
         const imgEl = document.getElementById('charImgPreview'); if (data.header.image && imgEl) imgEl.src = data.header.image;
 
         if(data.extras) { setVal('charProfs', data.extras.profs); setVal('charSize', data.extras.size || '0'); setVal('charSpeed', data.extras.speed); setVal('charXP', data.extras.xp); setVal('charCash', data.extras.cash); }
@@ -427,6 +463,13 @@ function loadData() {
             if(data.defense.shield) { setVal('shieldName', data.defense.shield.name); setVal('shieldBonus', data.defense.shield.bonus); setVal('shieldPenalty', data.defense.shield.penalty); setVal('shieldType', data.defense.shield.type || 'light'); setVal('shieldDesc', data.defense.shield.desc); }
             const defList = document.getElementById('defenseList'); if(defList) defList.innerHTML = '';
             if(data.defense.others) data.defense.others.forEach(item => addDefenseItem(item));
+        }
+
+        if(data.spellCD) {
+            setVal('spellCDAttrSelect', data.spellCD.attr || 'INT');
+            setVal('spellCDPowers', data.spellCD.powers);
+            setVal('spellCDItems', data.spellCD.items);
+            setVal('spellCDOther', data.spellCD.other);
         }
 
         if (data.skills && Array.isArray(data.skills)) { currentSkills = data.skills; }
@@ -449,6 +492,6 @@ function loadData() {
     updateCalculations();
 }
 
-function clearSheet() { if (confirm("ATENÇÃO: Apagar TODA a ficha?")) { localStorage.removeItem('t20_sheet_v13'); location.reload(); } }
-function exportSheet() { saveData(); const rawData = localStorage.getItem('t20_sheet_v13'); if (!rawData) return alert("Nenhum dado!"); const data = JSON.parse(rawData); const fileName = `Ficha_T20_${data.header.name || "Personagem"}.json`; const blob = new Blob([rawData], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
-function importSheet(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function (e) { try { localStorage.setItem('t20_sheet_v13', e.target.result); loadData(); alert("Ficha carregada!"); } catch (err) { alert("Erro ao carregar."); } }; reader.readAsText(file); input.value = ''; }
+function clearSheet() { if (confirm("ATENÇÃO: Apagar TODA a ficha?")) { localStorage.removeItem('t20_sheet_v15'); location.reload(); } }
+function exportSheet() { saveData(); const rawData = localStorage.getItem('t20_sheet_v15'); if (!rawData) return alert("Nenhum dado!"); const data = JSON.parse(rawData); const fileName = `Ficha_T20_${data.header.name || "Personagem"}.json`; const blob = new Blob([rawData], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+function importSheet(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function (e) { try { localStorage.setItem('t20_sheet_v15', e.target.result); loadData(); alert("Ficha carregada!"); } catch (err) { alert("Erro ao carregar."); } }; reader.readAsText(file); input.value = ''; }
