@@ -1,3 +1,111 @@
+/* --- 1. FONTE TORMENTA --- */
+@font-face {
+    font-family: 'Tormenta';
+    src: url('Tormenta.ttf') format('truetype');
+}
+
+/* Aplica a fonte nos títulos e números grandes */
+.t20-section-title,
+.def-shield,
+.attr-val,
+h1,
+h2,
+h3,
+.fs-4 {
+    font-family: 'Tormenta', serif;
+    letter-spacing: 1px;
+}
+
+/* Ajuste para a fonte não ficar pequena demais nos inputs */
+.attr-val {
+    font-size: 2.8rem !important;
+    /* Aumentei pois a fonte Tormenta costuma ser menor */
+    text-shadow: 2px 2px 0px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+    /* Contorno para leitura */
+    color: #8b0000 !important;
+    /* Vermelho sangue */
+}
+
+/* --- 2. ESTILO DOS ATRIBUTOS (TOKENS) --- */
+.attr-token {
+    width: 100%;
+    max-width: 110px;
+    aspect-ratio: 1 / 1;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    border: 4px solid #333;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    transition: transform 0.2s;
+    position: relative;
+    /* Essencial para o overlay */
+    overflow: hidden;
+    /* Para garantir que o overlay não vaze */
+}
+
+/* Nova camada de overlay para controlar a transparência da IMAGEM */
+.attr-token::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    /* Cor branca com 20% de opacidade */
+    /* Ajuste o último número (0.2) para controlar a transparência:
+       0.0 = totalmente transparente (só o fundo original aparece)
+       0.1 = bem sutil
+       0.2 = levemente transparente (como no exemplo)
+       0.3 = um pouco mais visível
+       0.4 = perceptível
+       ...
+       1.0 = totalmente opaco (a imagem sumiria e ficaria só branco)
+    */
+    pointer-events: none;
+    /* Permite clicar no input por baixo */
+}
+
+.attr-token:hover {
+    transform: scale(1.05);
+    border-color: var(--t20-red);
+}
+
+/* O input fica transparente por cima da imagem */
+.attr-input-overlay {
+    background: transparent !important;
+    border: none !important;
+    text-align: center;
+    width: 80%;
+    height: 80%;
+    padding: 0;
+    margin: 0;
+    z-index: 2;
+    /* Garante que o número fique por cima do overlay */
+}
+
+.attr-input-overlay:focus {
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50%;
+}
+
+/* O Label (Nome do Atributo) agora fica embaixo, estilo legenda */
+.attr-footer-label {
+    text-align: center;
+    font-family: 'Tormenta', serif;
+    font-weight: bold;
+    color: var(--t20-red);
+    font-size: 1.2rem;
+    margin-top: 5px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 0 #fff;
+}
+
 :root {
     --t20-red: #b22222;
     --t20-bg: #fdfdfd;
@@ -71,6 +179,7 @@
 }
 
 /* Labels flutuantes nas bordas */
+/* Labels flutuantes nas bordas */
 .t20-status-label,
 .t20-section-title {
     position: absolute;
@@ -82,6 +191,10 @@
     font-size: 0.8rem;
     color: var(--t20-red);
     text-transform: uppercase;
+    white-space: nowrap;
+    /* <--- ISSO IMPEDE A QUEBRA DE LINHA */
+    z-index: 5;
+    /* Garante que fique acima da borda e da barra */
 }
 
 /* Escudo da Defesa */
@@ -242,15 +355,70 @@
     border-color: var(--t20-red) !important;
     opacity: 0.9;
 }
+
 .char-img-container:hover div {
-    background-color: var(--t20-red) !important; /* Faixa inferior fica vermelha */
+    background-color: var(--t20-red) !important;
+    /* Faixa inferior fica vermelha */
 }
 
 /* Deixa a espada mais visível */
 .bi-sword {
-    transform: rotate(-45deg); /* Deixa ela inclinada pronta pro combate */
+    transform: rotate(-45deg);
+    /* Deixa ela inclinada pronta pro combate */
     display: inline-block;
 }
+
 .bi-sword:hover {
-    transform: rotate(0deg) scale(1.2); /* Animação de ataque ao passar o mouse */
+    transform: rotate(0deg) scale(1.2);
+    /* Animação de ataque ao passar o mouse */
+}
+
+/* --- 3. ESTILO DOS STATUS (BARRAS DINÂMICAS) --- */
+.status-card {
+    position: relative;
+    /* overflow: hidden;  <-- REMOVIDO para o título aparecer fora da caixa */
+    background-color: #e9ecef;
+    z-index: 1;
+    /* O Bootstrap 'rounded' aplica border-radius, a barra precisa acompanhar */
+}
+
+/* A barra colorida que fica atrás */
+.status-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    transition: width 0.4s ease-in-out;
+    opacity: 0.6;
+
+    /* ADICIONADO: Arredonda a barra para não vazar pelos cantos da caixa */
+    border-radius: 0.25rem;
+    /* Mesma curva do 'rounded' do Bootstrap */
+}
+
+/* Cores específicas */
+.bar-hp {
+    background-color: #dc3545;
+}
+
+/* Vermelho (Bootstrap danger) */
+.bar-mp {
+    background-color: #0d6efd;
+}
+
+/* Azul (Bootstrap primary) */
+
+/* Inputs transparentes para ver a barra */
+.status-card input {
+    background: transparent !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    color: #000 !important;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+    /* Sombra branca para ler texto sobre cor */
+}
+
+.status-card input:focus {
+    background: rgba(255, 255, 255, 0.5) !important;
 }
