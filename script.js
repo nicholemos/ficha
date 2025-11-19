@@ -24,6 +24,8 @@ window.onload = () => {
         renderStructure();
         loadData();
         attachGlobalListeners();
+        // NOVA CHAMADA:
+        enableDragAndDrop();
     } catch (e) { console.error(e); }
     setTimeout(updateCalculations, 100);
 };
@@ -204,17 +206,23 @@ function setText(id, val) { const el = document.getElementById(id); if (el) el.i
 function addAttack(data = null) {
     const container = document.getElementById('attacksList'); if (!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 atk-row';
+    // ... (logica de skills options igual) ...
+    // (Copie as skills options do seu código atual)
     const mainSkills = ['Luta', 'Pontaria', 'Atuação', 'Misticismo'];
     let skillOptions = `<option value="">(Manual)</option>`;
     mainSkills.forEach(sn => skillOptions += `<option value="${sn}" ${data && data.skill === sn ? 'selected' : ''}>${sn}</option>`);
+
     div.innerHTML = `
         <div class="row g-1 align-items-center text-center atk-summary mb-2">
-            <div class="col-1"><i class="bi bi-sword fs-4 dice-roller text-danger" onclick="rollAttack(this)" title="Rolar Ataque" style="cursor: pointer;"></i></div>
+            <div class="col-1 d-flex align-items-center justify-content-center">
+                <i class="bi bi-grip-vertical drag-handle me-1"></i>
+                <i class="bi bi-sword fs-5 dice-roller text-danger" onclick="rollAttack(this)" title="Rolar"></i>
+            </div>
             <div class="col-4"><input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Ataque" value="${data ? data.name : ''}"></div>
             <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm inp-bonus fw-bold" placeholder="+0" value="${data ? data.bonus : ''}"></div>
             <div class="col-2"><input type="text" class="form-control form-control-sm inp-dmg" placeholder="1d6" value="${data ? data.dmg : ''}"></div>
-            <div class="col-1"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-crit-range p-0" placeholder="20" value="${data ? (data.critRange || '20') : '20'}" title="Margem"></div>
-            <div class="col-1"><input type="text" class="form-control form-control-sm text-center inp-crit p-0" placeholder="x2" value="${data ? data.crit : 'x2'}" title="Multi"></div>
+            <div class="col-1"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-crit-range p-0" placeholder="20" value="${data ? (data.critRange || '20') : '20'}"></div>
+            <div class="col-1"><input type="text" class="form-control form-control-sm text-center inp-crit p-0" placeholder="x2" value="${data ? data.crit : 'x2'}"></div>
             <div class="col-1"><button class="btn btn-sm btn-outline-dark border-0 w-100 p-0" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button></div>
         </div>
         <div class="atk-details p-2 rounded d-none">
@@ -231,6 +239,7 @@ function addAttack(data = null) {
         </div>`;
     container.appendChild(div); if (!data) saveData();
 }
+
 function removeAttack(btn) { if (confirm('Remover ataque?')) { btn.closest('.atk-row').remove(); saveData(); } }
 
 function addDefenseItem(data = null) {
@@ -238,7 +247,10 @@ function addDefenseItem(data = null) {
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 def-row';
     div.innerHTML = `
         <div class="row g-1 align-items-center text-center def-summary mb-2">
-            <div class="col-1 fs-5"><i class="bi bi-magic"></i></div>
+            <div class="col-1 fs-5 d-flex align-items-center justify-content-center">
+                <i class="bi bi-grip-vertical drag-handle me-1" style="font-size: 0.8rem;"></i>
+                <i class="bi bi-magic"></i>
+            </div>
             <div class="col-5"><input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Item Extra" value="${data ? data.name : ''}"></div>
             <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm inp-bonus fw-bold text-success" placeholder="+0" value="${data ? data.bonus : ''}" oninput="updateCalculations()"></div>
             <div class="col-2"></div>
@@ -253,7 +265,8 @@ function addInventoryItem(data = null) {
     const container = document.getElementById('inventoryList'); if (!container) return;
     const div = document.createElement('div'); div.className = 'row g-1 align-items-center mb-2 inv-row border-bottom pb-1';
     div.innerHTML = `
-        <div class="col-6"><input type="text" class="form-control form-control-sm fw-bold inp-name" placeholder="Item" value="${data ? data.name : ''}"></div>
+        <div class="col-1 text-center"><i class="bi bi-grip-vertical drag-handle"></i></div>
+        <div class="col-5"><input type="text" class="form-control form-control-sm fw-bold inp-name" placeholder="Item" value="${data ? data.name : ''}"></div>
         <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-qtd" placeholder="1" value="${data ? data.qtd : '1'}" oninput="updateCalculations()"></div>
         <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-slots" placeholder="0" value="${data ? data.slots : '0'}" step="0.5" oninput="updateCalculations()"></div>
         <div class="col-2 text-center"><button class="btn btn-sm btn-outline-danger border-0" onclick="removeInventoryItem(this)"><i class="bi bi-trash"></i></button></div>`;
@@ -267,6 +280,7 @@ function addAbility(data = null) {
     div.innerHTML = `
         <div class="border rounded p-2 h-100 position-relative" style="background-color: #fdfdfd;">
             <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-grip-vertical drag-handle"></i>
                 <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
                 <input type="text" class="form-control form-control-sm fw-bold border-0 border-bottom p-0 inp-name" placeholder="Nome do Poder" value="${data ? data.name : ''}">
                 <button class="btn btn-sm btn-light border-0 p-0 ms-auto" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button>
@@ -286,7 +300,8 @@ function addSpell(circle, data = null) {
     const defaultCost = spellCosts[circle]; const costValue = data ? data.pm : defaultCost;
     div.innerHTML = `
         <div class="row g-1 align-items-center text-center mb-2">
-            <div class="col-9"><input type="text" class="form-control form-control-sm fw-bold inp-name text-start" placeholder="Nome da Magia" value="${data ? data.name : ''}"></div>
+            <div class="col-1"><i class="bi bi-grip-vertical drag-handle"></i></div>
+            <div class="col-8"><input type="text" class="form-control form-control-sm fw-bold inp-name text-start" placeholder="Nome da Magia" value="${data ? data.name : ''}"></div>
             <div class="col-2 position-relative"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-pm" placeholder="${defaultCost}" value="${costValue}"><span style="position: absolute; right: 5px; top: 20%; font-size: 0.6em; color: #6f42c1; font-weight:bold;">PM</span></div>
             <div class="col-1"><button class="btn btn-sm btn-light border text-primary w-100 p-0" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button></div>
         </div>
@@ -501,6 +516,37 @@ function loadData() {
     } catch (e) { console.error(e); }
 
     updateCalculations();
+}
+
+// --- SISTEMA DE COLAPSO ---
+function toggleSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('collapsed');
+}
+
+// --- SISTEMA DE ARRASTAR E SOLTAR ---
+function enableDragAndDrop() {
+    const lists = [
+        'attacksList',
+        'defenseList',
+        'inventoryList',
+        'abilitiesList',
+        'spellsList1', 'spellsList2', 'spellsList3', 'spellsList4', 'spellsList5'
+    ];
+
+    lists.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            new Sortable(el, {
+                handle: '.drag-handle', // Só arrasta se puxar pelo ícone
+                animation: 150,         // Animação suave
+                ghostClass: 'sortable-ghost', // Classe enquanto arrasta
+                onEnd: function () {     // Ao soltar...
+                    saveData();         // Salva a nova ordem imediatamente!
+                }
+            });
+        }
+    });
 }
 
 function clearSheet() { if (confirm("ATENÇÃO: Apagar TODA a ficha?")) { localStorage.removeItem('t20_sheet_v15'); location.reload(); } }
