@@ -422,3 +422,67 @@ h3,
 .status-card input:focus {
     background: rgba(255, 255, 255, 0.5) !important;
 }
+
+/* --- BOTÕES FLUTUANTES DE ATRIBUTO --- */
+.attr-wrapper {
+    position: relative; /* Para posicionar os botões absolutos */
+}
+
+.attr-btn-float {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #333;
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) scale(0); /* Começa invisível e pequeno */
+    transition: transform 0.2s ease-out;
+    z-index: 10;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.attr-btn-float:active {
+    background-color: var(--t20-red);
+    color: white;
+    border-color: var(--t20-red);
+}
+
+/* Posições */
+.attr-btn-up { top: -15px; }
+.attr-btn-down { bottom: 25px; } /* Fica entre o token e o nome */
+
+/* Classe para mostrar os botões */
+.attr-wrapper.active .attr-btn-float {
+    transform: translateX(-50%) scale(1); /* Aparece */
+}
+
+/* --- BOTÕES FLUTUANTES PARA PERÍCIAS --- */
+.skill-wrapper {
+    position: relative;
+}
+
+/* Versão mini dos botões */
+.skill-btn-mini {
+    width: 22px;
+    height: 22px;
+    font-size: 1rem;
+    z-index: 100 !important; /* Garante que fique acima das outras linhas */
+}
+
+/* Ajuste de posição para a tabela */
+.skill-wrapper .attr-btn-up { top: -22px; }
+.skill-wrapper .attr-btn-down { bottom: -22px; }
+
+/* Estado Ativo */
+.skill-wrapper.active .attr-btn-float {
+    transform: translateX(-50%) scale(1);
+}
