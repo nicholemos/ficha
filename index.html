@@ -8,6 +8,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -15,9 +16,14 @@
 
     <div class="container sheet bg-white p-4 rounded shadow-lg">
 
-        <header class="mb-4">
+        <header class="mb-4" id="headerSection">
             <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                <span class="fw-bold text-danger fst-italic fs-4">Ficha T20 Digital</span>
+                <div>
+                    <i class="bi bi-chevron-down section-toggle fs-4 text-danger"
+                        onclick="toggleSection('headerSection')" title="Recolher/Expandir Cabeçalho"
+                        style="cursor: pointer;"></i>
+                    <span class="fw-bold text-danger fst-italic fs-4">Ficha T20 Digital</span>
+                </div>
                 <div>
                     <button class="btn btn-outline-secondary btn-sm me-1" onclick="exportSheet()"
                         title="Salvar backup"><i class="bi bi-download"></i> Baixar</button>
@@ -26,16 +32,13 @@
                             class="bi bi-upload"></i> Carregar</button>
                     <input type="file" id="fileInput" style="display: none;" accept=".json"
                         onchange="importSheet(this)">
-
                     <button class="btn btn-outline-danger btn-sm ms-2 fw-bold" onclick="clearSheet()"
-                        title="Apagar tudo">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
+                        title="Apagar tudo"><i class="bi bi-trash-fill"></i></button>
                 </div>
             </div>
 
-            <div class="row g-3">
-                <div class="col-md-3">
+            <div class="row g-3 header-content">
+                <div class="col-md-3 col-img">
                     <div class="char-img-container border border-2 border-dark rounded bg-light d-flex align-items-center justify-content-center position-relative"
                         style="height: 180px; cursor: pointer; overflow: hidden;"
                         onclick="document.getElementById('charImgInput').click()" title="Clique para alterar a foto">
@@ -50,41 +53,30 @@
                     </div>
                 </div>
 
-                <div class="col-md-9">
+                <div class="col-md-9 col-data">
                     <div class="row g-2 mb-2 align-items-end">
-                        <div class="col-md-8">
-                            <label class="t20-label">Personagem</label>
-                            <input type="text" class="form-control t20-input" id="charName" oninput="saveData()">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="t20-label">Jogador(a)</label>
-                            <input type="text" class="form-control t20-input" id="playerName" oninput="saveData()">
-                        </div>
+                        <div class="col-md-8"><label class="t20-label">Personagem</label><input type="text"
+                                class="form-control t20-input" id="charName" oninput="saveData()"></div>
+                        <div class="col-md-4"><label class="t20-label">Jogador(a)</label><input type="text"
+                                class="form-control t20-input" id="playerName" oninput="saveData()"></div>
                     </div>
 
-                    <div class="row g-2">
-                        <div class="col-md-2">
-                            <label class="t20-label">Raça</label>
-                            <input type="text" class="form-control t20-input" id="charRace" oninput="saveData()">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="t20-label">Origem</label>
-                            <input type="text" class="form-control t20-input" id="charOrigin" oninput="saveData()">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="t20-label">Classe(s)</label>
-                            <input type="text" class="form-control t20-input" id="charClass"
-                                placeholder="Ex: Guerreiro 3, Ladino 1" oninput="saveData()">
-                        </div>
-                        <div class="col-md-1">
-                            <label class="t20-label">Nível</label>
-                            <input type="number" inputmode="numeric"class="form-control t20-input text-center fw-bold text-danger p-1"
-                                style="font-size: 1.1rem;" id="charLevel" value="1" min="1" max="20"
-                                oninput="updateCalculations(); saveData()">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="t20-label">Divindade</label>
-                            <input type="text" class="form-control t20-input" id="charDeity" oninput="saveData()">
+                    <div class="header-extra">
+                        <div class="row g-2">
+                            <div class="col-md-2"><label class="t20-label">Raça</label><input type="text"
+                                    class="form-control t20-input" id="charRace" oninput="saveData()"></div>
+                            <div class="col-md-2"><label class="t20-label">Origem</label><input type="text"
+                                    class="form-control t20-input" id="charOrigin" oninput="saveData()"></div>
+                            <div class="col-md-4"><label class="t20-label">Classe(s)</label><input type="text"
+                                    class="form-control t20-input" id="charClass" placeholder="Ex: Guerreiro 3"
+                                    oninput="saveData()"></div>
+                            <div class="col-md-1"><label class="t20-label">Nível</label><input type="number"
+                                    inputmode="numeric"
+                                    class="form-control t20-input text-center fw-bold text-danger p-1"
+                                    style="font-size: 1.1rem;" id="charLevel" value="1" min="1" max="20"
+                                    oninput="updateCalculations(); saveData()"></div>
+                            <div class="col-md-3"><label class="t20-label">Divindade</label><input type="text"
+                                    class="form-control t20-input" id="charDeity" oninput="saveData()"></div>
                         </div>
                     </div>
                 </div>
@@ -94,38 +86,32 @@
         <div class="row">
             <div class="col-lg-7">
 
-                <div class="row mb-4 text-center g-1" id="attributesArea">
-                </div>
+                <div class="row mb-4 text-center g-1" id="attributesArea"></div>
 
                 <div class="row mb-4">
                     <div class="col-6">
                         <div class="border border-2 border-dark rounded p-2 position-relative pt-3 status-card">
                             <div id="barPV" class="status-bar-fill bar-hp" style="width: 100%;"></div>
-
                             <span class="t20-section-title">PONTOS DE VIDA</span>
-
                             <div class="d-flex gap-2">
-                                <input type="number"
+                                <input type="number" inputmode="numeric"
                                     class="form-control border-0 border-bottom text-center fw-bold fs-5"
                                     placeholder="Máx" id="pvMax" oninput="updateCalculations(); saveData()">
-                                <input type="number"
+                                <input type="number" inputmode="numeric"
                                     class="form-control border-0 border-bottom text-center fw-bold fs-5"
                                     placeholder="Atual" id="pvCurrent" oninput="updateCalculations(); saveData()">
                             </div>
                         </div>
                     </div>
-
                     <div class="col-6">
                         <div class="border border-2 border-dark rounded p-2 position-relative pt-3 status-card">
                             <div id="barPM" class="status-bar-fill bar-mp" style="width: 100%;"></div>
-
                             <span class="t20-section-title" style="color: #0d6efd;">PONTOS DE MANA</span>
-
                             <div class="d-flex gap-2">
-                                <input type="number"
+                                <input type="number" inputmode="numeric"
                                     class="form-control border-0 border-bottom text-center fw-bold fs-5"
                                     placeholder="Máx" id="pmMax" oninput="updateCalculations(); saveData()">
-                                <input type="number"
+                                <input type="number" inputmode="numeric"
                                     class="form-control border-0 border-bottom text-center fw-bold fs-5"
                                     placeholder="Atual" id="pmCurrent" oninput="updateCalculations(); saveData()">
                             </div>
@@ -133,12 +119,13 @@
                     </div>
                 </div>
 
-                <div class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
-                    <span class="t20-section-title">ATAQUES</span>
-
-                    <div class="row fw-bold small text-center border-bottom border-dark pb-2 mb-2 mx-1">
+                <div id="attacksSection"
+                    class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
+                    <span class="t20-section-title" onclick="toggleSection('attacksSection')">
+                        <i class="bi bi-chevron-down section-toggle"></i>ATAQUES
+                    </span>
+                    <div class="row fw-bold small text-center border-bottom border-dark pb-2 mb-2 mx-1 atk-header-row">
                         <div class="col-1"><i class="bi bi-sword fs-5"></i></div>
-
                         <div class="col-4 text-start">ATAQUE</div>
                         <div class="col-2">BÔNUS</div>
                         <div class="col-2">DANO</div>
@@ -146,36 +133,32 @@
                         <div class="col-1 p-0">CRÍT.</div>
                         <div class="col-1"></div>
                     </div>
-
-                    <div id="attacksList" class="mb-3">
-                    </div>
-
-                    <button class="btn btn-dark w-100 fw-bold" onclick="addAttack()">
-                        <i class="bi bi-plus-lg"></i> ADICIONAR ATAQUE
-                    </button>
+                    <div id="attacksList" class="mb-3"></div>
+                    <button class="btn btn-dark w-100 fw-bold btn-add" onclick="addAttack()"><i
+                            class="bi bi-plus-lg"></i> ADICIONAR ATAQUE</button>
                 </div>
 
-                <div class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
-                    <span class="t20-section-title">DEFESA</span>
+                <div id="defenseSection"
+                    class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
+                    <span class="t20-section-title" onclick="toggleSection('defenseSection')">
+                        <i class="bi bi-chevron-down section-toggle"></i>DEFESA
+                    </span>
 
                     <div
-                        class="d-flex align-items-center justify-content-center gap-2 mb-3 border-bottom border-dark pb-3">
-
+                        class="d-flex align-items-center justify-content-center gap-2 mb-3 border-bottom border-dark pb-3 def-header">
                         <div class="def-shield d-flex align-items-center justify-content-center fs-1 fw-bold shadow-sm">
-                            <span id="defenseTotal">10</span>
-                        </div>
+                            <span id="defenseTotal">10</span></div>
 
-                        <div class="d-flex align-items-center flex-wrap gap-2 fw-bold small">
+                        <div class="def-formula d-flex align-items-center flex-wrap gap-2 fw-bold small">
                             <span class="fs-4 text-muted">= 10 + </span>
-
                             <div class="text-center position-relative">
                                 <div class="d-flex align-items-center justify-content-center mb-1">
                                     <input type="checkbox" class="form-check-input border-dark me-1" id="applyDefAttr"
-                                        checked title="Somar?" onchange="updateCalculations(); saveData()">
+                                        checked onchange="updateCalculations(); saveData()">
                                     <span id="defAttrVal" class="fs-5 text-danger">0</span>
                                 </div>
-                                <select class="form-select text-center p-0 ps-2" style="width: 70px; height: 35px;"
-                                    id="defAttrSelect" onchange="updateCalculations(); saveData()">
+                                <select class="form-select text-center p-0 ps-2" style="width: 70px;" id="defAttrSelect"
+                                    onchange="updateCalculations(); saveData()">
                                     <option value="DES">DES</option>
                                     <option value="CON">CON</option>
                                     <option value="SAB">SAB</option>
@@ -184,24 +167,15 @@
                                     <option value="FOR">FOR</option>
                                 </select>
                             </div>
-
                             <span class="fs-4 text-muted">+</span>
-
-                            <div class="text-center opacity-75">
-                                <span id="dispArmorBonus" class="fs-5">0</span><br><small>ARM</small>
-                            </div>
-
+                            <div class="text-center opacity-75"><span id="dispArmorBonus"
+                                    class="fs-5">0</span><br><small>ARM</small></div>
                             <span class="fs-4 text-muted">+</span>
-
-                            <div class="text-center opacity-75">
-                                <span id="dispShieldBonus" class="fs-5">0</span><br><small>ESC</small>
-                            </div>
-
+                            <div class="text-center opacity-75"><span id="dispShieldBonus"
+                                    class="fs-5">0</span><br><small>ESC</small></div>
                             <span class="fs-4 text-muted">+</span>
-
-                            <div class="text-center opacity-75">
-                                <span id="dispOtherBonus" class="fs-5">0</span><br><small>OUT</small>
-                            </div>
+                            <div class="text-center opacity-75"><span id="dispOtherBonus"
+                                    class="fs-5">0</span><br><small>OUT</small></div>
                         </div>
                     </div>
 
@@ -209,43 +183,31 @@
                         <div class="row g-1 align-items-end">
                             <div class="col-1 text-center fs-4 mb-1"><i class="bi bi-shield-shaded text-danger"></i>
                             </div>
-                            <div class="col-5">
-                                <label class="def-label-mini text-start ps-1">NOME DO ITEM</label>
-                                <input type="text" class="form-control fw-bold" id="armorName"
-                                    placeholder="Armadura (Nenhuma)" oninput="saveData()">
-                            </div>
-                            <div class="col-2">
-                                <label class="def-label-mini text-success">DEFESA</label>
-                                <input type="number" inputmode="numeric"class="form-control text-center fw-bold text-success"
-                                    id="armorBonus" placeholder="+0" oninput="updateCalculations(); saveData()">
-                            </div>
-                            <div class="col-2">
-                                <label class="def-label-mini text-danger">PENAL.</label>
-                                <input type="number" inputmode="numeric"class="form-control text-center text-danger" id="armorPenalty"
-                                    placeholder="0" title="Penalidade de Armadura"
-                                    oninput="updateCalculations(); saveData()">
-                            </div>
-                            <div class="col-2">
-                                <button class="btn btn-sm btn-outline-secondary w-100 mb-1"
+                            <div class="col-5"><label class="def-label-mini text-start ps-1">NOME DO ITEM</label><input
+                                    type="text" class="form-control fw-bold" id="armorName" placeholder="Armadura"
+                                    oninput="saveData()"></div>
+                            <div class="col-2"><label class="def-label-mini text-success">DEFESA</label><input
+                                    type="number" inputmode="numeric"
+                                    class="form-control text-center fw-bold text-success" id="armorBonus"
+                                    placeholder="+0" oninput="updateCalculations(); saveData()"></div>
+                            <div class="col-2"><label class="def-label-mini text-danger">PENAL.</label><input
+                                    type="number" inputmode="numeric" class="form-control text-center text-danger"
+                                    id="armorPenalty" placeholder="0" oninput="updateCalculations(); saveData()"></div>
+                            <div class="col-2"><button class="btn btn-sm btn-outline-secondary w-100 mb-1"
                                     onclick="toggleFixedDetail('armorDetail')"><i
-                                        class="bi bi-chevron-down"></i></button>
-                            </div>
+                                        class="bi bi-chevron-down"></i></button></div>
                         </div>
                         <div id="armorDetail" class="mt-2 d-none border-top pt-2">
                             <div class="row g-2">
-                                <div class="col-6">
-                                    <label class="form-label-sm">CATEGORIA</label>
-                                    <select class="form-select form-select-sm" id="armorType"
+                                <div class="col-6"><label class="form-label-sm">CATEGORIA</label><select
+                                        class="form-select form-select-sm" id="armorType"
                                         onchange="checkHeavyArmor(); saveData()">
                                         <option value="light">Leve</option>
                                         <option value="heavy">Pesada</option>
-                                    </select>
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label-sm">DESCRIÇÃO</label>
-                                    <input type="text" class="form-control form-control-sm" id="armorDesc"
-                                        placeholder="Ex: Reforçada" oninput="saveData()">
-                                </div>
+                                    </select></div>
+                                <div class="col-6"><label class="form-label-sm">DESCRIÇÃO</label><input type="text"
+                                        class="form-control form-control-sm" id="armorDesc" placeholder="Ex: Reforçada"
+                                        oninput="saveData()"></div>
                             </div>
                         </div>
                     </div>
@@ -254,309 +216,271 @@
                         <div class="row g-1 align-items-end">
                             <div class="col-1 text-center fs-4 mb-1"><i class="bi bi-shield-fill text-primary"></i>
                             </div>
-                            <div class="col-5">
-                                <label class="def-label-mini text-start ps-1">NOME DO ITEM</label>
-                                <input type="text" class="form-control fw-bold" id="shieldName"
-                                    placeholder="Escudo (Nenhum)" oninput="saveData()">
-                            </div>
-                            <div class="col-2">
-                                <label class="def-label-mini text-success">DEFESA</label>
-                                <input type="number" inputmode="numeric"class="form-control text-center fw-bold text-success"
-                                    id="shieldBonus" placeholder="+0" oninput="updateCalculations(); saveData()">
-                            </div>
-                            <div class="col-2">
-                                <label class="def-label-mini text-danger">PENAL.</label>
-                                <input type="number" inputmode="numeric"class="form-control text-center text-danger" id="shieldPenalty"
-                                    placeholder="0" title="Penalidade de Armadura"
-                                    oninput="updateCalculations(); saveData()">
-                            </div>
-                            <div class="col-2">
-                                <button class="btn btn-sm btn-outline-secondary w-100 mb-1"
+                            <div class="col-5"><label class="def-label-mini text-start ps-1">NOME DO ITEM</label><input
+                                    type="text" class="form-control fw-bold" id="shieldName" placeholder="Escudo"
+                                    oninput="saveData()"></div>
+                            <div class="col-2"><label class="def-label-mini text-success">DEFESA</label><input
+                                    type="number" inputmode="numeric"
+                                    class="form-control text-center fw-bold text-success" id="shieldBonus"
+                                    placeholder="+0" oninput="updateCalculations(); saveData()"></div>
+                            <div class="col-2"><label class="def-label-mini text-danger">PENAL.</label><input
+                                    type="number" inputmode="numeric" class="form-control text-center text-danger"
+                                    id="shieldPenalty" placeholder="0" oninput="updateCalculations(); saveData()"></div>
+                            <div class="col-2"><button class="btn btn-sm btn-outline-secondary w-100 mb-1"
                                     onclick="toggleFixedDetail('shieldDetail')"><i
-                                        class="bi bi-chevron-down"></i></button>
-                            </div>
+                                        class="bi bi-chevron-down"></i></button></div>
                         </div>
                         <div id="shieldDetail" class="mt-2 d-none border-top pt-2">
                             <div class="row g-2">
-                                <div class="col-6">
-                                    <label class="form-label-sm">TIPO</label>
-                                    <select class="form-select form-select-sm" id="shieldType" onchange="saveData()">
+                                <div class="col-6"><label class="form-label-sm">TIPO</label><select
+                                        class="form-select form-select-sm" id="shieldType" onchange="saveData()">
                                         <option value="light">Leve</option>
                                         <option value="heavy">Pesado</option>
+                                    </select></div>
+                                <div class="col-6"><label class="form-label-sm">DESCRIÇÃO</label><input type="text"
+                                        class="form-control form-control-sm" id="shieldDesc" placeholder="Ex: Aço"
+                                        oninput="saveData()"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="def-extras border-top border-dark mt-3 pt-2">
+                        <h6 class="small fw-bold text-muted text-center mb-2">OUTROS MODIFICADORES</h6>
+                        <div id="defenseList" class="mb-2"></div>
+                        <button class="btn btn-outline-dark w-100 fw-bold btn-sm" onclick="addDefenseItem()"><i
+                                class="bi bi-plus-circle"></i> Adicionar Modificador</button>
+                    </div>
+                </div>
+
+                <div id="abilitiesSection"
+                    class="border border-2 border-dark rounded p-2 position-relative pt-3 mb-4 bg-white">
+                    <span class="t20-section-title" onclick="toggleSection('abilitiesSection')">
+                        <i class="bi bi-chevron-down section-toggle"></i>CARACTERÍSTICAS
+                    </span>
+
+                    <div class="row g-2 mb-3 ab-extras">
+                        <div class="col-md-6">
+                            <div class="border rounded p-2 bg-light h-100">
+                                <label class="small fw-bold text-muted mb-1">PROFICIÊNCIAS</label>
+                                <textarea class="form-control form-control-sm border-0 bg-transparent" id="charProfs"
+                                    rows="3" placeholder="Ex: Armas Marciais, Escudos..." oninput="saveData()"
+                                    style="resize: none;"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="border rounded p-2 bg-light h-100 text-center">
+                                <label
+                                    class="t20-status-label position-relative top-0 start-0 translate-middle-x-0 mb-1">TAMANHO</label>
+                                <select
+                                    class="form-select form-select-sm border-0 fw-bold text-center bg-transparent mt-1"
+                                    id="charSize" onchange="updateCalculations(); saveData()">
+                                    <option value="0">Médio</option>
+                                    <option value="2">Pequeno</option>
+                                    <option value="5">Minúsculo</option>
+                                    <option value="-2">Grande</option>
+                                    <option value="-5">Enorme</option>
+                                    <option value="-10">Colossal</option>
+                                </select>
+                                <div class="small text-muted" style="font-size: 0.65em;">(Furtividade)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="border rounded p-2 bg-light h-100 text-center">
+                                <label
+                                    class="t20-status-label position-relative top-0 start-0 translate-middle-x-0 mb-1">DESLOC.</label>
+                                <input type="text"
+                                    class="form-control form-control-sm border-0 text-center fw-bold bg-transparent mt-1"
+                                    id="charSpeed" placeholder="9m" oninput="saveData()">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="border rounded p-2 bg-light h-100 text-center">
+                                <label
+                                    class="t20-status-label position-relative top-0 start-0 translate-middle-x-0 mb-1">XP</label>
+                                <input type="number" inputmode="numeric"
+                                    class="form-control form-control-sm border-0 text-center fw-bold bg-transparent mt-1"
+                                    id="charXP" placeholder="0" oninput="saveData()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-top border-secondary pt-2">
+                        <h6 class="small fw-bold text-muted text-center mb-2">PODERES & HABILIDADES</h6>
+                        <div id="abilitiesList" class="row g-2 mb-2"></div>
+                        <button class="btn btn-outline-dark w-100 fw-bold btn-sm btn-add" onclick="addAbility()"><i
+                                class="bi bi-stars"></i> ADICIONAR PODER</button>
+                    </div>
+                </div>
+
+                <div id="spellsSection" class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
+                    <span class="t20-section-title" style="color: #6f42c1;" onclick="toggleSection('spellsSection')">
+                        <i class="bi bi-chevron-down section-toggle"></i>MAGIAS
+                    </span>
+
+                    <div class="spells-content">
+                        <div
+                            class="d-flex align-items-center justify-content-center gap-2 mb-3 border-bottom border-dark pb-3">
+                            <div class="def-shield d-flex align-items-center justify-content-center fs-1 fw-bold shadow-sm"
+                                style="border-color: #6f42c1; color: #6f42c1;"><span id="spellCDTotal">10</span></div>
+                            <div class="d-flex align-items-center flex-wrap gap-2 fw-bold small">
+                                <span class="fs-5 text-muted" style="white-space: nowrap;">CD = 10 + </span>
+                                <div class="text-center"><span id="spellCDHalfLevel" class="fs-5">0</span><br><small
+                                        class="text-muted" style="font-size:0.65em">1/2 NV</small></div>
+                                <span class="fs-5 text-muted">+</span>
+                                <div class="text-center position-relative">
+                                    <div class="d-flex align-items-center justify-content-center mb-1"><span
+                                            id="spellCDAttrVal" class="fs-5" style="color: #6f42c1;">0</span></div>
+                                    <select class="form-select text-center p-0 ps-2 fw-bold"
+                                        style="width: 60px; height: 30px; color: #6f42c1; border-color: #6f42c1; font-size: 0.8rem;"
+                                        id="spellCDAttrSelect" onchange="updateCalculations(); saveData()">
+                                        <option value="INT">INT</option>
+                                        <option value="SAB">SAB</option>
+                                        <option value="CAR">CAR</option>
+                                        <option value="CON">CON</option>
+                                        <option value="DES">DES</option>
+                                        <option value="FOR">FOR</option>
                                     </select>
                                 </div>
-                                <div class="col-6">
-                                    <label class="form-label-sm">DESCRIÇÃO</label>
-                                    <input type="text" class="form-control form-control-sm" id="shieldDesc"
-                                        placeholder="Ex: Aço" oninput="saveData()">
-                                </div>
+                                <span class="fs-5 text-muted">+</span>
+                                <div class="text-center"><input type="number" inputmode="numeric"
+                                        class="form-control form-control-sm text-center p-0 fw-bold" style="width:40px"
+                                        id="spellCDPowers" placeholder="0"
+                                        oninput="updateCalculations(); saveData()"><span class="text-muted"
+                                        style="font-size:0.65em">PODER</span></div>
+                                <span class="fs-5 text-muted">+</span>
+                                <div class="text-center"><input type="number" inputmode="numeric"
+                                        class="form-control form-control-sm text-center p-0 fw-bold" style="width:40px"
+                                        id="spellCDItems" placeholder="0"
+                                        oninput="updateCalculations(); saveData()"><span class="text-muted"
+                                        style="font-size:0.65em">ITENS</span></div>
+                                <span class="fs-5 text-muted">+</span>
+                                <div class="text-center"><input type="number" inputmode="numeric"
+                                        class="form-control form-control-sm text-center p-0 fw-bold" style="width:40px"
+                                        id="spellCDOther" placeholder="0"
+                                        oninput="updateCalculations(); saveData()"><span class="text-muted"
+                                        style="font-size:0.65em">OUTROS</span></div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="border-top border-dark mt-3 pt-2">
-                        <h6 class="small fw-bold text-muted text-center mb-2">OUTROS MODIFICADORES DE DEFESA</h6>
-                        <div id="defenseList" class="mb-2">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
+                                style="border-left: 4px solid #6f42c1 !important;"><span
+                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">1º Círculo (1
+                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                    style="color: #6f42c1;" onclick="addSpell(1)">+ Adicionar</button></div>
+                            <div id="spellsList1"></div>
                         </div>
-                        <button class="btn btn-outline-dark w-100 fw-bold btn-sm" onclick="addDefenseItem()">
-                            <i class="bi bi-plus-circle"></i> Adicionar Outro Modificador
-                        </button>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
+                                style="border-left: 4px solid #6f42c1 !important;"><span
+                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">2º Círculo (3
+                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                    style="color: #6f42c1;" onclick="addSpell(2)">+ Adicionar</button></div>
+                            <div id="spellsList2"></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
+                                style="border-left: 4px solid #6f42c1 !important;"><span
+                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">3º Círculo (6
+                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                    style="color: #6f42c1;" onclick="addSpell(3)">+ Adicionar</button></div>
+                            <div id="spellsList3"></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
+                                style="border-left: 4px solid #6f42c1 !important;"><span
+                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">4º Círculo (10
+                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                    style="color: #6f42c1;" onclick="addSpell(4)">+ Adicionar</button></div>
+                            <div id="spellsList4"></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
+                                style="border-left: 4px solid #6f42c1 !important;"><span
+                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">5º Círculo (15
+                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                    style="color: #6f42c1;" onclick="addSpell(5)">+ Adicionar</button></div>
+                            <div id="spellsList5"></div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="row mb-4">
-
-                    <div class="col-12 mb-3">
-                        <div class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
-                            <span class="t20-section-title">CARACTERÍSTICAS & HABILIDADES</span>
-
-                            <div class="row g-2 mb-3">
-                                <div class="col-md-6">
-                                    <div class="border rounded p-2 bg-light h-100">
-                                        <label class="small fw-bold text-muted mb-1">PROFICIÊNCIAS</label>
-                                        <textarea class="form-control form-control-sm border-0 bg-transparent"
-                                            id="charProfs" rows="2" placeholder="Ex: Armas Marciais, Escudos, Élfico..."
-                                            oninput="saveData()" style="resize: none;"></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <div class="border rounded p-2 bg-light h-100 text-center">
-                                        <label
-                                            class="t20-status-label position-relative top-0 start-0 translate-middle-x-0 mb-1">TAMANHO</label>
-                                        <select
-                                            class="form-select form-select-sm border-0 fw-bold text-center bg-transparent mt-1"
-                                            id="charSize" onchange="updateCalculations(); saveData()">
-                                            <option value="0">Médio</option>
-                                            <option value="2">Pequeno</option>
-                                            <option value="5">Minúsculo</option>
-                                            <option value="-2">Grande</option>
-                                            <option value="-5">Enorme</option>
-                                            <option value="-10">Colossal</option>
-                                        </select>
-                                        <div class="small text-muted" style="font-size: 0.65em;">(Furtividade)</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="border rounded p-2 bg-light h-100 text-center">
-                                        <label
-                                            class="t20-status-label position-relative top-0 start-0 translate-middle-x-0 mb-1">DESLOC.</label>
-                                        <input type="text"
-                                            class="form-control form-control-sm border-0 text-center fw-bold bg-transparent mt-1"
-                                            id="charSpeed" placeholder="9m" oninput="saveData()">
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="border rounded p-2 bg-light h-100 text-center">
-                                        <label
-                                            class="t20-status-label position-relative top-0 start-0 translate-middle-x-0 mb-1">XP</label>
-                                        <input type="number"
-                                            class="form-control form-control-sm border-0 text-center fw-bold bg-transparent mt-1"
-                                            id="charXP" placeholder="0" oninput="saveData()">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="border-top border-secondary pt-2">
-                                <h6 class="small fw-bold text-muted text-center mb-2">PODERES & HABILIDADES</h6>
-
-                                <div id="abilitiesList" class="row g-2 mb-2">
-                                </div>
-
-                                <button class="btn btn-outline-dark w-100 fw-bold btn-sm" onclick="addAbility()">
-                                    <i class="bi bi-stars"></i> ADICIONAR PODER
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
-                    <span class="t20-section-title" style="color: #6f42c1;">MAGIAS</span>
-
-                    <div
-                        class="d-flex align-items-center justify-content-center gap-2 mb-3 border-bottom border-dark pb-3">
-                        <div class="def-shield d-flex align-items-center justify-content-center fs-1 fw-bold shadow-sm"
-                            style="border-color: #6f42c1; color: #6f42c1;">
-                            <span id="spellCDTotal">10</span>
-                        </div>
-
-                        <div class="d-flex align-items-center flex-wrap gap-2 fw-bold small">
-                            <span class="fs-5 text-muted" style="white-space: nowrap;">CD = 10 + </span>
-
-                            <div class="text-center">
-                                <span id="spellCDHalfLevel" class="fs-5">0</span><br><small class="text-muted"
-                                    style="font-size:0.65em">1/2 NV</small>
-                            </div>
-
-                            <span class="fs-5 text-muted">+</span>
-
-                            <div class="text-center position-relative">
-                                <div class="d-flex align-items-center justify-content-center mb-1">
-                                    <span id="spellCDAttrVal" class="fs-5" style="color: #6f42c1;">0</span>
-                                </div>
-                                <select class="form-select text-center p-0 ps-2 fw-bold"
-                                    style="width: 60px; height: 30px; color: #6f42c1; border-color: #6f42c1; font-size: 0.8rem;"
-                                    id="spellCDAttrSelect" onchange="updateCalculations(); saveData()">
-                                    <option value="INT">INT</option>
-                                    <option value="SAB">SAB</option>
-                                    <option value="CAR">CAR</option>
-                                    <option value="CON">CON</option>
-                                    <option value="DES">DES</option>
-                                    <option value="FOR">FOR</option>
-                                </select>
-                            </div>
-
-                            <span class="fs-5 text-muted">+</span>
-
-                            <div class="text-center">
-                                <input type="number" inputmode="numeric"class="form-control form-control-sm text-center p-0 fw-bold"
-                                    style="width:40px" id="spellCDPowers" placeholder="0"
-                                    oninput="updateCalculations(); saveData()">
-                                <span class="text-muted" style="font-size:0.65em">PODER</span>
-                            </div>
-
-                            <span class="fs-5 text-muted">+</span>
-
-                            <div class="text-center">
-                                <input type="number" inputmode="numeric"class="form-control form-control-sm text-center p-0 fw-bold"
-                                    style="width:40px" id="spellCDItems" placeholder="0"
-                                    oninput="updateCalculations(); saveData()">
-                                <span class="text-muted" style="font-size:0.65em">ITENS</span>
-                            </div>
-
-                            <span class="fs-5 text-muted">+</span>
-
-                            <div class="text-center">
-                                <input type="number" inputmode="numeric"class="form-control form-control-sm text-center p-0 fw-bold"
-                                    style="width:40px" id="spellCDOther" placeholder="0"
-                                    oninput="updateCalculations(); saveData()">
-                                <span class="text-muted" style="font-size:0.65em">OUTROS</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                            style="border-left: 4px solid #6f42c1 !important;">
-                            <span class="fw-bold small text-uppercase" style="color: #6f42c1;">1º Círculo (1 PM)</span>
-                            <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold" style="color: #6f42c1;"
-                                onclick="addSpell(1)">+ Adicionar</button>
-                        </div>
-                        <div id="spellsList1"></div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                            style="border-left: 4px solid #6f42c1 !important;">
-                            <span class="fw-bold small text-uppercase" style="color: #6f42c1;">2º Círculo (3 PM)</span>
-                            <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold" style="color: #6f42c1;"
-                                onclick="addSpell(2)">+ Adicionar</button>
-                        </div>
-                        <div id="spellsList2"></div>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                            style="border-left: 4px solid #6f42c1 !important;">
-                            <span class="fw-bold small text-uppercase" style="color: #6f42c1;">3º Círculo (6 PM)</span>
-                            <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold" style="color: #6f42c1;"
-                                onclick="addSpell(3)">+ Adicionar</button>
-                        </div>
-                        <div id="spellsList3"></div>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                            style="border-left: 4px solid #6f42c1 !important;">
-                            <span class="fw-bold small text-uppercase" style="color: #6f42c1;">4º Círculo (10 PM)</span>
-                            <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold" style="color: #6f42c1;"
-                                onclick="addSpell(4)">+ Adicionar</button>
-                        </div>
-                        <div id="spellsList4"></div>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                            style="border-left: 4px solid #6f42c1 !important;">
-                            <span class="fw-bold small text-uppercase" style="color: #6f42c1;">5º Círculo (15 PM)</span>
-                            <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold" style="color: #6f42c1;"
-                                onclick="addSpell(5)">+ Adicionar</button>
-                        </div>
-                        <div id="spellsList5"></div>
-                    </div>
-                </div>
-
             </div>
 
-
             <div class="col-lg-5">
-                <div class="border border-2 border-dark h-100 bg-light d-flex flex-column">
-                    <div class="bg-danger text-white text-center fw-bold py-1">PERÍCIAS</div>
 
-                    <div class="row g-0 text-center small fw-bold border-bottom border-dark mx-1">
-                        <div class="col-1">T</div>
-                        <div class="col-1"><i class="bi bi-dice-20-fill"></i></div>
-                        <div class="col-4 text-start ps-1">Nome</div>
-                        <div class="col-2 text-danger">Tot</div>
-                        <div class="col-1 text-muted">nv</div>
-                        <div class="col-1 text-muted">at</div>
-                        <div class="col-1 text-muted">tr</div>
-                        <div class="col-1 text-muted">ou</div>
+                <div id="skillsSection" class="border border-2 border-dark bg-light d-flex flex-column mb-4">
+                    <div class="bg-danger text-white text-center fw-bold py-1" onclick="toggleSection('skillsSection')"
+                        style="cursor: pointer;">
+                        <i class="bi bi-chevron-down me-2 text-white section-toggle"></i>PERÍCIAS
                     </div>
-
-                    <div id="skillsList" class="p-1 small flex-grow-1" style="overflow-y: auto; max-height: 800px;">
+                    <div class="skills-content d-flex flex-column flex-grow-1">
+                        <div class="row g-0 text-center small fw-bold border-bottom border-dark mx-1">
+                            <div class="col-1">T</div>
+                            <div class="col-1"><i class="bi bi-dice-20-fill"></i></div>
+                            <div class="col-4 text-start ps-1">Nome</div>
+                            <div class="col-2 text-danger">Tot</div>
+                            <div class="col-1 text-muted">nv</div>
+                            <div class="col-1 text-muted">at</div>
+                            <div class="col-1 text-muted">tr</div>
+                            <div class="col-1 text-muted">ou</div>
+                        </div>
+                        <div id="skillsList" class="p-1 small" style="overflow-y: auto; max-height: 500px;"></div>
+                        <div class="p-2 border-top border-secondary">
+                            <button class="btn btn-outline-danger w-100 fw-bold btn-sm btn-add" onclick="addSkill()"><i
+                                    class="bi bi-plus-circle"></i> ADICIONAR PERÍCIA</button>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="p-2 border-top border-secondary rounded p-3 mb-4 position-relative bg-white">
-                        <button class="btn btn-outline-danger w-100 fw-bold btn-sm" onclick="addSkill()">
-                            <i class="bi bi-plus-circle"></i> ADICIONAR PERÍCIA
-                        </button>
-                    </div>
-                    <div class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
-                        <span class="t20-section-title">EQUIPAMENTO</span>
+                <div id="inventorySection"
+                    class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
+                    <span class="t20-section-title" onclick="toggleSection('inventorySection')">
+                        <i class="bi bi-chevron-down section-toggle"></i>EQUIPAMENTO
+                    </span>
 
+                    <div class="inv-content">
                         <div class="row fw-bold small text-center border-bottom border-dark pb-2 mb-2 mx-1">
                             <div class="col-6 text-start">ITEM</div>
                             <div class="col-2">QTD</div>
                             <div class="col-2">ESPAÇOS</div>
                             <div class="col-2"></div>
                         </div>
-
-                        <div id="inventoryList" class="mb-3">
-                        </div>
-
-                        <button class="btn btn-dark w-100 fw-bold btn-sm mb-3" onclick="addInventoryItem()">
-                            <i class="bi bi-backpack2"></i> ADICIONAR ITEM
-                        </button>
-
+                        <div id="inventoryList" class="mb-3"></div>
+                        <button class="btn btn-dark w-100 fw-bold btn-sm mb-3 btn-add" onclick="addInventoryItem()"><i
+                                class="bi bi-backpack2"></i> ADICIONAR ITEM</button>
                         <div class="row align-items-center bg-light rounded p-2 border mx-0">
-                            <div class="col-md-4 d-flex align-items-center gap-2">
-                                <span class="fw-bold text-warning text-shadow"
-                                    style="text-shadow: 1px 1px 0 #000;">T$</span>
-                                <input type="number" inputmode="numeric"class="form-control form-control-sm fw-bold" id="charCash"
-                                    placeholder="0" oninput="saveData()">
-                            </div>
-
+                            <div class="col-md-4 d-flex align-items-center gap-2"><span
+                                    class="fw-bold text-warning text-shadow"
+                                    style="text-shadow: 1px 1px 0 #000;">T$</span><input type="number"
+                                    inputmode="numeric" class="form-control form-control-sm fw-bold" id="charCash"
+                                    placeholder="0" oninput="saveData()"></div>
                             <div class="col-md-8 d-flex justify-content-end align-items-center gap-2 small">
                                 <span class="fw-bold">CARGA:</span>
-                                <div class="input-group input-group-sm" style="width: 150px;">
-                                    <span class="input-group-text bg-white fw-bold" id="loadCurrent"
-                                        title="Carga Atual">0</span>
-                                    <span class="input-group-text">/</span>
-                                    <span class="input-group-text bg-white text-muted" id="loadLimit"
-                                        title="Limite de Carga">10</span>
-                                </div>
+                                <div class="input-group input-group-sm" style="width: 150px;"><span
+                                        class="input-group-text bg-white fw-bold" id="loadCurrent">0</span><span
+                                        class="input-group-text">/</span><span
+                                        class="input-group-text bg-white text-muted" id="loadLimit">10</span></div>
                                 <span class="text-muted" style="font-size: 0.7em;">(Slots)</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-
             </div>
         </div>
     </div>
 
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="rollToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header text-white" id="toastHeader">
+                <strong class="me-auto" id="toastTitle">Rolagem</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body fs-5 text-center fw-bold" id="toastBody">Resultado</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="script.js"></script>
 </body>
 
