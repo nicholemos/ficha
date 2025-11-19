@@ -425,7 +425,8 @@ h3,
 
 /* --- BOTÕES FLUTUANTES DE ATRIBUTO --- */
 .attr-wrapper {
-    position: relative; /* Para posicionar os botões absolutos */
+    position: relative;
+    /* Para posicionar os botões absolutos */
 }
 
 .attr-btn-float {
@@ -443,11 +444,12 @@ h3,
     justify-content: center;
     position: absolute;
     left: 50%;
-    transform: translateX(-50%) scale(0); /* Começa invisível e pequeno */
+    transform: translateX(-50%) scale(0);
+    /* Começa invisível e pequeno */
     transition: transform 0.2s ease-out;
     z-index: 10;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .attr-btn-float:active {
@@ -457,12 +459,20 @@ h3,
 }
 
 /* Posições */
-.attr-btn-up { top: -15px; }
-.attr-btn-down { bottom: 25px; } /* Fica entre o token e o nome */
+.attr-btn-up {
+    top: -15px;
+}
+
+.attr-btn-down {
+    bottom: 25px;
+}
+
+/* Fica entre o token e o nome */
 
 /* Classe para mostrar os botões */
 .attr-wrapper.active .attr-btn-float {
-    transform: translateX(-50%) scale(1); /* Aparece */
+    transform: translateX(-50%) scale(1);
+    /* Aparece */
 }
 
 /* --- BOTÕES FLUTUANTES PARA PERÍCIAS --- */
@@ -475,14 +485,157 @@ h3,
     width: 22px;
     height: 22px;
     font-size: 1rem;
-    z-index: 100 !important; /* Garante que fique acima das outras linhas */
+    z-index: 100 !important;
+    /* Garante que fique acima das outras linhas */
 }
 
 /* Ajuste de posição para a tabela */
-.skill-wrapper .attr-btn-up { top: -22px; }
-.skill-wrapper .attr-btn-down { bottom: -22px; }
+.skill-wrapper .attr-btn-up {
+    top: -22px;
+}
+
+.skill-wrapper .attr-btn-down {
+    bottom: -22px;
+}
 
 /* Estado Ativo */
 .skill-wrapper.active .attr-btn-float {
     transform: translateX(-50%) scale(1);
+}
+
+/* --- SISTEMA DE COLAPSO (ACCORDION) --- */
+
+/* Ícone da setinha */
+.section-toggle {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    margin-right: 8px;
+    color: inherit;
+}
+
+/* Gira a seta quando fechado */
+.collapsed .section-toggle {
+    transform: rotate(-90deg);
+}
+
+/* REGRAS ESPECÍFICAS POR SEÇÃO */
+
+/* 1. HEADER: Esconde foto e linhas extras, mantém só a primeira linha (Nome) */
+#headerSection.collapsed .header-extra {
+    display: none !important;
+}
+
+#headerSection.collapsed .col-img {
+    display: none !important;
+}
+
+#headerSection.collapsed .col-data {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/* 2. ATAQUES: Mostra apenas o 1º ataque, esconde o resto e botões */
+#attacksSection.collapsed .atk-header-row {
+    display: none !important;
+}
+
+#attacksSection.collapsed .atk-row:nth-child(n+2) {
+    display: none !important;
+}
+
+/* Esconde do 2º em diante */
+#attacksSection.collapsed .atk-details {
+    display: none !important;
+}
+
+/* Fecha detalhes se aberto */
+#attacksSection.collapsed .btn-add {
+    display: none !important;
+}
+
+/* 3. DEFESA: Mostra apenas o Escudo Total */
+
+
+#defenseSection.collapsed .def-formula {
+    display: none !important;
+}
+
+#defenseSection.collapsed .fixed-slot {
+    display: none !important;
+}
+
+#defenseSection.collapsed .def-extras {
+    display: none !important;
+}
+
+#defenseSection.collapsed .def-shield {
+    margin: 0 auto;
+    transform: scale(0.8);
+}
+
+#defenseSection.collapsed .def-header {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Centraliza */
+
+/* 4. CARACTERÍSTICAS: Esconde Profs/Status, mostra só 2 primeiros poderes */
+#abilitiesSection.collapsed .ab-extras {
+    display: none !important;
+}
+
+#abilitiesSection.collapsed .ability-row:nth-child(n+3) {
+    display: none !important;
+}
+
+/* Esconde do 3º em diante */
+#abilitiesSection.collapsed .btn-add {
+    display: none !important;
+}
+
+/* 5. MAGIAS: Esconde tudo */
+#spellsSection.collapsed .spells-content {
+    display: none !important;
+}
+
+/* 6. PERÍCIAS: Esconde tudo */
+#skillsSection.collapsed .skills-content {
+    display: none !important;
+}
+
+#skillsSection.collapsed .btn-add {
+    display: none !important;
+}
+
+#skillsSection.collapsed {
+    height: auto !important;
+    flex-grow: 0 !important;
+}
+
+/* 7. INVENTÁRIO: Esconde tudo */
+#inventorySection.collapsed .inv-content {
+    display: none !important;
+}
+
+
+/* Ícone de Arrastar */
+.drag-handle {
+    cursor: grab;
+    color: #aaa;
+    padding: 5px;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+    color: var(--t20-red);
+}
+
+/* Classe visual enquanto arrasta (opcional, o Sortable já faz um efeito, mas esse melhora) */
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: #f0f0f0;
 }
