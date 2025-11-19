@@ -42,7 +42,7 @@ function renderStructure() {
             <div class="col-2">
                 <div class="d-flex flex-column align-items-center">
                     <div class="attr-token" style="background-image: ${bgImage};">
-                        <input type="number" class="attr-val attr-input-overlay form-control" id="attr-${a}" value="0" min="-5">
+                        <input type="number" inputmode="numeric" class="attr-val attr-input-overlay form-control" id="attr-${a}" value="0" min="-5">
                     </div>
                     <div class="attr-footer-label">${a}</div>
                 </div>
@@ -73,16 +73,19 @@ function renderSkills() {
         <div class="row g-0 align-items-center skill-row py-1 border-bottom">
             <div class="col-1 text-center"><input class="form-check-input border-dark" type="checkbox" id="skTrain${i}" ${s.trained ? 'checked' : ''}></div>
             <div class="col-1 text-center"><i class="bi bi-dice-20-fill dice-roller text-secondary" onclick="rollSkill(${i})" title="Rolar Teste"></i></div>
+            
             <div class="col-4 ps-1 d-flex align-items-center">
                 <div style="flex: 1; overflow: hidden;">${nameDisplay}</div>
                 <select class="border-0 bg-transparent text-muted fw-bold ms-1 p-0" style="font-size: 0.65em; width: 35px; cursor:pointer;" onchange="updateSkillAttr(${i}, this.value)">${attrOptions}</select>
                 ${deleteBtn}
             </div>
+            
             <div class="col-2 text-center fw-bold text-danger fs-6" id="skTotal${i}">0</div>
+            
             <div class="col-1 text-center text-muted small" id="skHalfLevel${i}">0</div>
             <div class="col-1 text-center text-muted small" id="skAttrVal${i}">0</div>
             <div class="col-1 text-center text-muted small" id="skTrainVal${i}">0</div>
-            <div class="col-1 px-1"><input type="number" class="form-control form-control-sm p-0 text-center" id="skOther${i}" placeholder="0" value="${s.other || ''}"></div>
+            <div class="col-1 px-1"><input type="number" inputmode="numeric" class="form-control form-control-sm p-0 text-center" id="skOther${i}" placeholder="0" value="${s.other || ''}"></div>
         </div>`;
     }).join('');
     
@@ -172,15 +175,7 @@ function getVal(id) { const el = document.getElementById(id); return el ? el.val
 function getInt(id) { const v = parseInt(getVal(id)); return isNaN(v) ? 0 : v; }
 function setText(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
 
-// --- FUNÇÕES DE ADIÇÃO ---
-
-// Gerenciamento de Perícias
-function addSkill() { currentSkills.push({ n: 'Nova Perícia', a: 'INT', trained: false, other: 0, isCustom: true }); renderSkills(); saveData(); }
-function deleteSkill(index) { if(confirm("Remover perícia?")) { currentSkills.splice(index, 1); renderSkills(); saveData(); } }
-function updateSkillAttr(index, newAttr) { currentSkills[index].a = newAttr; updateCalculations(); saveData(); }
-function updateSkillName(index, newName) { currentSkills[index].n = newName; saveData(); updateCalculations(); }
-
-// Ataques
+// --- FUNÇÕES ADD/REMOVE ---
 function addAttack(data = null) {
     const container = document.getElementById('attacksList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 atk-row';
@@ -191,16 +186,16 @@ function addAttack(data = null) {
         <div class="row g-1 align-items-center text-center atk-summary mb-2">
             <div class="col-1"><i class="bi bi-sword fs-4 dice-roller text-danger" onclick="rollAttack(this)" title="Rolar Ataque" style="cursor: pointer;"></i></div>
             <div class="col-4"><input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Ataque" value="${data ? data.name : ''}"></div>
-            <div class="col-2"><input type="text" class="form-control form-control-sm inp-bonus fw-bold" placeholder="+0" value="${data ? data.bonus : ''}"></div>
+            <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm inp-bonus fw-bold" placeholder="+0" value="${data ? data.bonus : ''}"></div>
             <div class="col-2"><input type="text" class="form-control form-control-sm inp-dmg" placeholder="1d6" value="${data ? data.dmg : ''}"></div>
-            <div class="col-1"><input type="text" class="form-control form-control-sm text-center inp-crit-range p-0" placeholder="20" value="${data ? (data.critRange || '20') : '20'}" title="Margem"></div>
+            <div class="col-1"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-crit-range p-0" placeholder="20" value="${data ? (data.critRange || '20') : '20'}" title="Margem"></div>
             <div class="col-1"><input type="text" class="form-control form-control-sm text-center inp-crit p-0" placeholder="x2" value="${data ? data.crit : 'x2'}" title="Multi"></div>
             <div class="col-1"><button class="btn btn-sm btn-outline-dark border-0 w-100 p-0" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button></div>
         </div>
         <div class="atk-details p-2 rounded d-none">
             <div class="row g-2 mb-2">
                 <div class="col-4"><label class="form-label-sm">PERÍCIA</label><select class="form-select form-select-sm border-0 border-bottom p-0 inp-atk-skill" onchange="updateCalculations()">${skillOptions}</select></div>
-                <div class="col-3"><label class="form-label-sm">BÔNUS ITEM</label><input type="number" class="form-control form-control-sm border-0 border-bottom p-0 text-center inp-atk-mod" placeholder="+0" value="${data ? data.mod : ''}" oninput="updateCalculations()"></div>
+                <div class="col-3"><label class="form-label-sm">BÔNUS ITEM</label><input type="number" inputmode="numeric" class="form-control form-control-sm border-0 border-bottom p-0 text-center inp-atk-mod" placeholder="+0" value="${data ? data.mod : ''}" oninput="updateCalculations()"></div>
                 <div class="col-3"><label class="form-label-sm">TIPO</label><input type="text" class="form-control form-control-sm text-center border-0 border-bottom inp-type" placeholder="Corte" value="${data ? data.type : ''}"></div>
                 <div class="col-2"><label class="form-label-sm">ALCANCE</label><input type="text" class="form-control form-control-sm text-center border-0 border-bottom inp-range" placeholder="Curto" value="${data ? data.range : ''}"></div>
             </div>
@@ -213,7 +208,6 @@ function addAttack(data = null) {
 }
 function removeAttack(btn) { if(confirm('Remover ataque?')) { btn.closest('.atk-row').remove(); saveData(); } }
 
-// Outros Itens
 function addDefenseItem(data = null) {
     const container = document.getElementById('defenseList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 def-row';
@@ -221,7 +215,7 @@ function addDefenseItem(data = null) {
         <div class="row g-1 align-items-center text-center def-summary mb-2">
             <div class="col-1 fs-5"><i class="bi bi-magic"></i></div>
             <div class="col-5"><input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Item Extra" value="${data ? data.name : ''}"></div>
-            <div class="col-2"><input type="number" class="form-control form-control-sm inp-bonus fw-bold text-success" placeholder="+0" value="${data ? data.bonus : ''}" oninput="updateCalculations()"></div>
+            <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm inp-bonus fw-bold text-success" placeholder="+0" value="${data ? data.bonus : ''}" oninput="updateCalculations()"></div>
             <div class="col-2"></div>
             <div class="col-2"><button class="btn btn-sm btn-outline-danger border-0" onclick="removeDefenseItem(this)"><i class="bi bi-trash"></i></button></div>
         </div>`;
@@ -230,20 +224,18 @@ function addDefenseItem(data = null) {
 function removeDefenseItem(btn) { if(confirm('Remover item?')) { btn.closest('.def-row').remove(); updateCalculations(); saveData(); } }
 function checkHeavyArmor() { if (getVal('armorType') === 'heavy') { const chk = document.getElementById('applyDefAttr'); if(chk) chk.checked = false; } updateCalculations(); }
 
-// Inventário
 function addInventoryItem(data = null) {
     const container = document.getElementById('inventoryList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'row g-1 align-items-center mb-2 inv-row border-bottom pb-1';
     div.innerHTML = `
         <div class="col-6"><input type="text" class="form-control form-control-sm fw-bold inp-name" placeholder="Item" value="${data ? data.name : ''}"></div>
-        <div class="col-2"><input type="number" class="form-control form-control-sm text-center inp-qtd" placeholder="1" value="${data ? data.qtd : '1'}" oninput="updateCalculations()"></div>
-        <div class="col-2"><input type="number" class="form-control form-control-sm text-center inp-slots" placeholder="0" value="${data ? data.slots : '0'}" step="0.5" oninput="updateCalculations()"></div>
+        <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-qtd" placeholder="1" value="${data ? data.qtd : '1'}" oninput="updateCalculations()"></div>
+        <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-slots" placeholder="0" value="${data ? data.slots : '0'}" step="0.5" oninput="updateCalculations()"></div>
         <div class="col-2 text-center"><button class="btn btn-sm btn-outline-danger border-0" onclick="removeInventoryItem(this)"><i class="bi bi-trash"></i></button></div>`;
     container.appendChild(div); if (!data) saveData();
 }
 function removeInventoryItem(btn) { if(confirm('Remover item?')) { btn.closest('.inv-row').remove(); updateCalculations(); saveData(); } }
 
-// Poderes
 function addAbility(data = null) {
     const container = document.getElementById('abilitiesList'); if(!container) return;
     const div = document.createElement('div'); div.className = 'col-md-6 ability-row';
@@ -263,7 +255,6 @@ function addAbility(data = null) {
 }
 function removeAbility(btn) { if(confirm('Excluir poder?')) { btn.closest('.ability-row').remove(); saveData(); } }
 
-// Magias
 function addSpell(circle, data = null) {
     const container = document.getElementById(`spellsList${circle}`); if(!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 spell-row';
@@ -271,7 +262,7 @@ function addSpell(circle, data = null) {
     div.innerHTML = `
         <div class="row g-1 align-items-center text-center mb-2">
             <div class="col-9"><input type="text" class="form-control form-control-sm fw-bold inp-name text-start" placeholder="Nome da Magia" value="${data ? data.name : ''}"></div>
-            <div class="col-2 position-relative"><input type="number" class="form-control form-control-sm text-center inp-pm" placeholder="${defaultCost}" value="${costValue}"><span style="position: absolute; right: 5px; top: 20%; font-size: 0.6em; color: #6f42c1; font-weight:bold;">PM</span></div>
+            <div class="col-2 position-relative"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-pm" placeholder="${defaultCost}" value="${costValue}"><span style="position: absolute; right: 5px; top: 20%; font-size: 0.6em; color: #6f42c1; font-weight:bold;">PM</span></div>
             <div class="col-1"><button class="btn btn-sm btn-light border text-primary w-100 p-0" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button></div>
         </div>
         <div class="spell-details p-2 rounded d-none">
@@ -294,12 +285,10 @@ function removeSpell(btn) { if(confirm('Remover magia?')) { btn.closest('.spell-
 // --- CÁLCULOS ---
 function updateCalculations() {
     try {
-        // 1. Nível
         let level = getInt('charLevel');
         if (level < 1) level = 1; if (level > 20) level = 20;
         const halfLevel = Math.floor(level / 2);
 
-        // 2. Penalidades
         const armorPen = getInt('armorPenalty'); const shieldPen = getInt('shieldPenalty');
         const totalPenalty = Math.abs(armorPen) + Math.abs(shieldPen);
         const penaltySkills = ['Acrobacia', 'Furtividade', 'Ladinagem'];
@@ -342,7 +331,6 @@ function updateCalculations() {
             } else { mainInput.classList.remove('text-primary', 'bg-light'); mainInput.readOnly = false; }
         });
 
-        // Defesa
         const select = document.getElementById('defAttrSelect'); const selectedAttr = select ? select.value : 'DES';
         const attrValDef = getInt(`attr-${selectedAttr}`); const checkDef = document.getElementById('applyDefAttr'); const applyAttr = checkDef ? checkDef.checked : false;
         const elDefAttrVal = document.getElementById('defAttrVal'); if(elDefAttrVal) elDefAttrVal.innerText = attrValDef;
@@ -352,14 +340,12 @@ function updateCalculations() {
         const elOtherB = document.getElementById('dispOtherBonus'); if(elOtherB) elOtherB.innerText = othersBonus;
         const elDefTotal = document.getElementById('defenseTotal'); if(elDefTotal) elDefTotal.innerText = 10 + (applyAttr ? attrValDef : 0) + armorBonus + shieldBonus + othersBonus;
 
-        // Carga
         let currentLoad = 0; document.querySelectorAll('.inv-row').forEach(row => { const qtd = parseFloat(row.querySelector('.inp-qtd').value) || 0; const slots = parseFloat(row.querySelector('.inp-slots').value) || 0; currentLoad += (qtd * slots); });
         const elLoadCurr = document.getElementById('loadCurrent'); if(elLoadCurr) elLoadCurr.innerText = currentLoad;
         const str = getInt('attr-FOR'); let baseLimit = 10; if (str > 0) baseLimit += (str * 2); else baseLimit += str;
         const elLoadLim = document.getElementById('loadLimit'); if(elLoadLim) elLoadLim.innerText = baseLimit;
         if(elLoadCurr) { if(currentLoad > baseLimit) { elLoadCurr.classList.add('bg-danger', 'text-white'); elLoadCurr.classList.remove('bg-white'); } else { elLoadCurr.classList.add('bg-white'); elLoadCurr.classList.remove('bg-danger', 'text-white'); } }
 
-        // CD Magias
         const spellAttr = document.getElementById('spellCDAttrSelect').value;
         const spellAttrVal = getInt(`attr-${spellAttr}`);
         setText('spellCDHalfLevel', halfLevel);
@@ -382,7 +368,7 @@ function updateBars() {
     const barPM = document.getElementById('barPM'); if(barPM) barPM.style.width = `${pmPct}%`;
 }
 
-// --- PERSISTÊNCIA ---
+// --- SAVE / LOAD ---
 function saveData() {
     const data = {
         version: 15,
@@ -435,11 +421,9 @@ function loadData() {
     if (!json) json = localStorage.getItem('t20_sheet_v11');
     if (!json) json = localStorage.getItem('t20_sheet_v10');
     
-    // Se não tiver save, inicializa com itens básicos
     if (!json) { 
         addAttack(); 
         renderSkills(); 
-        // ITENS INICIAIS AUTOMÁTICOS
         addInventoryItem({ name: 'Mochila', qtd: 1, slots: 0 });
         addInventoryItem({ name: 'Saco de Dormir', qtd: 1, slots: 1 });
         addInventoryItem({ name: 'Traje de Viajante', qtd: 1, slots: 0 });
