@@ -78,7 +78,7 @@
                         </div>
                         <div class="col-md-1">
                             <label class="t20-label">Nível</label>
-                            <input type="number" class="form-control t20-input text-center fw-bold text-danger p-1"
+                            <input type="number" inputmode="numeric"class="form-control t20-input text-center fw-bold text-danger p-1"
                                 style="font-size: 1.1rem;" id="charLevel" value="1" min="1" max="20"
                                 oninput="updateCalculations(); saveData()">
                         </div>
@@ -216,12 +216,12 @@
                             </div>
                             <div class="col-2">
                                 <label class="def-label-mini text-success">DEFESA</label>
-                                <input type="number" class="form-control text-center fw-bold text-success"
+                                <input type="number" inputmode="numeric"class="form-control text-center fw-bold text-success"
                                     id="armorBonus" placeholder="+0" oninput="updateCalculations(); saveData()">
                             </div>
                             <div class="col-2">
                                 <label class="def-label-mini text-danger">PENAL.</label>
-                                <input type="number" class="form-control text-center text-danger" id="armorPenalty"
+                                <input type="number" inputmode="numeric"class="form-control text-center text-danger" id="armorPenalty"
                                     placeholder="0" title="Penalidade de Armadura"
                                     oninput="updateCalculations(); saveData()">
                             </div>
@@ -261,12 +261,12 @@
                             </div>
                             <div class="col-2">
                                 <label class="def-label-mini text-success">DEFESA</label>
-                                <input type="number" class="form-control text-center fw-bold text-success"
+                                <input type="number" inputmode="numeric"class="form-control text-center fw-bold text-success"
                                     id="shieldBonus" placeholder="+0" oninput="updateCalculations(); saveData()">
                             </div>
                             <div class="col-2">
                                 <label class="def-label-mini text-danger">PENAL.</label>
-                                <input type="number" class="form-control text-center text-danger" id="shieldPenalty"
+                                <input type="number" inputmode="numeric"class="form-control text-center text-danger" id="shieldPenalty"
                                     placeholder="0" title="Penalidade de Armadura"
                                     oninput="updateCalculations(); saveData()">
                             </div>
@@ -410,7 +410,7 @@
                             <span class="fs-5 text-muted">+</span>
 
                             <div class="text-center">
-                                <input type="number" class="form-control form-control-sm text-center p-0 fw-bold"
+                                <input type="number" inputmode="numeric"class="form-control form-control-sm text-center p-0 fw-bold"
                                     style="width:40px" id="spellCDPowers" placeholder="0"
                                     oninput="updateCalculations(); saveData()">
                                 <span class="text-muted" style="font-size:0.65em">PODER</span>
@@ -419,7 +419,7 @@
                             <span class="fs-5 text-muted">+</span>
 
                             <div class="text-center">
-                                <input type="number" class="form-control form-control-sm text-center p-0 fw-bold"
+                                <input type="number" inputmode="numeric"class="form-control form-control-sm text-center p-0 fw-bold"
                                     style="width:40px" id="spellCDItems" placeholder="0"
                                     oninput="updateCalculations(); saveData()">
                                 <span class="text-muted" style="font-size:0.65em">ITENS</span>
@@ -428,7 +428,7 @@
                             <span class="fs-5 text-muted">+</span>
 
                             <div class="text-center">
-                                <input type="number" class="form-control form-control-sm text-center p-0 fw-bold"
+                                <input type="number" inputmode="numeric"class="form-control form-control-sm text-center p-0 fw-bold"
                                     style="width:40px" id="spellCDOther" placeholder="0"
                                     oninput="updateCalculations(); saveData()">
                                 <span class="text-muted" style="font-size:0.65em">OUTROS</span>
@@ -533,7 +533,7 @@
                             <div class="col-md-4 d-flex align-items-center gap-2">
                                 <span class="fw-bold text-warning text-shadow"
                                     style="text-shadow: 1px 1px 0 #000;">T$</span>
-                                <input type="number" class="form-control form-control-sm fw-bold" id="charCash"
+                                <input type="number" inputmode="numeric"class="form-control form-control-sm fw-bold" id="charCash"
                                     placeholder="0" oninput="saveData()">
                             </div>
 
