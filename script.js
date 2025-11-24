@@ -16,6 +16,7 @@ const defaultSkills = [
 
 const spellCosts = { 1: 1, 2: 3, 3: 6, 4: 10, 5: 15 };
 let currentSkills = [];
+let currentLoadBonus = 0; // Bônus manual para a carga
 
 // --- INICIALIZAÇÃO ---
 window.onload = () => {
@@ -149,11 +150,6 @@ function updateSkillOther(index, delta) {
     saveData();
 }
 
-// ... (RESTO DAS FUNÇÕES: addSkill, roll20, addAttack, updateCalculations, saveData, loadData... MANTIDAS IGUAIS A VERSÃO 15.2) ...
-// Para economizar espaço e evitar erros de cópia, mantenha o restante do arquivo igual.
-// As únicas mudanças foram em 'renderStructure', e a adição de 'toggleAttrButtons' e 'updateAttr'.
-
-// --- HELPER: Copie o restante do arquivo anterior a partir daqui ---
 // --- GERENCIAMENTO DE PERÍCIAS ---
 function addSkill() { currentSkills.push({ n: 'Nova Perícia', a: 'INT', trained: false, other: 0, isCustom: true }); renderSkills(); saveData(); }
 function deleteSkill(index) { if (confirm("Remover perícia?")) { currentSkills.splice(index, 1); renderSkills(); saveData(); } }
@@ -198,7 +194,7 @@ function attachGlobalListeners() {
 }
 function toggleDetail(btn) { const row = btn.closest('.atk-row') || btn.closest('.def-row') || btn.closest('.ability-row') || btn.closest('.spell-row'); if (!row) return; const details = row.querySelector('.atk-details') || row.querySelector('.def-details') || row.querySelector('.ability-details') || row.querySelector('.spell-details'); const icon = btn.querySelector('i'); if (details.classList.contains('d-none')) { details.classList.remove('d-none'); icon.classList.replace('bi-chevron-down', 'bi-chevron-up'); } else { details.classList.add('d-none'); icon.classList.replace('bi-chevron-up', 'bi-chevron-down'); } }
 function toggleFixedDetail(id) { const el = document.getElementById(id); if (el) el.classList.toggle('d-none'); }
-function uploadImage(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function (e) { const img = new Image(); img.onload = function () { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const MAX_WIDTH = 300; const MAX_HEIGHT = 400; let width = img.width; let height = img.height; if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } } canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height); const el = document.getElementById('charImgPreview'); if (el) el.src = canvas.toDataURL('image/jpeg', 0.7); saveData(); }; img.src = e.target.result; }; reader.readAsDataURL(input.files[0]); } }
+
 function getVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 function getInt(id) { const v = parseInt(getVal(id)); return isNaN(v) ? 0 : v; }
 function setText(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
@@ -207,7 +203,6 @@ function addAttack(data = null) {
     const container = document.getElementById('attacksList'); if (!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 atk-row';
     // ... (logica de skills options igual) ...
-    // (Copie as skills options do seu código atual)
     const mainSkills = ['Luta', 'Pontaria', 'Atuação', 'Misticismo'];
     let skillOptions = `<option value="">(Manual)</option>`;
     mainSkills.forEach(sn => skillOptions += `<option value="${sn}" ${data && data.skill === sn ? 'selected' : ''}>${sn}</option>`);
@@ -322,11 +317,45 @@ function addSpell(circle, data = null) {
 }
 function removeSpell(btn) { if (confirm('Remover magia?')) { btn.closest('.spell-row').remove(); saveData(); } }
 
+// --- NOVAS FUNÇÕES DE CARGA ---
+function changeLoadBonus(amount) {
+    currentLoadBonus += amount;
+    document.getElementById('loadBonusDisplay').innerText = currentLoadBonus > 0 ? `+${currentLoadBonus}` : currentLoadBonus;
+    calcLoad(); // Recalcula o total
+    saveData(); // Salva a alteração
+}
+
+function calcLoad() {
+    const selectedAttr = getVal('loadAttrSelect') || 'FOR';
+    const attrVal = getInt(`attr-${selectedAttr}`);
+    let baseLimit = 10;
+
+    // Lógica de cálculo de carga: 10 + (Atributo * 2) se positivo, ou 10 + Atributo se negativo/zero
+    if (attrVal > 0) {
+        baseLimit += (attrVal * 2);
+    } else {
+        baseLimit += attrVal;
+    }
+
+    // Adiciona o bônus manual
+    const totalSlots = baseLimit + currentLoadBonus;
+
+    const currentSlots = Array.from(document.querySelectorAll('#inventoryList .inv-row .inp-slots')).reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
+
+    setText('loadCurrent', currentSlots.toFixed(1));
+    setText('loadLimit', totalSlots);
+}
+// --- FIM NOVAS FUNÇÕES DE CARGA ---
+
+
 function updateCalculations() {
     try {
         let level = getInt('charLevel');
         if (level < 1) level = 1; if (level > 20) level = 20;
         const halfLevel = Math.floor(level / 2);
+
+        // --- CÁLCULO DE CARGA ---
+        calcLoad();
 
         const armorPen = getInt('armorPenalty'); const shieldPen = getInt('shieldPenalty');
         const totalPenalty = Math.abs(armorPen) + Math.abs(shieldPen);
@@ -340,215 +369,378 @@ function updateCalculations() {
         currentSkills.forEach((s, i) => {
             const attrVal = getInt(`attr-${s.a}`);
             const check = document.getElementById(`skTrain${i}`); if (check) s.trained = check.checked;
-            const otherInp = document.getElementById(`skOther${i}`); if (otherInp) s.other = parseInt(otherInp.value) || 0;
+            const trained = s.trained ? trainBonus : 0;
+            const other = getInt(`skOther${i}`);
+            let total = halfLevel + attrVal + trained + other;
 
-            const finalTrainBonus = s.trained ? trainBonus : 0;
-            let appliedPenalty = (penaltySkills.includes(s.n) && totalPenalty > 0) ? totalPenalty : 0;
-            let appliedSizeMod = (s.n === 'Furtividade') ? sizeVal : 0;
+            // Penalidade de Armadura/Escudo
+            if (penaltySkills.includes(s.n)) {
+                total -= totalPenalty;
+            }
 
-            const elHalf = document.getElementById(`skHalfLevel${i}`); if (elHalf) elHalf.innerText = halfLevel;
-            const elAttr = document.getElementById(`skAttrVal${i}`); if (elAttr) elAttr.innerText = attrVal;
-            const elTrain = document.getElementById(`skTrainVal${i}`); if (elTrain) elTrain.innerText = finalTrainBonus;
+            // Penalidade de Tamanho (Furtividade)
+            if (s.n === 'Furtividade') {
+                total += sizeVal;
+            }
 
-            const total = halfLevel + attrVal + finalTrainBonus + s.other - appliedPenalty + appliedSizeMod;
+            setText(`skHalfLevel${i}`, halfLevel);
+            setText(`skAttrVal${i}`, attrVal);
+            setText(`skTrainVal${i}`, trained);
+            setText(`skTotal${i}`, total);
             skillValues[s.n] = total;
+        });
 
-            const totalEl = document.getElementById(`skTotal${i}`);
-            if (totalEl) {
-                totalEl.innerText = total;
-                if (appliedPenalty > 0 || appliedSizeMod !== 0) {
-                    totalEl.style.color = (total < 0 || appliedPenalty > 0) ? '#d35400' : 'var(--t20-red)';
-                } else {
-                    totalEl.style.color = 'var(--t20-red)';
-                }
+        // --- DEFESA ---
+        const defAttr = getVal('defAttrSelect');
+        const defAttrVal = getInt(`attr-${defAttr}`);
+        const applyDefAttr = document.getElementById('applyDefAttr') ? document.getElementById('applyDefAttr').checked : true;
+        const armorBonus = getInt('armorBonus');
+        const shieldBonus = getInt('shieldBonus');
+        let otherBonus = 0;
+        document.querySelectorAll('#defenseList .def-row .inp-bonus').forEach(input => { otherBonus += getInt(input.id || input.value); });
+        const totalDefense = 10 + (applyDefAttr ? defAttrVal : 0) + armorBonus + shieldBonus + otherBonus;
+
+        setText('defAttrVal', applyDefAttr ? defAttrVal : 0);
+        setText('dispArmorBonus', armorBonus);
+        setText('dispShieldBonus', shieldBonus);
+        setText('dispOtherBonus', otherBonus);
+        setText('defenseTotal', totalDefense);
+
+        // --- PV/PM ---
+        const pvMax = getInt('pvMax');
+        const pvCurrent = getInt('pvCurrent');
+        const pmMax = getInt('pmMax');
+        const pmCurrent = getInt('pmCurrent');
+
+        const barPV = document.getElementById('barPV');
+        if (barPV) barPV.style.width = `${(pvCurrent / pvMax) * 100}%`;
+        const barPM = document.getElementById('barPM');
+        if (barPM) barPM.style.width = `${(pmCurrent / pmMax) * 100}%`;
+
+        // --- MAGIAS CD ---
+        const spellCDAttr = getVal('spellCDAttrSelect');
+        const spellCDAttrVal = getInt(`attr-${spellCDAttr}`);
+        const spellCDPowers = getInt('spellCDPowers');
+        const spellCDItems = getInt('spellCDItems');
+        const spellCDOther = getInt('spellCDOther');
+        const spellCDTotal = 10 + halfLevel + spellCDAttrVal + spellCDPowers + spellCDItems + spellCDOther;
+
+        setText('spellCDHalfLevel', halfLevel);
+        setText('spellCDAttrVal', spellCDAttrVal);
+        setText('spellCDTotal', spellCDTotal);
+
+        // --- ATAQUES ---
+        document.querySelectorAll('.atk-row').forEach(row => {
+            const skillSelect = row.querySelector('.inp-atk-skill');
+            const bonusInput = row.querySelector('.inp-bonus');
+            const modInput = row.querySelector('.inp-atk-mod');
+
+            if (skillSelect && bonusInput && modInput) {
+                const selectedSkill = skillSelect.value;
+                const skillBonus = skillValues[selectedSkill] || 0;
+                const modBonus = getInt(modInput.id || modInput.value);
+                const totalBonus = skillBonus + modBonus;
+                bonusInput.value = totalBonus > 0 ? `+${totalBonus}` : totalBonus;
             }
         });
 
-        document.querySelectorAll('.atk-row').forEach(row => {
-            const skillSelect = row.querySelector('.inp-atk-skill'); const modInput = row.querySelector('.inp-atk-mod'); const mainInput = row.querySelector('.inp-bonus');
-            if (skillSelect && skillSelect.value && skillValues[skillSelect.value] !== undefined) {
-                const base = skillValues[skillSelect.value]; const mod = parseInt(modInput.value) || 0;
-                const totalAtk = base + mod; mainInput.value = (totalAtk >= 0 ? '+' : '') + totalAtk;
-                mainInput.classList.add('text-primary', 'bg-light'); mainInput.readOnly = true;
-            } else { mainInput.classList.remove('text-primary', 'bg-light'); mainInput.readOnly = false; }
-        });
-
-        const select = document.getElementById('defAttrSelect'); const selectedAttr = select ? select.value : 'DES';
-        const attrValDef = getInt(`attr-${selectedAttr}`); const checkDef = document.getElementById('applyDefAttr'); const applyAttr = checkDef ? checkDef.checked : false;
-        const elDefAttrVal = document.getElementById('defAttrVal'); if (elDefAttrVal) elDefAttrVal.innerText = attrValDef;
-        const armorBonus = getInt('armorBonus'); const elArmorB = document.getElementById('dispArmorBonus'); if (elArmorB) elArmorB.innerText = armorBonus;
-        const shieldBonus = getInt('shieldBonus'); const elShieldB = document.getElementById('dispShieldBonus'); if (elShieldB) elShieldB.innerText = shieldBonus;
-        let othersBonus = 0; document.querySelectorAll('.def-row').forEach(row => { othersBonus += parseInt(row.querySelector('.inp-bonus').value) || 0; });
-        const elOtherB = document.getElementById('dispOtherBonus'); if (elOtherB) elOtherB.innerText = othersBonus;
-        const elDefTotal = document.getElementById('defenseTotal'); if (elDefTotal) elDefTotal.innerText = 10 + (applyAttr ? attrValDef : 0) + armorBonus + shieldBonus + othersBonus;
-
-        let currentLoad = 0; document.querySelectorAll('.inv-row').forEach(row => { const qtd = parseFloat(row.querySelector('.inp-qtd').value) || 0; const slots = parseFloat(row.querySelector('.inp-slots').value) || 0; currentLoad += (qtd * slots); });
-        const elLoadCurr = document.getElementById('loadCurrent'); if (elLoadCurr) elLoadCurr.innerText = currentLoad;
-        const str = getInt('attr-FOR'); let baseLimit = 10; if (str > 0) baseLimit += (str * 2); else baseLimit += str;
-        const elLoadLim = document.getElementById('loadLimit'); if (elLoadLim) elLoadLim.innerText = baseLimit;
-        if (elLoadCurr) { if (currentLoad > baseLimit) { elLoadCurr.classList.add('bg-danger', 'text-white'); elLoadCurr.classList.remove('bg-white'); } else { elLoadCurr.classList.add('bg-white'); elLoadCurr.classList.remove('bg-danger', 'text-white'); } }
-
-        const spellAttr = document.getElementById('spellCDAttrSelect').value;
-        const spellAttrVal = getInt(`attr-${spellAttr}`);
-        setText('spellCDHalfLevel', halfLevel);
-        setText('spellCDAttrVal', spellAttrVal);
-        const cdPowers = getInt('spellCDPowers'); const cdItems = getInt('spellCDItems'); const cdOther = getInt('spellCDOther');
-        const totalCD = 10 + halfLevel + spellAttrVal + cdPowers + cdItems + cdOther;
-        setText('spellCDTotal', totalCD);
-
-        updateBars();
-    } catch (e) { console.log("Calc pendente...", e); }
-}
-
-function updateBars() {
-    const pvMax = parseFloat(document.getElementById('pvMax').value) || 0; const pvCur = parseFloat(document.getElementById('pvCurrent').value) || 0;
-    let pvPct = 0; if (pvMax > 0) pvPct = (pvCur / pvMax) * 100; if (pvPct > 100) pvPct = 100; if (pvPct < 0) pvPct = 0;
-    const barPV = document.getElementById('barPV'); if (barPV) barPV.style.width = `${pvPct}%`;
-
-    const pmMax = parseFloat(document.getElementById('pmMax').value) || 0; const pmCur = parseFloat(document.getElementById('pmCurrent').value) || 0;
-    let pmPct = 0; if (pmMax > 0) pmPct = (pmCur / pmMax) * 100; if (pmPct > 100) pmPct = 100; if (pmPct < 0) pmPct = 0;
-    const barPM = document.getElementById('barPM'); if (barPM) barPM.style.width = `${pmPct}%`;
+    } catch (e) { console.error("Erro em updateCalculations:", e); }
 }
 
 function saveData() {
     const data = {
-        version: 16,
-        header: {
-            name: getVal('charName'), player: getVal('playerName'), race: getVal('charRace'),
-            origin: getVal('charOrigin'), class: getVal('charClass'), level: getVal('charLevel'),
-            deity: getVal('charDeity'), image: document.getElementById('charImgPreview') ? document.getElementById('charImgPreview').src : ''
-        },
+        loadBonus: currentLoadBonus, // Salvar bônus de carga manual
+        // --- DADOS GERAIS ---
+        version: 15.3,
+        charName: getVal('charName'), playerName: getVal('playerName'),
+        charRace: getVal('charRace'), charOrigin: getVal('charOrigin'), charClass: getVal('charClass'),
+        charLevel: getVal('charLevel'), charDeity: getVal('charDeity'),
+        // --- EXTRAS ---
         extras: { profs: getVal('charProfs'), size: getVal('charSize'), speed: getVal('charSpeed'), xp: getVal('charXP'), cash: getVal('charCash') },
+        // --- ATRIBUTOS ---
         attrs: {},
+        // --- STATUS ---
         status: { pvM: getVal('pvMax'), pvC: getVal('pvCurrent'), pmM: getVal('pmMax'), pmC: getVal('pmCurrent') },
+        // --- DEFESA ---
         defense: {
             config: { attr: getVal('defAttrSelect'), apply: document.getElementById('applyDefAttr') ? document.getElementById('applyDefAttr').checked : true },
             armor: { name: getVal('armorName'), bonus: getVal('armorBonus'), penalty: getVal('armorPenalty'), type: getVal('armorType'), desc: getVal('armorDesc') },
             shield: { name: getVal('shieldName'), bonus: getVal('shieldBonus'), penalty: getVal('shieldPenalty'), type: getVal('shieldType'), desc: getVal('shieldDesc') },
-            others: []
+            other: []
         },
-        spellCD: {
-            attr: getVal('spellCDAttrSelect'),
-            powers: getVal('spellCDPowers'),
-            items: getVal('spellCDItems'),
-            other: getVal('spellCDOther')
+        // --- PERÍCIAS ---
+        skills: currentSkills.map(s => ({ n: s.n, a: s.a, trained: s.trained, other: s.other, isCustom: s.isCustom })),
+        // --- ATAQUES ---
+        attacks: [],
+        // --- INVENTÁRIO ---
+        inventory: [],
+        // --- PODERES ---
+        abilities: [],
+        // --- MAGIAS ---
+        spells: {
+            config: { attr: getVal('spellCDAttrSelect'), powers: getVal('spellCDPowers'), items: getVal('spellCDItems'), other: getVal('spellCDOther') },
+            list: []
         },
-        skills: currentSkills,
-        attacks: [], inventory: [], abilities: [], spells: []
+        // --- CARGA ---
+        loadConfig: { attr: getVal('loadAttrSelect') || 'FOR' }
     };
 
-    attrs.forEach(a => data.attrs[a] = getVal(`attr-${a}`));
+    attrs.forEach(a => { data.attrs[a] = getVal(`attr-${a}`); });
 
-    document.querySelectorAll('.atk-row').forEach(row => {
-        data.attacks.push({
-            name: row.querySelector('.inp-name').value, bonus: row.querySelector('.inp-bonus').value, dmg: row.querySelector('.inp-dmg').value, crit: row.querySelector('.inp-crit').value, critRange: row.querySelector('.inp-crit-range').value, desc: row.querySelector('.inp-desc').value, type: row.querySelector('.inp-type').value, range: row.querySelector('.inp-range').value, skill: row.querySelector('.inp-atk-skill') ? row.querySelector('.inp-atk-skill').value : '', mod: row.querySelector('.inp-atk-mod') ? row.querySelector('.inp-atk-mod').value : ''
+    document.querySelectorAll('#defenseList .def-row').forEach(row => {
+        data.defense.other.push({
+            name: row.querySelector('.inp-name').value,
+            bonus: row.querySelector('.inp-bonus').value
         });
     });
-    document.querySelectorAll('.def-row').forEach(row => { data.defense.others.push({ name: row.querySelector('.inp-name').value, bonus: row.querySelector('.inp-bonus').value }); });
-    document.querySelectorAll('.inv-row').forEach(row => { data.inventory.push({ name: row.querySelector('.inp-name').value, qtd: row.querySelector('.inp-qtd').value, slots: row.querySelector('.inp-slots').value }); });
-    document.querySelectorAll('.ability-row').forEach(row => { data.abilities.push({ name: row.querySelector('.inp-name').value, desc: row.querySelector('.inp-desc').value }); });
-    document.querySelectorAll('.spell-row').forEach(row => {
-        data.spells.push({ circle: row.querySelector('.inp-circle').value, name: row.querySelector('.inp-name').value, pm: row.querySelector('.inp-pm').value, school: row.querySelector('.inp-school').value, exec: row.querySelector('.inp-exec').value, range: row.querySelector('.inp-range').value, target: row.querySelector('.inp-target').value, dur: row.querySelector('.inp-dur').value, res: row.querySelector('.inp-res').value, desc: row.querySelector('.inp-desc').value });
+
+    document.querySelectorAll('#attacksList .atk-row').forEach(row => {
+        data.attacks.push({
+            name: row.querySelector('.inp-name').value,
+            bonus: row.querySelector('.inp-bonus').value,
+            dmg: row.querySelector('.inp-dmg').value,
+            critRange: row.querySelector('.inp-crit-range').value,
+            crit: row.querySelector('.inp-crit').value,
+            skill: row.querySelector('.inp-atk-skill').value,
+            mod: row.querySelector('.inp-atk-mod').value,
+            type: row.querySelector('.inp-type').value,
+            range: row.querySelector('.inp-range').value,
+            desc: row.querySelector('.inp-desc').value
+        });
     });
 
-    localStorage.setItem('t20_sheet_v16', JSON.stringify(data));
+    document.querySelectorAll('#inventoryList .inv-row').forEach(row => {
+        data.inventory.push({
+            name: row.querySelector('.inp-name').value,
+            qtd: row.querySelector('.inp-qtd').value,
+            slots: row.querySelector('.inp-slots').value
+        });
+    });
+
+    document.querySelectorAll('#abilitiesList .ability-row').forEach(row => {
+        data.abilities.push({
+            name: row.querySelector('.inp-name').value,
+            desc: row.querySelector('.inp-desc').value
+        });
+    });
+
+    [1, 2, 3, 4, 5].forEach(circle => {
+        document.querySelectorAll(`#spellsList${circle} .spell-row`).forEach(row => {
+            data.spells.list.push({
+                circle: circle,
+                name: row.querySelector('.inp-name').value,
+                pm: row.querySelector('.inp-pm').value,
+                school: row.querySelector('.inp-school').value,
+                exec: row.querySelector('.inp-exec').value,
+                range: row.querySelector('.inp-range').value,
+                target: row.querySelector('.inp-target').value,
+                dur: row.querySelector('.inp-dur').value,
+                res: row.querySelector('.inp-res').value,
+                desc: row.querySelector('.inp-desc').value
+            });
+        });
+    });
+
+    localStorage.setItem('t20SheetData', JSON.stringify(data));
 }
 
 function loadData() {
-    let json = localStorage.getItem('t20_sheet_v16');
-    if (!json) json = localStorage.getItem('t20_sheet_v15');
-    if (!json) json = localStorage.getItem('t20_sheet_v14');
-    if (!json) json = localStorage.getItem('t20_sheet_v13');
-    if (!json) json = localStorage.getItem('t20_sheet_v12');
-    if (!json) json = localStorage.getItem('t20_sheet_v11');
-    if (!json) json = localStorage.getItem('t20_sheet_v10');
+    const savedData = localStorage.getItem('t20SheetData');
+    if (savedData) {
+        const data = JSON.parse(savedData);
 
-    if (!json) {
-        addAttack();
-        renderSkills();
-        addInventoryItem({ name: 'Mochila', qtd: 1, slots: 0 });
-        addInventoryItem({ name: 'Saco de Dormir', qtd: 1, slots: 1 });
-        addInventoryItem({ name: 'Traje de Viajante', qtd: 1, slots: 0 });
-        return;
-    }
+        // Carregar bônus de carga manual
+        currentLoadBonus = data.loadBonus || 0;
+        const loadBonusDisplay = document.getElementById('loadBonusDisplay');
+        if (loadBonusDisplay) loadBonusDisplay.innerText = currentLoadBonus > 0 ? `+${currentLoadBonus}` : currentLoadBonus;
 
-    try {
-        const data = JSON.parse(json);
-        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+        // --- DADOS GERAIS ---
+        if (data.charName) document.getElementById('charName').value = data.charName;
+        if (data.playerName) document.getElementById('playerName').value = data.playerName;
+        if (data.charRace) document.getElementById('charRace').value = data.charRace;
+        if (data.charOrigin) document.getElementById('charOrigin').value = data.charOrigin;
+        if (data.charClass) document.getElementById('charClass').value = data.charClass;
+        if (data.charLevel) document.getElementById('charLevel').value = data.charLevel;
+        if (data.charDeity) document.getElementById('charDeity').value = data.charDeity;
 
-        setVal('charName', data.header.name); setVal('playerName', data.header.player); setVal('charRace', data.header.race); setVal('charOrigin', data.header.origin); setVal('charClass', data.header.class); setVal('charLevel', data.header.level || '1'); setVal('charDeity', data.header.deity);
-        const imgEl = document.getElementById('charImgPreview'); if (data.header.image && imgEl) imgEl.src = data.header.image;
-
-        if (data.extras) { setVal('charProfs', data.extras.profs); setVal('charSize', data.extras.size || '0'); setVal('charSpeed', data.extras.speed); setVal('charXP', data.extras.xp); setVal('charCash', data.extras.cash); }
-        if (data.attrs) attrs.forEach(a => setVal(`attr-${a}`, data.attrs[a]));
-        if (data.status) { setVal('pvMax', data.status.pvM); setVal('pvCurrent', data.status.pvC); setVal('pmMax', data.status.pmM); setVal('pmCurrent', data.status.pmC); }
-
-        if (data.defense) {
-            if (data.defense.config) { setVal('defAttrSelect', data.defense.config.attr || 'DES'); const chk = document.getElementById('applyDefAttr'); if (chk) chk.checked = data.defense.config.apply; }
-            if (data.defense.armor) { setVal('armorName', data.defense.armor.name); setVal('armorBonus', data.defense.armor.bonus); setVal('armorPenalty', data.defense.armor.penalty); setVal('armorType', data.defense.armor.type || 'light'); setVal('armorDesc', data.defense.armor.desc); }
-            if (data.defense.shield) { setVal('shieldName', data.defense.shield.name); setVal('shieldBonus', data.defense.shield.bonus); setVal('shieldPenalty', data.defense.shield.penalty); setVal('shieldType', data.defense.shield.type || 'light'); setVal('shieldDesc', data.defense.shield.desc); }
-            const defList = document.getElementById('defenseList'); if (defList) defList.innerHTML = '';
-            if (data.defense.others) data.defense.others.forEach(item => addDefenseItem(item));
+        // --- EXTRAS ---
+        if (data.extras) {
+            if (data.extras.profs) document.getElementById('charProfs').value = data.extras.profs;
+            if (data.extras.size) document.getElementById('charSize').value = data.extras.size;
+            if (data.extras.speed) document.getElementById('charSpeed').value = data.extras.speed;
+            if (data.extras.xp) document.getElementById('charXP').value = data.extras.xp;
+            if (data.extras.cash) document.getElementById('charCash').value = data.extras.cash;
         }
 
-        if (data.spellCD) {
-            setVal('spellCDAttrSelect', data.spellCD.attr || 'INT');
-            setVal('spellCDPowers', data.spellCD.powers);
-            setVal('spellCDItems', data.spellCD.items);
-            setVal('spellCDOther', data.spellCD.other);
-        }
-
-        if (data.skills && Array.isArray(data.skills)) { currentSkills = data.skills; }
-        renderSkills();
-
-        const atkList = document.getElementById('attacksList'); if (atkList) atkList.innerHTML = '';
-        if (data.attacks) data.attacks.forEach(atk => addAttack(atk)); else addAttack();
-
-        const invList = document.getElementById('inventoryList'); if (invList) invList.innerHTML = '';
-        if (data.inventory) data.inventory.forEach(item => addInventoryItem(item));
-
-        const abList = document.getElementById('abilitiesList'); if (abList) abList.innerHTML = '';
-        if (data.abilities) data.abilities.forEach(ab => addAbility(ab));
-
-        for (let i = 1; i <= 5; i++) { const el = document.getElementById(`spellsList${i}`); if (el) el.innerHTML = ''; }
-        if (data.spells) data.spells.forEach(spell => addSpell(spell.circle, spell));
-
-    } catch (e) { console.error(e); }
-
-    updateCalculations();
-}
-
-// --- SISTEMA DE COLAPSO ---
-function toggleSection(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('collapsed');
-}
-
-// --- SISTEMA DE ARRASTAR E SOLTAR ---
-function enableDragAndDrop() {
-    const lists = [
-        'attacksList',
-        'defenseList',
-        'inventoryList',
-        'abilitiesList',
-        'spellsList1', 'spellsList2', 'spellsList3', 'spellsList4', 'spellsList5'
-    ];
-
-    lists.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            new Sortable(el, {
-                handle: '.drag-handle', // Só arrasta se puxar pelo ícone
-                animation: 150,         // Animação suave
-                ghostClass: 'sortable-ghost', // Classe enquanto arrasta
-                onEnd: function () {     // Ao soltar...
-                    saveData();         // Salva a nova ordem imediatamente!
-                }
+        // --- ATRIBUTOS ---
+        if (data.attrs) {
+            attrs.forEach(a => {
+                if (data.attrs[a]) document.getElementById(`attr-${a}`).value = data.attrs[a];
             });
         }
+
+        // --- STATUS ---
+        if (data.status) {
+            if (data.status.pvM) document.getElementById('pvMax').value = data.status.pvM;
+            if (data.status.pvC) document.getElementById('pvCurrent').value = data.status.pvC;
+            if (data.status.pmM) document.getElementById('pmMax').value = data.status.pmM;
+            if (data.status.pmC) document.getElementById('pmCurrent').value = data.status.pmC;
+        }
+
+        // --- DEFESA ---
+        if (data.defense) {
+            if (data.defense.config) {
+                if (data.defense.config.attr) document.getElementById('defAttrSelect').value = data.defense.config.attr;
+                const chk = document.getElementById('applyDefAttr');
+                if (chk) chk.checked = data.defense.config.apply;
+            }
+            if (data.defense.armor) {
+                if (data.defense.armor.name) document.getElementById('armorName').value = data.defense.armor.name;
+                if (data.defense.armor.bonus) document.getElementById('armorBonus').value = data.defense.armor.bonus;
+                if (data.defense.armor.penalty) document.getElementById('armorPenalty').value = data.defense.armor.penalty;
+                if (data.defense.armor.type) document.getElementById('armorType').value = data.defense.armor.type;
+                if (data.defense.armor.desc) document.getElementById('armorDesc').value = data.defense.armor.desc;
+            }
+            if (data.defense.shield) {
+                if (data.defense.shield.name) document.getElementById('shieldName').value = data.defense.shield.name;
+                if (data.defense.shield.bonus) document.getElementById('shieldBonus').value = data.defense.shield.bonus;
+                if (data.defense.shield.penalty) document.getElementById('shieldPenalty').value = data.defense.shield.penalty;
+                if (data.defense.shield.type) document.getElementById('shieldType').value = data.defense.shield.type;
+                if (data.defense.shield.desc) document.getElementById('shieldDesc').value = data.defense.shield.desc;
+            }
+            if (data.defense.other) {
+                data.defense.other.forEach(item => addDefenseItem(item));
+            }
+        }
+
+        // --- PERÍCIAS ---
+        if (data.skills && data.skills.length > 0) {
+            currentSkills = data.skills;
+            renderSkills();
+        }
+
+        // --- ATAQUES ---
+        if (data.attacks) {
+            data.attacks.forEach(item => addAttack(item));
+        }
+
+        // --- INVENTÁRIO ---
+        if (data.inventory) {
+            data.inventory.forEach(item => addInventoryItem(item));
+        }
+
+        // --- PODERES ---
+        if (data.abilities) {
+            data.abilities.forEach(item => addAbility(item));
+        }
+
+        // --- MAGIAS ---
+        if (data.spells) {
+            if (data.spells.config) {
+                if (data.spells.config.attr) document.getElementById('spellCDAttrSelect').value = data.spells.config.attr;
+                if (data.spells.config.powers) document.getElementById('spellCDPowers').value = data.spells.config.powers;
+                if (data.spells.config.items) document.getElementById('spellCDItems').value = data.spells.config.items;
+                if (data.spells.config.other) document.getElementById('spellCDOther').value = data.spells.config.other;
+            }
+            if (data.spells.list) {
+                data.spells.list.forEach(item => addSpell(item.circle, item));
+            }
+        }
+
+        // --- CARGA ---
+        if (data.loadConfig && data.loadConfig.attr) {
+            document.getElementById('loadAttrSelect').value = data.loadConfig.attr;
+        }
+
+    } else {
+        // Se não houver dados salvos, renderiza as perícias padrão
+        renderSkills();
+    }
+}
+
+function clearSheet() {
+    if (confirm("Tem certeza que deseja apagar todos os dados da ficha?")) {
+        localStorage.removeItem('t20SheetData');
+        window.location.reload();
+    }
+}
+
+function exportSheet() {
+    saveData();
+    const data = localStorage.getItem('t20SheetData');
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ficha_t20_backup.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function importSheet(input) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                localStorage.setItem('t20SheetData', JSON.stringify(data));
+                window.location.reload();
+            } catch (error) {
+                alert('Erro ao carregar o arquivo. Certifique-se de que é um arquivo JSON de backup válido.');
+                console.error(error);
+            }
+        };
+        reader.readAsText(file);
+    }
+}
+
+// --- DRAG AND DROP ---
+function enableDragAndDrop() {
+    // Ataques
+    const attacksList = document.getElementById('attacksList');
+    if (attacksList) new Sortable(attacksList, { animation: 150, handle: '.drag-handle', onEnd: saveData });
+
+    // Defesa
+    const defenseList = document.getElementById('defenseList');
+    if (defenseList) new Sortable(defenseList, { animation: 150, handle: '.drag-handle', onEnd: saveData });
+
+    // Inventário
+    const inventoryList = document.getElementById('inventoryList');
+    if (inventoryList) new Sortable(inventoryList, { animation: 150, handle: '.drag-handle', onEnd: saveData });
+
+    // Poderes
+    const abilitiesList = document.getElementById('abilitiesList');
+    if (abilitiesList) new Sortable(abilitiesList, { animation: 150, handle: '.drag-handle', onEnd: saveData });
+
+    // Magias
+    [1, 2, 3, 4, 5].forEach(circle => {
+        const spellsList = document.getElementById(`spellsList${circle}`);
+        if (spellsList) new Sortable(spellsList, { animation: 150, handle: '.drag-handle', onEnd: saveData });
     });
 }
 
-function clearSheet() { if (confirm("ATENÇÃO: Apagar TODA a ficha?")) { localStorage.removeItem('t20_sheet_v15'); location.reload(); } }
-function exportSheet() { saveData(); const rawData = localStorage.getItem('t20_sheet_v15'); if (!rawData) return alert("Nenhum dado!"); const data = JSON.parse(rawData); const fileName = `Ficha_T20_${data.header.name || "Personagem"}.json`; const blob = new Blob([rawData], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
-function importSheet(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function (e) { try { localStorage.setItem('t20_sheet_v15', e.target.result); loadData(); alert("Ficha carregada!"); } catch (err) { alert("Erro ao carregar."); } }; reader.readAsText(file); input.value = ''; }
+// --- IMAGEM ---
+function uploadImage(input) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = document.getElementById('charImgPreview');
+            img.src = e.target.result;
+            localStorage.setItem('charImage', e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Carregar imagem salva
+document.addEventListener('DOMContentLoaded', () => {
+    const savedImage = localStorage.getItem('charImage');
+    if (savedImage) {
+        const img = document.getElementById('charImgPreview');
+        if (img) img.src = savedImage;
+    }
+});
