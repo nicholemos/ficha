@@ -453,12 +453,25 @@
                                     style="text-shadow: 1px 1px 0 #000;">T$</span><input type="number"
                                     inputmode="numeric" class="form-control form-control-sm fw-bold" id="charCash"
                                     placeholder="0" oninput="saveData()"></div>
-                            <div class="col-md-8 d-flex justify-content-end align-items-center gap-2 small">
+                            <div class="col-md-8 d-flex justify-content-end align-items-center gap-2 small flex-wrap">
                                 <span class="fw-bold">CARGA:</span>
+                                <select class="form-select form-select-sm fw-bold p-0 ps-1" style="width: 60px; height: 30px;" id="loadAttrSelect" onchange="updateCalculations(); saveData()">
+                                    <option value="FOR">FOR</option>
+                                    <option value="DES">DES</option>
+                                    <option value="CON">CON</option>
+                                    <option value="INT">INT</option>
+                                    <option value="SAB">SAB</option>
+                                    <option value="CAR">CAR</option>
+                                </select>
                                 <div class="input-group input-group-sm" style="width: 150px;"><span
                                         class="input-group-text bg-white fw-bold" id="loadCurrent">0</span><span
                                         class="input-group-text">/</span><span
-                                        class="input-group-text bg-white text-muted" id="loadLimit">10</span></div>
+                                  <span class="input-group-text bg-white text-muted" id="loadLimit">10</span></div>
+                                <div class="input-group input-group-sm" style="width: 100px;">
+                                    <button class="btn btn-outline-secondary btn-sm p-0 px-1" type="button" onclick="changeLoadBonus(-1)"><i class="bi bi-dash"></i></button>
+                                    <span class="input-group-text bg-white fw-bold p-0 px-1" id="loadBonusDisplay" style="width: 40px;">0</span>
+                                    <button class="btn btn-outline-secondary btn-sm p-0 px-1" type="button" onclick="changeLoadBonus(1)"><i class="bi bi-plus"></i></button>
+                                </div>
                                 <span class="text-muted" style="font-size: 0.7em;">(Slots)</span>
                             </div>
                         </div>
