@@ -397,7 +397,7 @@ function updateCalculations() {
         const armorBonus = getInt('armorBonus');
         const shieldBonus = getInt('shieldBonus');
         let otherBonus = 0;
-        document.querySelectorAll('#defenseList .def-row .inp-bonus').forEach(input => { otherBonus += getInt(input.id || input.value); });
+        document.querySelectorAll('#defenseList .def-row .inp-bonus').forEach(input => { otherBonus += (parseInt(input.value) || 0); });
         const totalDefense = 10 + (applyDefAttr ? defAttrVal : 0) + armorBonus + shieldBonus + otherBonus;
 
         setText('defAttrVal', applyDefAttr ? defAttrVal : 0);
@@ -744,3 +744,4 @@ document.addEventListener('DOMContentLoaded', () => {
         if (img) img.src = savedImage;
     }
 });
+
