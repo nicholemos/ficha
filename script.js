@@ -476,6 +476,8 @@ function saveData() {
         inventory: [],
         // --- PODERES ---
         abilities: [],
+        // --- NOTAS ---
+        notes: document.getElementById('charNotes').value,
         // --- MAGIAS ---
         spells: {
             config: { attr: getVal('spellCDAttrSelect'), powers: getVal('spellCDPowers'), items: getVal('spellCDItems'), other: getVal('spellCDOther') },
@@ -633,6 +635,11 @@ function loadData() {
         if (data.abilities) {
             data.abilities.forEach(item => addAbility(item));
         }
+        
+        // --- NOTAS  ---
+        if (data.notes !== undefined) {
+            document.getElementById('charNotes').value = data.notes;
+        }
 
         // --- MAGIAS ---
         if (data.spells) {
@@ -744,4 +751,5 @@ document.addEventListener('DOMContentLoaded', () => {
         if (img) img.src = savedImage;
     }
 });
+
 
