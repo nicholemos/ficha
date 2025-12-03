@@ -639,3 +639,9 @@ h3,
     opacity: 0.4;
     background-color: #f0f0f0;
 }
+
+
+/* 8. ANOTAÇÕES: Regra para recolher a seção */
+#notesSection.collapsed .notes-content {
+    display: none !important;
+}
