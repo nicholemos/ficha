@@ -27,6 +27,7 @@ window.onload = () => {
         attachGlobalListeners();
         // NOVA CHAMADA:
         enableDragAndDrop();
+        combatInit();
     } catch (e) { console.error(e); }
     setTimeout(updateCalculations, 100);
 };
@@ -194,6 +195,13 @@ function attachGlobalListeners() {
 }
 function toggleDetail(btn) { const row = btn.closest('.atk-row') || btn.closest('.def-row') || btn.closest('.ability-row') || btn.closest('.spell-row'); if (!row) return; const details = row.querySelector('.atk-details') || row.querySelector('.def-details') || row.querySelector('.ability-details') || row.querySelector('.spell-details'); const icon = btn.querySelector('i'); if (details.classList.contains('d-none')) { details.classList.remove('d-none'); icon.classList.replace('bi-chevron-down', 'bi-chevron-up'); } else { details.classList.add('d-none'); icon.classList.replace('bi-chevron-up', 'bi-chevron-down'); } }
 function toggleFixedDetail(id) { const el = document.getElementById(id); if (el) el.classList.toggle('d-none'); }
+
+// --- COLAPSAR/EXPANDIR SEÇÕES ---
+function toggleSection(sectionId) {
+    const el = document.getElementById(sectionId);
+    if (!el) return;
+    el.classList.toggle('collapsed');
+}
 
 function getVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 function getInt(id) { const v = parseInt(getVal(id)); return isNaN(v) ? 0 : v; }
@@ -484,7 +492,10 @@ function saveData() {
             list: []
         },
         // --- CARGA ---
-        loadConfig: { attr: getVal('loadAttrSelect') || 'FOR' }
+        loadConfig: { attr: getVal('loadAttrSelect') || 'FOR' },
+
+        // --- COMBATE ---
+        combat: combatState
     };
 
     attrs.forEach(a => { data.attrs[a] = getVal(`attr-${a}`); });
@@ -659,6 +670,15 @@ function loadData() {
             document.getElementById('loadAttrSelect').value = data.loadConfig.attr;
         }
 
+        // --- COMBATE ---
+        if (data.combat && typeof data.combat === 'object') {
+            combatState = {
+                round: parseInt(data.combat.round) || 1,
+                activeId: data.combat.activeId || null,
+                combatants: Array.isArray(data.combat.combatants) ? data.combat.combatants : []
+            };
+        }
+
     } else {
         // Se não houver dados salvos, renderiza as perícias padrão
         renderSkills();
@@ -753,3 +773,499 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+
+// =========================================================
+//  GERENCIADOR DE COMBATE
+// =========================================================
+
+function combatInit() {
+    // Se a seção não existir nessa versão do HTML, não faz nada.
+    if (!document.getElementById('combatSection')) return;
+
+    // Normaliza state
+    if (!combatState || typeof combatState !== 'object') {
+        combatState = { round: 1, activeId: null, combatants: [] };
+    }
+    if (!Array.isArray(combatState.combatants)) combatState.combatants = [];
+    combatState.round = parseInt(combatState.round) || 1;
+
+    combatRender();
+    combatEnableDrag();
+
+    // Enter no campo Nome adiciona rápido
+    const nameInp = document.getElementById('combatNewName');
+    if (nameInp) {
+        nameInp.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                combatAddFromForm();
+            }
+        });
+    }
+}
+
+function combatDefaultState() {
+    return { round: 1, activeId: null, combatants: [] };
+}
+
+function combatSave() {
+    // Aproveita o mesmo save da ficha (um único JSON)
+    try { saveData(); } catch (e) { console.warn('combatSave falhou', e); }
+}
+
+function combatRender() {
+    const list = document.getElementById('combatList');
+    if (!list) return;
+
+    // Se não tiver active e houver alguém, ativa o primeiro
+    if (!combatState.activeId && combatState.combatants.length > 0) {
+        combatState.activeId = combatState.combatants[0].id;
+    }
+
+    const roundEl = document.getElementById('combatRound');
+    const roundMini = document.getElementById('combatRoundMini');
+    if (roundEl) roundEl.innerText = combatState.round;
+    if (roundMini) roundMini.innerText = combatState.round;
+
+    const activeName = combatGetActiveName();
+    const activeMini = document.getElementById('combatActiveMini');
+    if (activeMini) activeMini.innerText = activeName;
+
+    list.innerHTML = combatState.combatants.map(c => combatRowHTML(c)).join('');
+
+    // Marca o ativo visualmente
+    combatState.combatants.forEach(c => {
+        const row = document.getElementById(`combatRow-${c.id}`);
+        if (!row) return;
+        row.classList.toggle('active-turn', c.id === combatState.activeId);
+    });
+}
+
+function combatRowHTML(c) {
+    const init = Number.isFinite(parseInt(c.init)) ? parseInt(c.init) : 0;
+    const hpCur = Number.isFinite(parseInt(c.hpCur)) ? parseInt(c.hpCur) : 0;
+    const hpMax = Number.isFinite(parseInt(c.hpMax)) ? parseInt(c.hpMax) : hpCur;
+    const mpCur = Number.isFinite(parseInt(c.mpCur)) ? parseInt(c.mpCur) : 0;
+    const mpMax = Number.isFinite(parseInt(c.mpMax)) ? parseInt(c.mpMax) : mpCur;
+    const hasNotes = (c.notes || '').trim().length > 0;
+    const open = !!c.open;
+
+    const noteClass = hasNotes ? 'has-notes' : '';
+    const detailsClass = open ? '' : 'd-none';
+    const icon = open ? 'bi-chevron-up' : 'bi-chevron-down';
+
+    return `
+        <div class="combat-row" id="combatRow-${c.id}" data-id="${c.id}">
+            <div class="row g-1 align-items-center text-center combat-summary" onclick="combatRowClick('${c.id}', event)">
+                <div class="col-2 d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-grip-vertical drag-handle" title="Arrastar"></i>
+                    <span class="fw-bold text-danger fs-5">${init}</span>
+                </div>
+
+                <div class="col-6 text-start">
+                    <span class="fw-bold">${escapeHtml(c.name || '—')}</span>
+                    <span id="combatNoteIndicator-${c.id}" class="combat-note-indicator ${noteClass}" title="Anotações">📝</span>
+                </div>
+
+                <div class="col-3">
+                    <div class="combat-badges">
+                        <span id="combatHPBadge-${c.id}" class="badge text-bg-light border border-dark">PV ${hpCur}/${hpMax}</span>
+                        <span id="combatMPBadge-${c.id}" class="badge text-bg-light border border-dark">PM ${mpCur}/${mpMax}</span>
+                    </div>
+                </div>
+
+                <div class="col-1">
+                    <button class="btn btn-sm btn-outline-secondary p-0 px-1" onclick="combatToggleDetails('${c.id}'); event.stopPropagation();" title="Detalhes">
+                        <i id="combatChevron-${c.id}" class="bi ${icon}"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="combatDetails-${c.id}" class="combat-details ${detailsClass}">
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-md-6">
+                        <div class="border rounded p-2 bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-danger">PV</span>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-outline-secondary btn-sm combat-quick-btn" onclick="combatDelta('${c.id}','hpCur',-5); event.stopPropagation();">-5</button>
+                                    <button class="btn btn-outline-secondary btn-sm combat-quick-btn" onclick="combatDelta('${c.id}','hpCur',-1); event.stopPropagation();">-1</button>
+                                    <button class="btn btn-outline-secondary btn-sm combat-quick-btn" onclick="combatDelta('${c.id}','hpCur',+1); event.stopPropagation();">+1</button>
+                                    <button class="btn btn-outline-secondary btn-sm combat-quick-btn" onclick="combatDelta('${c.id}','hpCur',+5); event.stopPropagation();">+5</button>
+                                </div>
+                            </div>
+                            <div class="row g-1">
+                                <div class="col-6">
+                                    <label class="t20-label">Atual</label>
+                                    <input class="form-control t20-input combat-input text-center" type="number" inputmode="numeric" value="${hpCur}" oninput="combatUpdateNumber('${c.id}','hpCur',this.value)">
+                                </div>
+                                <div class="col-6">
+                                    <label class="t20-label">Máx</label>
+                                    <input class="form-control t20-input combat-input text-center" type="number" inputmode="numeric" value="${hpMax}" oninput="combatUpdateNumber('${c.id}','hpMax',this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="border rounded p-2 bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-primary">PM</span>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-outline-secondary btn-sm combat-quick-btn" onclick="combatDelta('${c.id}','mpCur',-5); event.stopPropagation();">-5</button>
+                                    <button class="btn btn-outline-secondary btn-sm combat-quick-btn" onclick="combatDelta('${c.id}','mpCur',-1); event.stopPropagation();">-1</button>
+                                    <button class="btn btn-outline-secondary btn-sm combat-quick-btn" onclick="combatDelta('${c.id}','mpCur',+1); event.stopPropagation();">+1</button>
+                                    <button class="btn btn-outline-secondary btn-sm combat-quick-btn" onclick="combatDelta('${c.id}','mpCur',+5); event.stopPropagation();">+5</button>
+                                </div>
+                            </div>
+                            <div class="row g-1">
+                                <div class="col-6">
+                                    <label class="t20-label">Atual</label>
+                                    <input class="form-control t20-input combat-input text-center" type="number" inputmode="numeric" value="${mpCur}" oninput="combatUpdateNumber('${c.id}','mpCur',this.value)">
+                                </div>
+                                <div class="col-6">
+                                    <label class="t20-label">Máx</label>
+                                    <input class="form-control t20-input combat-input text-center" type="number" inputmode="numeric" value="${mpMax}" oninput="combatUpdateNumber('${c.id}','mpMax',this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="t20-label">Anotações</label>
+                        <textarea class="form-control bg-white border-dark" rows="3" placeholder="Condições, reação preparada, CD, observações..." oninput="combatUpdateNotes('${c.id}', this.value)">${escapeHtml(c.notes || '')}</textarea>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <button class="btn btn-outline-dark btn-sm" onclick="combatSetActive('${c.id}'); event.stopPropagation();" title="Marcar como a vez">
+                            <i class="bi bi-person-check"></i> Marcar vez
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm fw-bold" onclick="combatRemove('${c.id}'); event.stopPropagation();" title="Remover">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function combatRowClick(id, ev) {
+    // Clique em inputs/textareas não muda vez nem abre/fecha
+    const tag = (ev.target && ev.target.tagName) ? ev.target.tagName.toUpperCase() : '';
+    if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'I'].includes(tag)) return;
+
+    // Clique no nome: abre/fecha
+    combatToggleDetails(id);
+}
+
+function combatToggleDetails(id) {
+    const c = combatFind(id);
+    if (!c) return;
+    c.open = !c.open;
+
+    const details = document.getElementById(`combatDetails-${id}`);
+    const chev = document.getElementById(`combatChevron-${id}`);
+    if (details) details.classList.toggle('d-none', !c.open);
+    if (chev) {
+        chev.classList.toggle('bi-chevron-down', !c.open);
+        chev.classList.toggle('bi-chevron-up', c.open);
+    }
+    combatSave();
+}
+
+function combatFind(id) {
+    return combatState.combatants.find(x => x.id === id);
+}
+
+function combatGetActiveName() {
+    const c = combatFind(combatState.activeId);
+    return c ? (c.name || '—') : '—';
+}
+
+function combatAddFromForm() {
+    const init = parseInt(document.getElementById('combatNewInit')?.value) || 0;
+    const name = (document.getElementById('combatNewName')?.value || '').trim();
+    const hp = parseInt(document.getElementById('combatNewHP')?.value) || 0;
+    const mp = parseInt(document.getElementById('combatNewMP')?.value) || 0;
+
+    if (!name) {
+        alert('Digite um nome para adicionar.');
+        return;
+    }
+
+    const id = `c${Date.now()}${Math.floor(Math.random() * 9999)}`;
+    combatState.combatants.push({
+        id,
+        name,
+        init,
+        hpCur: hp,
+        hpMax: hp,
+        mpCur: mp,
+        mpMax: mp,
+        notes: '',
+        open: false
+    });
+
+    // limpa inputs
+    document.getElementById('combatNewName').value = '';
+    // mantém iniciativa (mestre costuma repetir)
+
+    // Se ainda não tinha ativo, define
+    if (!combatState.activeId) combatState.activeId = id;
+
+    combatRender();
+    combatEnableDrag();
+    combatSave();
+}
+
+function combatRemove(id) {
+    if (!confirm('Remover este combatente?')) return;
+    const idx = combatState.combatants.findIndex(x => x.id === id);
+    if (idx < 0) return;
+
+    combatState.combatants.splice(idx, 1);
+
+    if (combatState.activeId === id) {
+        combatState.activeId = combatState.combatants[0]?.id || null;
+    }
+
+    combatRender();
+    combatEnableDrag();
+    combatSave();
+}
+
+function combatUpdateNumber(id, field, value) {
+    const c = combatFind(id);
+    if (!c) return;
+    const n = parseInt(value);
+    c[field] = isNaN(n) ? 0 : n;
+
+    // Mantém coerência (cur <= max)
+    if (field === 'hpMax' && c.hpCur > c.hpMax) c.hpCur = c.hpMax;
+    if (field === 'mpMax' && c.mpCur > c.mpMax) c.mpCur = c.mpMax;
+    if (field === 'hpCur' && c.hpCur > c.hpMax) c.hpMax = c.hpCur;
+    if (field === 'mpCur' && c.mpCur > c.mpMax) c.mpMax = c.mpCur;
+
+    combatRefreshBadges(id);
+    combatSave();
+}
+
+function combatDelta(id, field, delta) {
+    const c = combatFind(id);
+    if (!c) return;
+    const cur = parseInt(c[field]) || 0;
+    let next = cur + delta;
+    if (next < 0) next = 0;
+    c[field] = next;
+
+    // Ajusta limites
+    if (field === 'hpCur' && (parseInt(c.hpMax) || 0) < next) c.hpMax = next;
+    if (field === 'mpCur' && (parseInt(c.mpMax) || 0) < next) c.mpMax = next;
+
+    // Atualiza inputs do detalhe (se estiver aberto)
+    const details = document.getElementById(`combatDetails-${id}`);
+    if (details) {
+        const inputs = details.querySelectorAll('input');
+        inputs.forEach(inp => {
+            if (inp.getAttribute('oninput')?.includes(`'${field}'`)) {
+                inp.value = next;
+            }
+        });
+    }
+
+    combatRefreshBadges(id);
+    combatSave();
+}
+
+function combatUpdateNotes(id, value) {
+    const c = combatFind(id);
+    if (!c) return;
+    c.notes = value;
+
+    const ind = document.getElementById(`combatNoteIndicator-${id}`);
+    if (ind) {
+        const has = (value || '').trim().length > 0;
+        ind.classList.toggle('has-notes', has);
+    }
+    combatSave();
+}
+
+function combatRefreshBadges(id) {
+    const c = combatFind(id);
+    if (!c) return;
+    const hp = document.getElementById(`combatHPBadge-${id}`);
+    const mp = document.getElementById(`combatMPBadge-${id}`);
+    const hpCur = parseInt(c.hpCur) || 0;
+    const hpMax = parseInt(c.hpMax) || 0;
+    const mpCur = parseInt(c.mpCur) || 0;
+    const mpMax = parseInt(c.mpMax) || 0;
+
+    if (hp) hp.innerText = `PV ${hpCur}/${hpMax}`;
+    if (mp) mp.innerText = `PM ${mpCur}/${mpMax}`;
+}
+
+function combatSetActive(id) {
+    combatState.activeId = id;
+    combatRender();
+    combatSave();
+}
+
+function combatIndexOfActive() {
+    return combatState.combatants.findIndex(x => x.id === combatState.activeId);
+}
+
+function combatNextTurn() {
+    if (combatState.combatants.length === 0) return;
+    let idx = combatIndexOfActive();
+    if (idx < 0) idx = 0;
+
+    idx += 1;
+    if (idx >= combatState.combatants.length) {
+        idx = 0;
+        combatState.round = (parseInt(combatState.round) || 1) + 1;
+    }
+    combatState.activeId = combatState.combatants[idx].id;
+    combatRender();
+    combatSave();
+}
+
+function combatPrevTurn() {
+    if (combatState.combatants.length === 0) return;
+    let idx = combatIndexOfActive();
+    if (idx < 0) idx = 0;
+
+    idx -= 1;
+    if (idx < 0) {
+        // volta para o último, mas não reduz rodada abaixo de 1
+        idx = combatState.combatants.length - 1;
+        const r = parseInt(combatState.round) || 1;
+        combatState.round = Math.max(1, r - 1);
+    }
+    combatState.activeId = combatState.combatants[idx].id;
+    combatRender();
+    combatSave();
+}
+
+function combatChangeRound(delta) {
+    const r = parseInt(combatState.round) || 1;
+    combatState.round = Math.max(1, r + delta);
+    combatRender();
+    combatSave();
+}
+
+function combatSort() {
+    combatState.combatants.sort((a, b) => {
+        const ia = parseInt(a.init) || 0;
+        const ib = parseInt(b.init) || 0;
+        if (ib !== ia) return ib - ia;
+        const na = (a.name || '').toLowerCase();
+        const nb = (b.name || '').toLowerCase();
+        return na.localeCompare(nb);
+    });
+
+    // Se activeId não existir mais, ajusta
+    if (combatState.activeId && !combatFind(combatState.activeId)) {
+        combatState.activeId = combatState.combatants[0]?.id || null;
+    }
+
+    combatRender();
+    combatEnableDrag();
+    combatSave();
+}
+
+function combatClear() {
+    if (!confirm('Limpar toda a lista de combate?')) return;
+    combatState = combatDefaultState();
+    combatRender();
+    combatEnableDrag();
+    combatSave();
+}
+
+function combatExport() {
+    const blob = new Blob([JSON.stringify(combatState, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'combate_t20.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function combatImport(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (!data || typeof data !== 'object') throw new Error('JSON inválido');
+
+            combatState = {
+                round: parseInt(data.round) || 1,
+                activeId: data.activeId || null,
+                combatants: Array.isArray(data.combatants) ? data.combatants : []
+            };
+
+            // Garante ids
+            combatState.combatants = combatState.combatants.map((c, i) => ({
+                id: c.id || (`c${Date.now()}${i}`),
+                name: c.name || '—',
+                init: parseInt(c.init) || 0,
+                hpCur: parseInt(c.hpCur) || 0,
+                hpMax: parseInt(c.hpMax) || parseInt(c.hpCur) || 0,
+                mpCur: parseInt(c.mpCur) || 0,
+                mpMax: parseInt(c.mpMax) || parseInt(c.mpCur) || 0,
+                notes: c.notes || '',
+                open: false
+            }));
+
+            if (combatState.combatants.length > 0 && !combatState.activeId) {
+                combatState.activeId = combatState.combatants[0].id;
+            }
+
+            combatRender();
+            combatEnableDrag();
+            combatSave();
+        } catch (err) {
+            alert('Erro ao carregar combate. Certifique-se de que é um JSON válido.');
+            console.error(err);
+        }
+    };
+    reader.readAsText(file);
+    input.value = '';
+}
+
+function combatEnableDrag() {
+    const list = document.getElementById('combatList');
+    if (!list || typeof Sortable === 'undefined') return;
+
+    // Evita recriar Sortable sem necessidade
+    if (list._sortableCombat) return;
+
+    list._sortableCombat = new Sortable(list, {
+        animation: 150,
+        handle: '.drag-handle',
+        onEnd: () => {
+            // Reordena o state de acordo com o DOM
+            const ids = Array.from(list.querySelectorAll('.combat-row')).map(el => el.getAttribute('data-id'));
+            combatState.combatants.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+            combatSave();
+        }
+    });
+}
+
+
+function escapeHtml(str) {
+    // Para evitar quebrar o HTML na renderização
+    return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
