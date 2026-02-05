@@ -363,7 +363,7 @@ function updateCalculations() {
         const halfLevel = Math.floor(level / 2);
 
         // --- CÁLCULO DE CARGA ---
-        calcLoad();
+        if (typeof calcLoad === 'function') calcLoad();
 
         const armorPen = getInt('armorPenalty'); const shieldPen = getInt('shieldPenalty');
         const totalPenalty = Math.abs(armorPen) + Math.abs(shieldPen);
@@ -378,8 +378,12 @@ function updateCalculations() {
             const attrVal = getInt(`attr-${s.a}`);
             const check = document.getElementById(`skTrain${i}`); if (check) s.trained = check.checked;
             const trained = s.trained ? trainBonus : 0;
+
+            // --- CORREÇÃO AQUI ---
             const other = getInt(`skOther${i}`);
-            s.other = other;
+            s.other = other; // Salva o valor no objeto global
+            // ---------------------
+
             let total = halfLevel + attrVal + trained + other;
 
             // Penalidade de Armadura/Escudo
@@ -1270,3 +1274,4 @@ function escapeHtml(str) {
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
 }
+
