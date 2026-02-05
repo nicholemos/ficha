@@ -379,6 +379,7 @@ function updateCalculations() {
             const check = document.getElementById(`skTrain${i}`); if (check) s.trained = check.checked;
             const trained = s.trained ? trainBonus : 0;
             const other = getInt(`skOther${i}`);
+            s.other = other;
             let total = halfLevel + attrVal + trained + other;
 
             // Penalidade de Armadura/Escudo
@@ -646,7 +647,7 @@ function loadData() {
         if (data.abilities) {
             data.abilities.forEach(item => addAbility(item));
         }
-        
+
         // --- NOTAS  ---
         if (data.notes !== undefined) {
             document.getElementById('charNotes').value = data.notes;
