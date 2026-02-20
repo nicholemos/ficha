@@ -24,6 +24,10 @@
                         style="cursor: pointer;"></i>
                     <span class="fw-bold text-danger fst-italic fs-4">Ficha T20 Digital</span>
                 </div>
+                <button class="btn btn-outline-primary btn-sm me-1" onclick="copyToClipboard()"
+                    title="Copiar resumo para Discord">
+                    <i class="bi bi-clipboard-plus"></i> Copiar Resumo
+                </button>
                 <div>
                     <button class="btn btn-outline-secondary btn-sm me-1" onclick="exportSheet()"
                         title="Salvar backup"><i class="bi bi-download"></i> Baixar</button>
@@ -93,13 +97,21 @@
                         <div class="border border-2 border-dark rounded p-2 position-relative pt-3 status-card">
                             <div id="barPV" class="status-bar-fill bar-hp" style="width: 100%;"></div>
                             <span class="t20-section-title">PONTOS DE VIDA</span>
-                            <div class="d-flex gap-2">
-                                <input type="number" inputmode="numeric"
-                                    class="form-control border-0 border-bottom text-center fw-bold fs-5"
-                                    placeholder="Máx" id="pvMax" oninput="updateCalculations(); saveData()">
-                                <input type="number" inputmode="numeric"
-                                    class="form-control border-0 border-bottom text-center fw-bold fs-5"
-                                    placeholder="Atual" id="pvCurrent" oninput="updateCalculations(); saveData()">
+
+                            <div class="d-flex gap-2 mt-2">
+                                <div class="position-relative w-50">
+                                    <span class="t20-mini-label">MÁX</span>
+                                    <input type="number"
+                                        class="form-control border-0 border-bottom text-center fw-bold fs-5" id="pvMax"
+                                        oninput="updateCalculations(); saveData()">
+                                </div>
+                                <div class="vr mx-1"></div>
+                                <div class="position-relative w-50">
+                                    <span class="t20-mini-label">ATUAL</span>
+                                    <input type="number"
+                                        class="form-control border-0 border-bottom text-center fw-bold fs-5"
+                                        id="pvCurrent" oninput="updateCalculations(); saveData()">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -107,13 +119,21 @@
                         <div class="border border-2 border-dark rounded p-2 position-relative pt-3 status-card">
                             <div id="barPM" class="status-bar-fill bar-mp" style="width: 100%;"></div>
                             <span class="t20-section-title" style="color: #0d6efd;">PONTOS DE MANA</span>
-                            <div class="d-flex gap-2">
-                                <input type="number" inputmode="numeric"
-                                    class="form-control border-0 border-bottom text-center fw-bold fs-5"
-                                    placeholder="Máx" id="pmMax" oninput="updateCalculations(); saveData()">
-                                <input type="number" inputmode="numeric"
-                                    class="form-control border-0 border-bottom text-center fw-bold fs-5"
-                                    placeholder="Atual" id="pmCurrent" oninput="updateCalculations(); saveData()">
+                            <div class="d-flex gap-2 mt-2">
+                                <div class="position-relative w-50">
+                                    <span class="t20-mini-label" style="color: #0d6efd;">MÁX</span>
+                                    <input type="number" inputmode="numeric"
+                                        class="form-control border-0 border-bottom text-center fw-bold fs-5" id="pmMax"
+                                        oninput="updateCalculations(); saveData()">
+                                </div>
+                                <div class="vr"></div>
+                                <div class="position-relative w-50">
+                                    <span class="t20-mini-label" style="color: #0d6efd;">ATUAL</span>
+                                    <input type="number" inputmode="numeric"
+                                        class="form-control border-0 border-bottom text-center fw-bold fs-5"
+                                        id="pmCurrent" oninput="updateCalculations(); saveData()">
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -135,7 +155,8 @@
                     </div>
                     <div id="attacksList" class="mb-3"></div>
                     <button class="btn btn-dark w-100 fw-bold btn-add" onclick="addAttack()"><i
-                            class="bi bi-plus-lg"></i> ADICIONAR ATAQUE</button>
+                            class="bi bi-plus-lg"></i>
+                        ADICIONAR ATAQUE</button>
                 </div>
 
                 <div id="defenseSection"
@@ -196,7 +217,8 @@
                                     id="armorPenalty" placeholder="0" oninput="updateCalculations(); saveData()"></div>
                             <div class="col-2"><button class="btn btn-sm btn-outline-secondary w-100 mb-1"
                                     onclick="toggleFixedDetail('armorDetail')"><i
-                                        class="bi bi-chevron-down"></i></button></div>
+                                        class="bi bi-chevron-down"></i></button>
+                            </div>
                         </div>
                         <div id="armorDetail" class="mt-2 d-none border-top pt-2">
                             <div class="row g-2">
@@ -229,7 +251,8 @@
                                     id="shieldPenalty" placeholder="0" oninput="updateCalculations(); saveData()"></div>
                             <div class="col-2"><button class="btn btn-sm btn-outline-secondary w-100 mb-1"
                                     onclick="toggleFixedDetail('shieldDetail')"><i
-                                        class="bi bi-chevron-down"></i></button></div>
+                                        class="bi bi-chevron-down"></i></button>
+                            </div>
                         </div>
                         <div id="shieldDetail" class="mt-2 d-none border-top pt-2">
                             <div class="row g-2">
@@ -514,170 +537,177 @@
         </div>
     </div>
     <!-- ASSINATURA / CRÉDITOS (STR-style) -->
-  <section class="sig-wrap" aria-label="Sobre e créditos">
-    <details class="sig-card">
-      <summary class="sig-summary">
-        <div class="sig-summary-left">
-          <span class="sig-badge">Sobre</span>
-          <span class="sig-title">Créditos e outros projetos</span>
-        </div>
-        <div class="sig-summary-right">
-          <span class="sig-hint">clique para abrir</span>
-          <span class="sig-chevron" aria-hidden="true">▾</span>
-        </div>
-      </summary>
+    <section class="sig-wrap" aria-label="Sobre e créditos">
+        <details class="sig-card">
+            <summary class="sig-summary">
+                <div class="sig-summary-left">
+                    <span class="sig-badge">Sobre</span>
+                    <span class="sig-title">Créditos e outros projetos</span>
+                </div>
+                <div class="sig-summary-right">
+                    <span class="sig-hint">clique para abrir</span>
+                    <span class="sig-chevron" aria-hidden="true">▾</span>
+                </div>
+            </summary>
 
-      <div class="sig-body">
-        <div class="sig-hero">
-          <h3 class="sig-h3">Quem fez isso?</h3>
-          <p class="sig-p">
-            Olá! Meu nome é <strong>Nicholas Lemos</strong>.
-            Sou jogador de RPG, desenvolvedor de software e entusiasta de ferramentas para <strong>Tormenta20</strong>.
-          </p>
-          <p class="sig-p">
-            Criei este <strong>Ficha com salvamento automático</strong> para facilitar o controle dos jogadores online, de forma
-            <strong>rápida, clara e pensada para a mesa</strong>. A ideia é manter tudo <strong>visível, acessível e sem quebrar o
-              ritmo</strong>.
-          </p>
-          <p class="sig-p">
-            Feedbacks, sugestões e ideias são sempre bem-vindos.
-          </p>
-        </div>
-        <div class="sig-col">
-          <h4 class="sig-h4">Contato</h4>
+            <div class="sig-body">
+                <div class="sig-hero">
+                    <h3 class="sig-h3">Quem fez isso?</h3>
+                    <p class="sig-p">
+                        Olá! Meu nome é <strong>Nicholas Lemos</strong>.
+                        Sou jogador de RPG, desenvolvedor de software e entusiasta de ferramentas para
+                        <strong>Tormenta20</strong>.
+                    </p>
+                    <p class="sig-p">
+                        Criei este <strong>Ficha com salvamento automático</strong> para facilitar o controle dos
+                        jogadores online, de forma
+                        <strong>rápida, clara e pensada para a mesa</strong>. A ideia é manter tudo <strong>visível,
+                            acessível e sem quebrar o
+                            ritmo</strong>.
+                    </p>
+                    <p class="sig-p">
+                        Feedbacks, sugestões e ideias são sempre bem-vindos.
+                    </p>
+                </div>
+                <div class="sig-col">
+                    <h4 class="sig-h4">Contato</h4>
 
-          <a class="sig-link"
-            href="https://api.whatsapp.com/send/?phone=5531992825753&text=Ol%C3%A1%2C+gostaria+de+tirar+uma+d%C3%BAvida.&type=phone_number&app_absent=0"
-            target="_blank" rel="noopener noreferrer">
-            <div class="sig-link-main">
-              <span class="sig-link-name">WhatsApp</span>
-              <span class="sig-link-url">Fale comigo diretamente</span>
+                    <a class="sig-link"
+                        href="https://api.whatsapp.com/send/?phone=5531992825753&text=Ol%C3%A1%2C+gostaria+de+tirar+uma+d%C3%BAvida.&type=phone_number&app_absent=0"
+                        target="_blank" rel="noopener noreferrer">
+                        <div class="sig-link-main">
+                            <span class="sig-link-name">WhatsApp</span>
+                            <span class="sig-link-url">Fale comigo diretamente</span>
+                        </div>
+                        <span class="sig-ext">↗</span>
+                    </a>
+
+                    <a class="sig-link" href="https://www.linkedin.com/in/nicholas-lemos/" target="_blank"
+                        rel="noopener noreferrer">
+                        <div class="sig-link-main">
+                            <span class="sig-link-name">LinkedIn</span>
+                            <span class="sig-link-url">Perfil profissional</span>
+                        </div>
+                        <span class="sig-ext">↗</span>
+                    </a>
+
+                    <a class="sig-link" href="https://github.com/nicholemos" target="_blank" rel="noopener noreferrer">
+                        <div class="sig-link-main">
+                            <span class="sig-link-name">GitHub</span>
+                            <span class="sig-link-url">Repositórios e projetos</span>
+                        </div>
+                        <span class="sig-ext">↗</span>
+                    </a>
+
+                    <div class="sig-note sig-cta">
+                        <div class="sig-note-title">Que tal um site para você?</div>
+                        <div class="sig-note-text">
+                            Dê uma olhada no modelo de site e me chame para conversarmos.
+                            <br>
+                            <a href="https://nicholemos.github.io/" target="_blank" rel="noopener noreferrer">
+                                https://nicholemos.github.io/
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="sig-grid">
+                    <div class="sig-col">
+                        <h4 class="sig-h4">Conheça meus outros projetos</h4>
+
+                        <a class="sig-link" href="https://nicholemos.github.io/STR" target="_blank"
+                            rel="noopener noreferrer">
+                            <div class="sig-link-main">
+                                <span class="sig-link-name">STR – Supremo Tribunal Regreiro</span>
+                                <span class="sig-link-url">nicholemos.github.io/STR</span>
+                            </div>
+                            <span class="sig-ext" aria-hidden="true">↗</span>
+                        </a>
+
+                        <a class="sig-link" href="https://nicholemos.github.io/combate/" target="_blank"
+                            rel="noopener noreferrer">
+                            <div class="sig-link-main">
+                                <span class="sig-link-name">Gerenciador de Combate – Tormenta20</span>
+                                <span class="sig-link-url">nicholemos.github.io/combate</span>
+                            </div>
+                            <span class="sig-ext" aria-hidden="true">↗</span>
+                        </a>
+
+                        <a class="sig-link" href="https://nicholemos.github.io/itens/" target="_blank"
+                            rel="noopener noreferrer">
+                            <div class="sig-link-main">
+                                <span class="sig-link-name">Compilado de Itens</span>
+                                <span class="sig-link-url">nicholemos.github.io/itens</span>
+                            </div>
+                            <span class="sig-ext" aria-hidden="true">↗</span>
+                        </a>
+
+                        <a class="sig-link" href="https://nicholemos.github.io/poderes/" target="_blank"
+                            rel="noopener noreferrer">
+                            <div class="sig-link-main">
+                                <span class="sig-link-name">Compilado de Poderes</span>
+                                <span class="sig-link-url">nicholemos.github.io/poderes</span>
+                            </div>
+                            <span class="sig-ext" aria-hidden="true">↗</span>
+                        </a>
+
+                        <a class="sig-link" href="https://nicholemos.github.io/CalculadoradeAtributos/" target="_blank"
+                            rel="noopener noreferrer">
+                            <div class="sig-link-main">
+                                <span class="sig-link-name">Calculadora de Atributos</span>
+                                <span class="sig-link-url">nicholemos.github.io/CalculadoradeAtributos</span>
+                            </div>
+                            <span class="sig-ext" aria-hidden="true">↗</span>
+                        </a>
+
+                        <a class="sig-link" href="https://nicholemos.github.io/EncontrosAleatorios/" target="_blank"
+                            rel="noopener noreferrer">
+                            <div class="sig-link-main">
+                                <span class="sig-link-name">Encontros Aleatórios</span>
+                                <span class="sig-link-url">nicholemos.github.io/EncontrosAleatorios</span>
+                            </div>
+                            <span class="sig-ext" aria-hidden="true">↗</span>
+                        </a>
+
+                        <a class="sig-link" href="https://nicholemos.github.io/calculadoraND_Tormenta/" target="_blank"
+                            rel="noopener noreferrer">
+                            <div class="sig-link-main">
+                                <span class="sig-link-name">Calculadora de ND</span>
+                                <span class="sig-link-url">nicholemos.github.io/calculadoraND_Tormenta</span>
+                            </div>
+                            <span class="sig-ext" aria-hidden="true">↗</span>
+                        </a>
+                    </div>
+
+                    <div class="sig-col">
+                        <h4 class="sig-h4">Este projeto</h4>
+
+                        <a class="sig-link sig-link-primary" href="https://nicholemos.github.io/ficha/" target="_blank"
+                            rel="noopener noreferrer">
+                            <div class="sig-link-main">
+                                <span class="sig-link-name">Ficha Automática de Tormenta20</span>
+                                <span class="sig-link-url">nicholemos.github.io/ficha</span>
+                            </div>
+                            <span class="sig-ext" aria-hidden="true">↗</span>
+                        </a>
+
+                        <div class="sig-note">
+                            <div class="sig-note-title">Dica rápida</div>
+                            <div class="sig-note-text">
+                                Os links abrem em nova aba. Durante a semana vamos polir cada ferramenta aos poucos.
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="sig-footer">
+                    <span class="sig-footer-text">Feito para mesa rápida. Feedbacks são bem-vindos.</span>
+                </div>
             </div>
-            <span class="sig-ext">↗</span>
-          </a>
-
-          <a class="sig-link" href="https://www.linkedin.com/in/nicholas-lemos/" target="_blank"
-            rel="noopener noreferrer">
-            <div class="sig-link-main">
-              <span class="sig-link-name">LinkedIn</span>
-              <span class="sig-link-url">Perfil profissional</span>
-            </div>
-            <span class="sig-ext">↗</span>
-          </a>
-
-          <a class="sig-link" href="https://github.com/nicholemos" target="_blank" rel="noopener noreferrer">
-            <div class="sig-link-main">
-              <span class="sig-link-name">GitHub</span>
-              <span class="sig-link-url">Repositórios e projetos</span>
-            </div>
-            <span class="sig-ext">↗</span>
-          </a>
-
-          <div class="sig-note sig-cta">
-            <div class="sig-note-title">Que tal um site para você?</div>
-            <div class="sig-note-text">
-              Dê uma olhada no modelo de site e me chame para conversarmos.
-              <br>
-              <a href="https://nicholemos.github.io/" target="_blank" rel="noopener noreferrer">
-                https://nicholemos.github.io/
-              </a>
-            </div>
-          </div>
-        </div>
-        <br>
-        <div class="sig-grid">
-          <div class="sig-col">
-            <h4 class="sig-h4">Conheça meus outros projetos</h4>
-
-            <a class="sig-link" href="https://nicholemos.github.io/STR" target="_blank" rel="noopener noreferrer">
-              <div class="sig-link-main">
-                <span class="sig-link-name">STR – Supremo Tribunal Regreiro</span>
-                <span class="sig-link-url">nicholemos.github.io/STR</span>
-              </div>
-              <span class="sig-ext" aria-hidden="true">↗</span>
-            </a>
-
-            <a class="sig-link" href="https://nicholemos.github.io/combate/" target="_blank" rel="noopener noreferrer">
-              <div class="sig-link-main">
-                <span class="sig-link-name">Gerenciador de Combate – Tormenta20</span>
-                <span class="sig-link-url">nicholemos.github.io/combate</span>
-              </div>
-              <span class="sig-ext" aria-hidden="true">↗</span>
-            </a>
-
-            <a class="sig-link" href="https://nicholemos.github.io/itens/" target="_blank" rel="noopener noreferrer">
-              <div class="sig-link-main">
-                <span class="sig-link-name">Compilado de Itens</span>
-                <span class="sig-link-url">nicholemos.github.io/itens</span>
-              </div>
-              <span class="sig-ext" aria-hidden="true">↗</span>
-            </a>
-
-            <a class="sig-link" href="https://nicholemos.github.io/poderes/" target="_blank" rel="noopener noreferrer">
-              <div class="sig-link-main">
-                <span class="sig-link-name">Compilado de Poderes</span>
-                <span class="sig-link-url">nicholemos.github.io/poderes</span>
-              </div>
-              <span class="sig-ext" aria-hidden="true">↗</span>
-            </a>
-
-            <a class="sig-link" href="https://nicholemos.github.io/CalculadoradeAtributos/" target="_blank"
-              rel="noopener noreferrer">
-              <div class="sig-link-main">
-                <span class="sig-link-name">Calculadora de Atributos</span>
-                <span class="sig-link-url">nicholemos.github.io/CalculadoradeAtributos</span>
-              </div>
-              <span class="sig-ext" aria-hidden="true">↗</span>
-            </a>
-
-            <a class="sig-link" href="https://nicholemos.github.io/EncontrosAleatorios/" target="_blank"
-              rel="noopener noreferrer">
-              <div class="sig-link-main">
-                <span class="sig-link-name">Encontros Aleatórios</span>
-                <span class="sig-link-url">nicholemos.github.io/EncontrosAleatorios</span>
-              </div>
-              <span class="sig-ext" aria-hidden="true">↗</span>
-            </a>
-
-            <a class="sig-link" href="https://nicholemos.github.io/calculadoraND_Tormenta/" target="_blank"
-              rel="noopener noreferrer">
-              <div class="sig-link-main">
-                <span class="sig-link-name">Calculadora de ND</span>
-                <span class="sig-link-url">nicholemos.github.io/calculadoraND_Tormenta</span>
-              </div>
-              <span class="sig-ext" aria-hidden="true">↗</span>
-            </a>
-          </div>
-
-          <div class="sig-col">
-            <h4 class="sig-h4">Este projeto</h4>
-
-            <a class="sig-link sig-link-primary" href="https://nicholemos.github.io/ficha/" target="_blank"
-              rel="noopener noreferrer">
-              <div class="sig-link-main">
-                <span class="sig-link-name">Ficha Automática de Tormenta20</span>
-                <span class="sig-link-url">nicholemos.github.io/ficha</span>
-              </div>
-              <span class="sig-ext" aria-hidden="true">↗</span>
-            </a>
-
-            <div class="sig-note">
-              <div class="sig-note-title">Dica rápida</div>
-              <div class="sig-note-text">
-                Os links abrem em nova aba. Durante a semana vamos polir cada ferramenta aos poucos.
-              </div>
-            </div>
-          </div>
-
-
-        </div>
-
-        <div class="sig-footer">
-          <span class="sig-footer-text">Feito para mesa rápida. Feedbacks são bem-vindos.</span>
-        </div>
-      </div>
-    </details>
-  </section>
+        </details>
+    </section>
 
 
 
@@ -687,5 +717,3 @@
 </body>
 
 </html>
-
-
