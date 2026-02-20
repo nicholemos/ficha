@@ -426,9 +426,26 @@ function updateCalculations() {
         const pmCurrent = getInt('pmCurrent');
 
         const barPV = document.getElementById('barPV');
-        if (barPV) barPV.style.width = `${(pvCurrent / pvMax) * 100}%`;
+        if (barPV) {
+            const isExceeded = pvCurrent > pvMax;
+            const percPV = Math.min((pvCurrent / pvMax) * 100, 100);
+            barPV.style.width = `${percPV}%`;
+
+            // Toggle da classe de destaque e do símbolo +
+            barPV.classList.toggle('bar-exceeded', isExceeded);
+            barPV.innerHTML = isExceeded ? '<span class="bar-plus">+</span>' : '';
+        }
+
         const barPM = document.getElementById('barPM');
-        if (barPM) barPM.style.width = `${(pmCurrent / pmMax) * 100}%`;
+        if (barPM) {
+            const isExceeded = pmCurrent > pmMax;
+            const percPM = Math.min((pmCurrent / pmMax) * 100, 100);
+            barPM.style.width = `${percPM}%`;
+
+            // Toggle da classe de destaque e do símbolo +
+            barPM.classList.toggle('bar-exceeded', isExceeded);
+            barPM.innerHTML = isExceeded ? '<span class="bar-plus">+</span>' : '';
+        }
 
         // --- MAGIAS CD ---
         const spellCDAttr = getVal('spellCDAttrSelect');
@@ -442,7 +459,7 @@ function updateCalculations() {
         setText('spellCDAttrVal', spellCDAttrVal);
         setText('spellCDTotal', spellCDTotal);
 
-        // --- ATAQUES ---
+        // --- ATAQUES (Correção Final: Leitura Direta da Interface) ---
         document.querySelectorAll('.atk-row').forEach(row => {
             const skillSelect = row.querySelector('.inp-atk-skill');
             const bonusInput = row.querySelector('.inp-bonus');
@@ -450,10 +467,20 @@ function updateCalculations() {
 
             if (skillSelect && bonusInput && modInput) {
                 const selectedSkill = skillSelect.value;
-                const skillBonus = skillValues[selectedSkill] || 0;
-                const modBonus = getInt(modInput.id || modInput.value);
+
+                // 1. Busca o índice da perícia no seu array global
+                const skillIndex = currentSkills.findIndex(s => s.n === selectedSkill);
+                let skillBonus = 0;
+                // 2. Tenta ler o valor que já está calculado e exibido na tabela de perícias
+                if (skillIndex !== -1) {
+                    const skillTotalEl = document.getElementById(`skTotal${skillIndex}`);
+                    if (skillTotalEl) {
+                        skillBonus = parseInt(skillTotalEl.innerText) || 0;
+                    }
+                }
+                const modBonus = parseInt(modInput.value) || 0;
                 const totalBonus = skillBonus + modBonus;
-                bonusInput.value = totalBonus > 0 ? `+${totalBonus}` : totalBonus;
+                bonusInput.value = totalBonus;
             }
         });
 
@@ -778,3 +805,118 @@ function escapeHtml(str) {
 }
 
 
+function copyToClipboard() {
+    // Coleta de Dados Básicos
+    const nome = document.getElementById('charName').value || 'Sem Nome';
+    const raca = document.getElementById('charRace').value || '-';
+    const classe = document.getElementById('charClass').value || '-';
+    const nivel = document.getElementById('charLevel').value || '1';
+    const divindade = document.getElementById('charDeity').value || '-';
+
+    // Atributos
+    const attrs = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
+    const attrVals = {};
+    attrs.forEach(a => attrVals[a] = document.getElementById(`attr-${a}`).value);
+
+    // Função auxiliar para buscar bônus total de perícias
+    const getSkillVal = (name) => {
+        const idx = currentSkills.findIndex(s => s.n === name);
+        if (idx !== -1) {
+            const val = parseInt(document.getElementById(`skTotal${idx}`).innerText);
+            return val >= 0 ? `+${val}` : `${val}`;
+        }
+        return '+0';
+    };
+
+    let resumo = `**Nome:** ${nome}\n`;
+    resumo += `**Raça:** ${raca} | **Classe:** ${classe} ND ${nivel}\n`;
+    resumo += `**Devoto:** ${divindade}\n`;
+    resumo += `------------------------------------------------\n`;
+
+    // Iniciativa e Percepção em destaque
+    resumo += `⚡ **INICIATIVA:** ${getSkillVal('Iniciativa')} | **PERCEPÇÃO:** ${getSkillVal('Percepção')}\n`;
+    resumo += `🛡️ **DEFESA:** ${document.getElementById('defenseTotal').innerText}\n`;
+    resumo += `💪 **RESISTÊNCIAS:** Fort ${getSkillVal('Fortitude')} | Ref ${getSkillVal('Reflexos')} | Von ${getSkillVal('Vontade')}\n`;
+    resumo += `❤️ **PV:** ${document.getElementById('pvCurrent').value}/${document.getElementById('pvMax').value}\n`;
+    resumo += `🔹 **PM:** ${document.getElementById('pmCurrent').value}/${document.getElementById('pmMax').value}\n`;
+    resumo += `🏃 **DESLOCAMENTO:** ${document.getElementById('charSpeed').value || '9m'}\n`;
+    resumo += `------------------------------------------------\n`;
+
+    // NOVO: Perícias Treinadas (Excluindo as que já estão no topo)
+    const skillsIgnorar = ['Iniciativa', 'Percepção', 'Fortitude', 'Reflexos', 'Vontade'];
+    let outrasPericias = [];
+    currentSkills.forEach((s, i) => {
+        if (s.trained && !skillsIgnorar.includes(s.n)) {
+            const total = document.getElementById(`skTotal${i}`).innerText;
+            const formatado = parseInt(total) >= 0 ? `+${total}` : total;
+            outrasPericias.push(`${s.n} ${formatado}`);
+        }
+    });
+    if (outrasPericias.length > 0) {
+        resumo += `📊 **PERÍCIAS:** ${outrasPericias.join(' | ')}\n`;
+        resumo += `------------------------------------------------\n`;
+    }
+
+    // --- Trecho de Ataques na função copyToClipboard ---
+    const ataques = document.querySelectorAll('#attacksList .atk-row');
+    if (ataques.length > 0) {
+        resumo += `⚔️ **AÇÕES E ATAQUES:**\n`;
+        ataques.forEach(row => {
+            const n = row.querySelector('.inp-name').value || 'Ataque';
+
+            // Captura o bônus como número para tratar o sinal manualmente
+            const bValue = parseInt(row.querySelector('.inp-bonus').value) || 0;
+            const bFormatado = bValue >= 0 ? `+${bValue}` : bValue;
+
+            const d = row.querySelector('.inp-dmg').value || '-';
+            const cr = row.querySelector('.inp-crit-range').value || '20';
+            const c = row.querySelector('.inp-crit').value || '-';
+
+            // CORREÇÃO: Usando bFormatado em vez de b
+            resumo += `▫️ ${n} ${bFormatado} (${d}, ${cr}/${c})\n`;
+        });
+        resumo += `------------------------------------------------\n`;
+    }
+
+    // Habilidades e Poderes
+    const poderes = [];
+    document.querySelectorAll('#abilitiesList .inp-name').forEach(el => {
+        if (el.value) poderes.push(`▫️ ${el.value}`);
+    });
+    if (poderes.length > 0) resumo += `✨ **HABILIDADES E PODERES:**\n${poderes.join(' ')}\n\n`;
+
+    // Magias
+    const temMagias = document.querySelectorAll('.spell-row .inp-name').length > 0;
+    if (temMagias) {
+        resumo += `🔮 **MAGIAS:**\n`;
+        [1, 2, 3, 4, 5].forEach(circulo => {
+            const magiasCirculo = document.querySelectorAll(`#spellsList${circulo} .inp-name`);
+            if (magiasCirculo.length > 0) {
+                let nomesMagias = [];
+                magiasCirculo.forEach(m => { if (m.value) nomesMagias.push(m.value); });
+                resumo += `*${circulo}º Círculo:* ${nomesMagias.join(', ')}\n`;
+            }
+        });
+        resumo += `\n`;
+    }
+
+    // Equipamentos
+    const itens = document.querySelectorAll('#inventoryList .inv-row');
+    if (itens.length > 0) {
+        resumo += `🎒 **EQUIPAMENTO:**\n`;
+        let listaItens = [];
+        itens.forEach(row => {
+            const nomeItem = row.querySelector('.inp-name').value;
+            const qtd = row.querySelector('.inp-qtd').value || '1';
+            if (nomeItem) listaItens.push(`${nomeItem} (x${qtd})`);
+        });
+        resumo += `▫️ ${listaItens.join(' ▫️ ')}\n`;
+    }
+
+    resumo += `------------------------------------------------\n`;
+    resumo += `FOR ${attrVals.FOR} | DES ${attrVals.DES} | CON ${attrVals.CON} | INT ${attrVals.INT} | SAB ${attrVals.SAB} | CAR ${attrVals.CAR}\n`;
+
+    navigator.clipboard.writeText(resumo).then(() => {
+        alert("Resumo copiado!");
+    });
+}
