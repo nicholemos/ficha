@@ -948,121 +948,55 @@ function escapeHtml(str) {
 
 
 function copyToClipboard() {
-    // Coleta de Dados Básicos
-    const nome = document.getElementById('charName').value || 'Sem Nome';
-    const raca = document.getElementById('charRace').value || '-';
-    const classe = document.getElementById('charClass').value || '-';
-    const nivel = document.getElementById('charLevel').value || '1';
-    const divindade = document.getElementById('charDeity').value || '-';
+    const data = JSON.parse(localStorage.getItem('t20SheetData'));
+    if (!data) return;
 
+    // Cabeçalho com informações principais
+    let text = `**${data.charName || 'Personagem'}** | ${data.charRace || ''} ${data.charClass || ''} lvl ${data.charLevel || 1}\n`;
+    text += `PV: ${data.status.pvC}/${data.status.pvM} | PM: ${data.status.pmC}/${data.status.pmM} | Defesa: ${document.getElementById('defenseTotal')?.innerText || '10'}\n`;
+    
     // Atributos
-    const attrs = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
-    const attrVals = {};
-    attrs.forEach(a => attrVals[a] = document.getElementById(`attr-${a}`).value);
+    text += `FOR: ${data.attrs.FOR} DES: ${data.attrs.DES} CON: ${data.attrs.CON} INT: ${data.attrs.INT} SAB: ${data.attrs.SAB} CAR: ${data.attrs.CAR}\n\n`;
 
-    // Função auxiliar para buscar bônus total de perícias
-    const getSkillVal = (name) => {
-        const idx = currentSkills.findIndex(s => s.n === name);
-        if (idx !== -1) {
-            const val = parseInt(document.getElementById(`skTotal${idx}`).innerText);
-            return val >= 0 ? `+${val}` : `${val}`;
-        }
-        return '+0';
-    };
-
-    let resumo = `**Nome:** ${nome}\n`;
-    resumo += `**Raça:** ${raca} | **Classe:** ${classe} ND ${nivel}\n`;
-    resumo += `**Devoto:** ${divindade}\n`;
-    resumo += `------------------------------------------------\n`;
-
-    // Iniciativa e Percepção em destaque
-    resumo += `⚡ **INICIATIVA:** ${getSkillVal('Iniciativa')} | **PERCEPÇÃO:** ${getSkillVal('Percepção')}\n`;
-    resumo += `🛡️ **DEFESA:** ${document.getElementById('defenseTotal').innerText}\n`;
-    resumo += `💪 **RESISTÊNCIAS:** Fort ${getSkillVal('Fortitude')} | Ref ${getSkillVal('Reflexos')} | Von ${getSkillVal('Vontade')}\n`;
-    resumo += `❤️ **PV:** ${document.getElementById('pvCurrent').value}/${document.getElementById('pvMax').value}\n`;
-    resumo += `🔹 **PM:** ${document.getElementById('pmCurrent').value}/${document.getElementById('pmMax').value}\n`;
-    resumo += `🏃 **DESLOCAMENTO:** ${document.getElementById('charSpeed').value || '9m'}\n`;
-    resumo += `------------------------------------------------\n`;
-
-    // NOVO: Perícias Treinadas (Excluindo as que já estão no topo)
-    const skillsIgnorar = ['Iniciativa', 'Percepção', 'Fortitude', 'Reflexos', 'Vontade'];
-    let outrasPericias = [];
-    currentSkills.forEach((s, i) => {
-        if (s.trained && !skillsIgnorar.includes(s.n)) {
-            const total = document.getElementById(`skTotal${i}`).innerText;
-            const formatado = parseInt(total) >= 0 ? `+${total}` : total;
-            outrasPericias.push(`${s.n} ${formatado}`);
-        }
-    });
-    if (outrasPericias.length > 0) {
-        resumo += `📊 **PERÍCIAS:** ${outrasPericias.join(' | ')}\n`;
-        resumo += `------------------------------------------------\n`;
-    }
-
-    // --- Trecho de Ataques na função copyToClipboard ---
-    const ataques = document.querySelectorAll('#attacksList .atk-row');
-    if (ataques.length > 0) {
-        resumo += `⚔️ **AÇÕES E ATAQUES:**\n`;
-        ataques.forEach(row => {
-            const n = row.querySelector('.inp-name').value || 'Ataque';
-
-            // Captura o bônus como número para tratar o sinal manualmente
-            const bValue = parseInt(row.querySelector('.inp-bonus').value) || 0;
-            const bFormatado = bValue >= 0 ? `+${bValue}` : bValue;
-
-            const d = row.querySelector('.inp-dmg').value || '-';
-            const cr = row.querySelector('.inp-crit-range').value || '20';
-            const c = row.querySelector('.inp-crit').value || '-';
-
-            // CORREÇÃO: Usando bFormatado em vez de b
-            resumo += `▫️ ${n} ${bFormatado} (${d}, ${cr}/${c})\n`;
+    // Habilidades de Raça e Origem
+    if (data.raceAbilities && data.raceAbilities.length > 0) {
+        text += `__**Habilidades de Raça & Origem**__\n`;
+        data.raceAbilities.forEach(a => {
+            text += `* **${a.name}:** ${a.desc}\n`;
         });
-        resumo += `------------------------------------------------\n`;
+        text += `\n`;
     }
 
-    // Habilidades e Poderes
-    const poderes = [];
-    document.querySelectorAll('#abilitiesList .inp-name').forEach(el => {
-        if (el.value) poderes.push(`▫️ ${el.value}`);
-    });
-    if (poderes.length > 0) resumo += `✨ **HABILIDADES E PODERES:**\n${poderes.join(' ')}\n\n`;
-
-    // Magias
-    const temMagias = document.querySelectorAll('.spell-row .inp-name').length > 0;
-    if (temMagias) {
-        resumo += `🔮 **MAGIAS:**\n`;
-        [1, 2, 3, 4, 5].forEach(circulo => {
-            const magiasCirculo = document.querySelectorAll(`#spellsList${circulo} .inp-name`);
-            if (magiasCirculo.length > 0) {
-                let nomesMagias = [];
-                magiasCirculo.forEach(m => { if (m.value) nomesMagias.push(m.value); });
-                resumo += `*${circulo}º Círculo:* ${nomesMagias.join(', ')}\n`;
-            }
+    // Habilidades de Classe e Poderes
+    if (data.classAbilities && data.classAbilities.length > 0) {
+        text += `__**Habilidades de Classe & Poderes**__\n`;
+        data.classAbilities.forEach(a => {
+            text += `* **${a.name}:** ${a.desc}\n`;
         });
-        resumo += `\n`;
+        text += `\n`;
     }
 
-    // Equipamentos
-    const itens = document.querySelectorAll('#inventoryList .inv-row');
-    if (itens.length > 0) {
-        resumo += `🎒 **EQUIPAMENTO:**\n`;
-        let listaItens = [];
-        itens.forEach(row => {
-            const nomeItem = row.querySelector('.inp-name').value;
-            const qtd = row.querySelector('.inp-qtd').value || '1';
-            if (nomeItem) listaItens.push(`${nomeItem} (x${qtd})`);
+    // AtaquesPrincipais
+    if (data.attacks && data.attacks.length > 0) {
+        text += `__**Ataques**__\n`;
+        data.attacks.forEach(atk => {
+            text += `* ${atk.name}: ${atk.bonus} (${atk.dmg}, ${atk.critRange}/${atk.crit})\n`;
         });
-        resumo += `▫️ ${listaItens.join(' ▫️ ')}\n`;
     }
 
-    resumo += `------------------------------------------------\n`;
-    resumo += `FOR ${attrVals.FOR} | DES ${attrVals.DES} | CON ${attrVals.CON} | INT ${attrVals.INT} | SAB ${attrVals.SAB} | CAR ${attrVals.CAR}\n`;
-
-    navigator.clipboard.writeText(resumo).then(() => {
-        alert("Resumo copiado!");
+    // Copiar para o sistema
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('button[onclick="copyToClipboard()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check-lg"></i> Copiado!';
+        btn.classList.replace('btn-outline-primary', 'btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.replace('btn-success', 'btn-outline-primary');
+        }, 2000);
     });
 }
-
 async function exportarParaPDF() {
     try {
         const response = await fetch('Ficha.pdf');
@@ -1231,5 +1165,6 @@ async function exportarParaPDF() {
         console.error("Erro na exportação completa:", error);
         alert("Erro ao exportar o PDF. Verifique os dados.");
     }
+
 
 }
