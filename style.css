@@ -1028,3 +1028,19 @@ h3,
     align-self: stretch;
     margin: 5px 0;
 }
+
+
+.ability-row .inp-name:focus {
+    box-shadow: none;
+    border-bottom: 1px solid #dc3545 !important;
+}
+
+.ability-row .collapse-icon {
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+/* Deixa a linha mais fina quando fechada */
+.ability-row {
+    transition: all 0.3s ease;
+}
