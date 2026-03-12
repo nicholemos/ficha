@@ -1,3 +1,4 @@
+
 // --- DADOS E CONFIGURAÇÕES ---
 const attrs = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
 
@@ -277,24 +278,70 @@ function addInventoryItem(data = null) {
 }
 function removeInventoryItem(btn) { if (confirm('Remover item?')) { btn.closest('.inv-row').remove(); updateCalculations(); saveData(); } }
 
-function addAbility(data = null) {
-    const container = document.getElementById('abilitiesList'); if (!container) return;
-    const div = document.createElement('div'); div.className = 'col-md-6 ability-row';
+function addAbility(targetId = 'abilitiesClassList', name = '', desc = '') {
+    const list = document.getElementById(targetId);
+    if (!list) return;
+
+    // Gerar um ID único para o colapso
+    const abilityId = 'ability_' + Math.random().toString(36).substr(2, 9);
+    const div = document.createElement('div');
+    div.className = 'ability-row list-group-item bg-light p-2 mb-2 border rounded shadow-sm';
+
     div.innerHTML = `
-        <div class="border rounded p-2 h-100 position-relative" style="background-color: #fdfdfd;">
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <i class="bi bi-grip-vertical drag-handle"></i>
-                <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
-                <input type="text" class="form-control form-control-sm fw-bold border-0 border-bottom p-0 inp-name" placeholder="Nome do Poder" value="${data ? data.name : ''}">
-                <button class="btn btn-sm btn-light border-0 p-0 ms-auto" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button>
+        <div class="d-flex align-items-center gap-2">
+            <div class="p-1 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse_${abilityId}" style="cursor: pointer;">
+                <i class="bi bi-chevron-right collapse-icon text-danger"></i>
             </div>
-            <div class="ability-details d-none mt-2 pt-2 border-top">
-                <textarea class="form-control form-control-sm border-0 bg-light inp-desc" rows="4" placeholder="Descrição...">${data ? data.desc : ''}</textarea>
-                <div class="text-end mt-1"><button class="btn btn-sm btn-outline-danger border-0 py-0" onclick="removeAbility(this)">Excluir</button></div>
-            </div>
-        </div>`;
-    container.appendChild(div); if (!data) saveData();
+            
+            <input type="text" class="form-control form-control-sm fw-bold border-0 bg-transparent inp-name" 
+                   placeholder="Nome da Habilidade" 
+                   value="${name}"
+                   data-bs-toggle="collapse" 
+                   data-bs-target="#collapse_${abilityId}"
+                   style="cursor: pointer;">
+            
+            <button class="btn btn-outline-danger btn-sm border-0" onclick="this.closest('.ability-row').remove(); saveData();">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+        
+        <div class="collapse mt-2" id="collapse_${abilityId}">
+            <textarea class="form-control form-control-sm inp-desc border-danger-subtle" rows="3" 
+                      placeholder="Descrição detalhada...">${desc}</textarea>
+        </div>
+    `;
+
+    // Evita que o clique para digitar no input feche o collapse se ele já estiver aberto
+    const inputField = div.querySelector('.inp-name');
+    inputField.addEventListener('click', (e) => {
+        const collapseEl = document.getElementById(`collapse_${abilityId}`);
+        if (collapseEl.classList.contains('show')) {
+            e.stopPropagation(); // Se já estiver aberto, permite apenas editar o texto
+        }
+    });
+
+    // Listeners para salvar mudanças
+    div.querySelectorAll('input, textarea').forEach(el => {
+        el.addEventListener('input', saveData);
+    });
+
+    // Animação do ícone de seta
+    const collapseEl = div.querySelector('.collapse');
+    const icon = div.querySelector('.collapse-icon');
+
+    collapseEl.addEventListener('show.bs.collapse', () => {
+        icon.classList.replace('bi-chevron-right', 'bi-chevron-down');
+        div.classList.add('border-danger'); // Destaque visual quando aberto
+    });
+    collapseEl.addEventListener('hide.bs.collapse', () => {
+        icon.classList.replace('bi-chevron-down', 'bi-chevron-right');
+        div.classList.remove('border-danger');
+    });
+
+    list.appendChild(div);
+    saveData();
 }
+
 function removeAbility(btn) { if (confirm('Excluir poder?')) { btn.closest('.ability-row').remove(); saveData(); } }
 
 function addSpell(circle, data = null) {
@@ -488,45 +535,90 @@ function updateCalculations() {
 }
 
 function saveData() {
+    // 1. Primeiro coletamos as listas de habilidades antes de criar o objeto
+    const raceAbilities = [];
+    document.querySelectorAll('#abilitiesRaceList .ability-row').forEach(row => {
+        raceAbilities.push({
+            name: row.querySelector('.inp-name').value,
+            desc: row.querySelector('.inp-desc').value
+        });
+    });
+
+    const classAbilities = [];
+    document.querySelectorAll('#abilitiesClassList .ability-row').forEach(row => {
+        classAbilities.push({
+            name: row.querySelector('.inp-name').value,
+            desc: row.querySelector('.inp-desc').value
+        });
+    });
+
+    // 2. Agora criamos o objeto data
     const data = {
-        loadBonus: currentLoadBonus, // Salvar bônus de carga manual
-        // --- DADOS GERAIS ---
+        loadBonus: currentLoadBonus,
         version: 15.3,
-        charName: getVal('charName'), playerName: getVal('playerName'),
-        charRace: getVal('charRace'), charOrigin: getVal('charOrigin'), charClass: getVal('charClass'),
-        charLevel: getVal('charLevel'), charDeity: getVal('charDeity'),
-        // --- EXTRAS ---
-        extras: { profs: getVal('charProfs'), size: getVal('charSize'), speed: getVal('charSpeed'), xp: getVal('charXP'), cash: getVal('charCash') },
-        // --- ATRIBUTOS ---
+        charName: getVal('charName'),
+        playerName: getVal('playerName'),
+        charRace: getVal('charRace'),
+        charOrigin: getVal('charOrigin'),
+        charClass: getVal('charClass'),
+        charLevel: getVal('charLevel'),
+        charDeity: getVal('charDeity'),
+        extras: {
+            profs: getVal('charProfs'),
+            size: getVal('charSize'),
+            speed: getVal('charSpeed'),
+            xp: getVal('charXP'),
+            cash: getVal('charCash')
+        },
         attrs: {},
-        // --- STATUS ---
-        status: { pvM: getVal('pvMax'), pvC: getVal('pvCurrent'), pmM: getVal('pmMax'), pmC: getVal('pmCurrent') },
-        // --- DEFESA ---
+        status: {
+            pvM: getVal('pvMax'),
+            pvC: getVal('pvCurrent'),
+            pmM: getVal('pmMax'),
+            pmC: getVal('pmCurrent')
+        },
         defense: {
-            config: { attr: getVal('defAttrSelect'), apply: document.getElementById('applyDefAttr') ? document.getElementById('applyDefAttr').checked : true },
-            armor: { name: getVal('armorName'), bonus: getVal('armorBonus'), penalty: getVal('armorPenalty'), type: getVal('armorType'), desc: getVal('armorDesc') },
-            shield: { name: getVal('shieldName'), bonus: getVal('shieldBonus'), penalty: getVal('shieldPenalty'), type: getVal('shieldType'), desc: getVal('shieldDesc') },
+            config: {
+                attr: getVal('defAttrSelect'),
+                apply: document.getElementById('applyDefAttr') ? document.getElementById('applyDefAttr').checked : true
+            },
+            armor: {
+                name: getVal('armorName'),
+                bonus: getVal('armorBonus'),
+                penalty: getVal('armorPenalty'),
+                type: getVal('armorType'),
+                desc: getVal('armorDesc')
+            },
+            shield: {
+                name: getVal('shieldName'),
+                bonus: getVal('shieldBonus'),
+                penalty: getVal('shieldPenalty'),
+                type: getVal('shieldType'),
+                desc: getVal('shieldDesc')
+            },
             other: []
         },
-        // --- PERÍCIAS ---
         skills: currentSkills.map(s => ({ n: s.n, a: s.a, trained: s.trained, other: s.other, isCustom: s.isCustom })),
-        // --- ATAQUES ---
         attacks: [],
-        // --- INVENTÁRIO ---
         inventory: [],
-        // --- PODERES ---
-        abilities: [],
-        // --- NOTAS ---
+        // Atribuímos as listas que coletamos acima
+        raceAbilities: raceAbilities,
+        classAbilities: classAbilities,
+        abilities: [], // Mantido para compatibilidade se necessário
         notes: document.getElementById('charNotes').value,
-        // --- MAGIAS ---
         spells: {
-            config: { attr: getVal('spellCDAttrSelect'), powers: getVal('spellCDPowers'), items: getVal('spellCDItems'), other: getVal('spellCDOther') },
+            config: {
+                attr: getVal('spellCDAttrSelect'),
+                powers: getVal('spellCDPowers'),
+                items: getVal('spellCDItems'),
+                other: getVal('spellCDOther')
+            },
             list: []
         },
-        // --- CARGA ---
-        loadConfig: { attr: getVal('loadAttrSelect') || 'FOR' },
-
+        loadConfig: { attr: getVal('loadAttrSelect') || 'FOR' }
     };
+
+    // --- LOGICA DE PREENCHIMENTO POSTERIOR ---
 
     attrs.forEach(a => { data.attrs[a] = getVal(`attr-${a}`); });
 
@@ -560,6 +652,7 @@ function saveData() {
         });
     });
 
+    // Se você ainda quiser salvar na lista antiga "abilities" por segurança:
     document.querySelectorAll('#abilitiesList .ability-row').forEach(row => {
         data.abilities.push({
             name: row.querySelector('.inp-name').value,
@@ -620,6 +713,17 @@ function loadData() {
             attrs.forEach(a => {
                 if (data.attrs[a]) document.getElementById(`attr-${a}`).value = data.attrs[a];
             });
+        }
+
+        // No local onde carrega as habilidades (normalmente após o parse do JSON)
+        if (data.raceAbilities) {
+            document.getElementById('abilitiesRaceList').innerHTML = '';
+            data.raceAbilities.forEach(a => addAbility('abilitiesRaceList', a.name, a.desc));
+        }
+
+        if (data.classAbilities) {
+            document.getElementById('abilitiesClassList').innerHTML = '';
+            data.classAbilities.forEach(a => addAbility('abilitiesClassList', a.name, a.desc));
         }
 
         // --- STATUS ---
@@ -762,7 +866,34 @@ function enableDragAndDrop() {
 
     // Poderes
     const abilitiesList = document.getElementById('abilitiesList');
-    if (abilitiesList) new Sortable(abilitiesList, { animation: 150, handle: '.drag-handle', onEnd: saveData });
+    // Inicializa arraste para Raça/Origem
+    new Sortable(document.getElementById('abilitiesRaceList'), {
+        group: 'sharedAbilities', // Nome do grupo igual permite mover entre elas
+        animation: 150,
+        ghostClass: 'bg-warning-subtle',
+        onEnd: saveData
+    });
+
+    // Inicializa arraste para Classe/Poderes
+    new Sortable(document.getElementById('abilitiesClassList'), {
+        group: 'sharedAbilities',
+        animation: 150,
+        ghostClass: 'bg-danger-subtle',
+        onEnd: saveData
+    });
+
+    // No local onde você inicializa o Sortable atual
+    const raceSortable = new Sortable(document.getElementById('abilitiesRaceList'), {
+        group: 'abilities', // O segredo está no nome do grupo igual
+        animation: 150,
+        onEnd: saveData
+    });
+
+    const classSortable = new Sortable(document.getElementById('abilitiesClassList'), {
+        group: 'abilities',
+        animation: 150,
+        onEnd: saveData
+    });
 
     // Magias
     [1, 2, 3, 4, 5].forEach(circle => {
@@ -919,4 +1050,183 @@ function copyToClipboard() {
     navigator.clipboard.writeText(resumo).then(() => {
         alert("Resumo copiado!");
     });
+}
+
+async function exportarParaPDF() {
+    try {
+        const response = await fetch('Ficha.pdf');
+        const arrayBuffer = await response.arrayBuffer();
+        const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+        const form = pdfDoc.getForm();
+        const data = JSON.parse(localStorage.getItem('t20SheetData'));
+        if (!data) return alert("Nenhum dado encontrado!");
+
+        // Constantes para cálculos automáticos do PDF
+        const level = parseInt(data.charLevel) || 1;
+        const halfLevel = Math.floor(level / 2);
+        const trainBonus = level >= 15 ? 6 : (level >= 7 ? 4 : 2);
+
+        // --- DADOS BÁSICOS ---
+        form.getTextField('Nome do Personagem').setText(data.charName || '');
+        form.getTextField('Nome do Jogador').setText(data.playerName || '');
+        form.getTextField('Raca do Personagem').setText(data.charRace || '');
+        form.getTextField('Origem do Personagem').setText(data.charOrigin || '');
+        form.getTextField('Classe(s) do personagem').setText(data.charClass || '');
+        form.getTextField('Lv').setText(data.charLevel?.toString() || '1');
+        form.getTextField('Divindade').setText(data.charDeity || '');
+        form.getTextField('Experiencia total do personagem').setText(data.extras?.xp?.toString() || '0');
+
+        // --- ATRIBUTOS (MODIFICADORES) ---
+        const attrMap = { 'FOR': 'ModFor', 'DES': 'ModDes', 'CON': 'ModCon', 'INT': 'ModInt', 'SAB': 'ModSab', 'CAR': 'ModCar' };
+        Object.keys(attrMap).forEach(key => {
+
+            try { form.getTextField(attrMap[key]).setText(data.attrs[key]?.toString() || '0'); } catch (e) { }
+
+        });
+
+        // Status (PV/PM) - Usando os nomes técnicos identificados
+        form.getTextField('Pontos de Vida m#C3#A1ximos').setText(data.status.pvM?.toString() || '0');
+        form.getTextField('Pontos de Vida atuais').setText(data.status.pvC?.toString() || '0');
+        form.getTextField('Pontos de Mana m#C3#A1ximos').setText(data.status.pmM?.toString() || '0');
+        form.getTextField('Pontos de Mana atuais').setText(data.status.pmC?.toString() || '0');
+
+
+        // --- PERÍCIAS (TREINO, 1/2 NV, ATRIB, OUTROS E TOTAL) ---
+        const skillSuffix = {
+            'Acrobacia': 'acro', 'Adestramento': 'ades', 'Atletismo': 'atle', 'Atuação': 'atua',
+            'Cavalgar': 'caval', 'Conhecimento': 'conhe', 'Cura': 'cura', 'Diplomacia': 'dipl',
+            'Enganação': 'enga', 'Fortitude': 'forti', 'Furtividade': 'furti', 'Guerra': 'guerra',
+            'Iniciativa': 'ini', 'Intimidação': 'inti', 'Intuição': 'intu', 'Investigação': 'inve',
+            'Jogatina': 'joga', 'Ladinagem': 'ladi', 'Luta': 'luta', 'Misticismo': 'misti',
+            'Nobreza': 'nobre', 'Percepção': 'perce', 'Pilotagem': 'pilo', 'Pontaria': 'ponta',
+            'Reflexos': 'refle', 'Religião': 'reli', 'Sobrevivência': 'sobre', 'Vontade': 'vonta'
+        };
+
+        data.skills.forEach((s, i) => {
+            const suf = skillSuffix[s.n] || (s.n.includes('Ofício') ? 'ofi1' : null);
+            if (suf) {
+                try {
+                    const baseId = (i + 1).toString().padStart(2, '0');
+
+                    // 1. Checkbox de Treinamento
+                    if (s.trained) { form.getCheckBox(`Mar Trei ${suf}`).check(); }
+
+                    // 2. Valores das Colunas (ID 0=Total, 1=1/2 Nível, 3=Treino, 4=Outros)
+                    form.getTextField(`${baseId}0`).setText(document.getElementById(`skTotal${i}`)?.innerText || '0');
+                    form.getTextField(`${baseId}1`).setText(halfLevel.toString());
+                    form.getTextField(`${baseId}3`).setText(s.trained ? trainBonus.toString() : '0');
+                    form.getTextField(`${baseId}4`).setText(s.other?.toString() || '0');
+
+                    // 3. Modificador de Atributo (Ex: ModAtribAcro)
+                    // O PDF usa CamelCase nos nomes (Acro, Ades, Fort...)
+                    const attrFieldName = `ModAtrib${suf.charAt(0).toUpperCase() + suf.slice(1, 4)}`;
+                    form.getTextField(attrFieldName).setText(data.attrs[s.a]?.toString() || '0');
+
+                } catch (e) { }
+            }
+        });
+
+        // Ataques (Exemplo para os 2 primeiros)
+        if (data.attacks && data.attacks.length > 0) {
+            data.attacks.slice(0, 5).forEach((atk, i) => {
+                const n = i + 1;
+                form.getTextField(`Ataque ${n}`).setText(atk.name || '');
+                form.getTextField(`Bonus do ataque ${n}`).setText(atk.bonus || '');
+                form.getTextField(`Dano causado pelo ataque ${n}`).setText(atk.dmg || '');
+                form.getTextField(`Margem de cr#C3#ADtico e multiplicador ${n}`).setText(`${atk.critRange}/${atk.crit}`);
+                form.getTextField(`Tipo de dano do ataque ${n}`).setText(atk.type || '');
+                form.getTextField(`Alcance do ataque ${n}`).setText(atk.range || '');
+            });
+        }
+
+        // --- DEFESA (FÓRMULA E DETALHES) ---
+        try {
+            form.getTextField('CA').setText(document.getElementById('defenseTotal')?.innerText || '10');
+
+            // Armadura
+            form.getTextField('Armadura').setText(data.defense.armor.name || '');
+            const armBonus = data.defense.armor.bonus?.toString() || '0';
+            form.getTextField('B.Arm').setText(armBonus);   // Campo da fórmula (topo)
+            form.getTextField('B.Arm1').setText(armBonus);  // Campo do detalhe (embaixo)
+            form.getTextField('Pa').setText(data.defense.armor.penalty?.toString() || '0');
+
+            // Escudo
+            form.getTextField('Escudo').setText(data.defense.shield.name || '');
+            const escBonus = data.defense.shield.bonus?.toString() || '0';
+            form.getTextField('B.Esc').setText(escBonus);   // Campo da fórmula (topo)
+            form.getTextField('B.Esc2').setText(escBonus);  // Campo do detalhe (embaixo)
+            form.getTextField('Pe').setText(data.defense.shield.penalty?.toString() || '0');
+
+            // Outros modificadores de Defesa
+            let defOutros = 0;
+            document.querySelectorAll('#defenseList .def-row .inp-bonus').forEach(input => defOutros += (parseInt(input.value) || 0));
+            form.getTextField('Outros B.CA').setText(defOutros.toString());
+
+        } catch (e) { }
+
+        // --- CARACTERÍSTICAS E PODERES ---
+        form.getTextField('Proficiencias e outras caracteristicas').setText(data.extras?.profs || '');
+
+        // Concatena todos os poderes para caber no campo grande do PDF
+        const poderesTexto = data.abilities.map(a => `${a.name.toUpperCase()}: ${a.desc}`).join('\n\n');
+        form.getTextField('Habilidades de Classe e poderes').setText(poderesTexto);
+
+        // --- TAMANHO E DESLOCAMENTO ---
+        form.getTextField('Deslocamento do personagem').setText(data.extras?.speed || '9m');
+        try {
+            const tamanhoSel = document.getElementById('charSize');
+            const tamanhoTexto = tamanhoSel.options[tamanhoSel.selectedIndex].text;
+            form.getDropdown('SeleTamanho').select(tamanhoTexto);
+        } catch (e) {
+            try { form.getTextField('SeleTamanho').setText(tamanhoTexto); } catch (err) { }
+        }
+
+        // --- EQUIPAMENTO E DINHEIRO ---
+        form.getTextField('Tibares').setText(data.extras?.cash?.toString() || '0');
+        form.getTextField('Anotacoes').setText(data.notes || '');
+        if (data.inventory) {
+            data.inventory.slice(0, 17).forEach((item, i) => {
+                const n = i + 1;
+                try {
+                    form.getTextField(`Item ${n}`).setText(item.name || '');
+                    form.getTextField(`Quantidade Item ${n}`).setText(item.qtd?.toString() || '1');
+                    form.getTextField(`Slots Item ${n}`).setText(item.slots?.toString() || '0');
+                } catch (e) { }
+            });
+        }
+
+        // Habilidades de Raça e Origem
+        // Dentro da exportarParaPDF
+        const raceTxt = data.raceAbilities.map(a => `${a.name.toUpperCase()}: ${a.desc}`).join('\n\n');
+        form.getTextField('Habilidades de raca e origem').setText(raceTxt);
+
+        const classTxt = data.classAbilities.map(a => `${a.name.toUpperCase()}: ${a.desc}`).join('\n\n');
+        form.getTextField('Habilidades de Classe e poderes').setText(classTxt);
+
+        // --- MAGIAS (Página 2) ---
+        if (data.spells && data.spells.list.length > 0) {
+            const magiasTexto = data.spells.list.map(m =>
+                `[${m.circle}º Circ] ${m.name.toUpperCase()} (${m.pm} PM) - Exec: ${m.exec}, Alc: ${m.range}, Dur: ${m.dur}`
+            ).join('\n\n');
+
+            try {
+                form.getTextField('Magias').setText(magiasTexto);
+            } catch (e) {
+                console.warn("Campo 'Magias' não encontrado no PDF.");
+            }
+        }
+
+        // --- EXPORTAÇÃO ---
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Ficha_${data.charName || 'Personagem'}.pdf`;
+        link.click();
+
+    } catch (error) {
+        console.error("Erro na exportação completa:", error);
+        alert("Erro ao exportar o PDF. Verifique os dados.");
+    }
+
 }
