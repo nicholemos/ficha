@@ -1,4 +1,3 @@
-
 // --- DADOS E CONFIGURAÇÕES ---
 const attrs = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
 
@@ -18,6 +17,7 @@ const defaultSkills = [
 const spellCosts = { 1: 1, 2: 3, 3: 6, 4: 10, 5: 15 };
 let currentSkills = [];
 let currentLoadBonus = 0; // Bônus manual para a carga
+let isLoading = false;    // Flag para suprimir saveData() durante o carregamento inicial
 
 // --- INICIALIZAÇÃO ---
 window.onload = () => {
@@ -339,7 +339,7 @@ function addAbility(targetId = 'abilitiesClassList', name = '', desc = '') {
     });
 
     list.appendChild(div);
-    saveData();
+    if (!isLoading) saveData();
 }
 
 function removeAbility(btn) { if (confirm('Excluir poder?')) { btn.closest('.ability-row').remove(); saveData(); } }
@@ -535,6 +535,16 @@ function updateCalculations() {
 }
 
 function saveData() {
+    if (isLoading) return; // Não salvar durante o carregamento inicial
+
+    // 0. Sincroniza trained e other das perícias diretamente do DOM antes de salvar
+    currentSkills.forEach((s, i) => {
+        const chk = document.getElementById(`skTrain${i}`);
+        if (chk) s.trained = chk.checked;
+        const otherEl = document.getElementById(`skOther${i}`);
+        if (otherEl) s.other = parseInt(otherEl.value) || 0;
+    });
+
     // 1. Coletamos as novas listas primeiro para evitar erros de escopo
     const raceAbilities = [];
     document.querySelectorAll('#abilitiesRaceList .ability-row').forEach(row => {
@@ -694,6 +704,7 @@ function saveData() {
 function loadData() {
     const savedData = localStorage.getItem('t20SheetData');
     if (savedData) {
+        isLoading = true; // Impede que saveData() seja chamado durante o carregamento
         const data = JSON.parse(savedData);
 
         // Carregar bônus de carga manual
@@ -815,6 +826,7 @@ function loadData() {
             document.getElementById('loadAttrSelect').value = data.loadConfig.attr;
         }
 
+        isLoading = false; // Carregamento concluído - salvar normalmente a partir daqui
 
     } else {
         // Se não houver dados salvos, renderiza as perícias padrão
@@ -946,7 +958,7 @@ function escapeHtml(str) {
         .replaceAll("'", '&#039;');
 }
 
-// Resumo para Discord
+
 function copyToClipboard() {
     // Coleta de Dados Básicos
     const nome = document.getElementById('charName').value || 'Sem Nome';
@@ -1017,12 +1029,12 @@ function copyToClipboard() {
 
     // HABILIDADES E PODERES (Versão atualizada para as duas listas)
     let poderes = [];
-    
+
     // Coleta da lista de Raça e Origem
     document.querySelectorAll('#abilitiesRaceList .inp-name').forEach(el => {
         if (el.value) poderes.push(el.value);
     });
-    
+
     // Coleta da lista de Classe e Poderes
     document.querySelectorAll('#abilitiesClassList .inp-name').forEach(el => {
         if (el.value) poderes.push(el.value);
@@ -1079,7 +1091,6 @@ function copyToClipboard() {
     });
 }
 
-// Exportar PDF
 async function exportarParaPDF() {
     try {
         const response = await fetch('Ficha.pdf');
@@ -1107,19 +1118,16 @@ async function exportarParaPDF() {
         // --- ATRIBUTOS (MODIFICADORES) ---
         const attrMap = { 'FOR': 'ModFor', 'DES': 'ModDes', 'CON': 'ModCon', 'INT': 'ModInt', 'SAB': 'ModSab', 'CAR': 'ModCar' };
         Object.keys(attrMap).forEach(key => {
-
             try { form.getTextField(attrMap[key]).setText(data.attrs[key]?.toString() || '0'); } catch (e) { }
-
         });
 
-        // Status (PV/PM) - Usando os nomes técnicos identificados
+        // --- STATUS (PV/PM) ---
         form.getTextField('Pontos de Vida m#C3#A1ximos').setText(data.status.pvM?.toString() || '0');
         form.getTextField('Pontos de Vida atuais').setText(data.status.pvC?.toString() || '0');
         form.getTextField('Pontos de Mana m#C3#A1ximos').setText(data.status.pmM?.toString() || '0');
         form.getTextField('Pontos de Mana atuais').setText(data.status.pmC?.toString() || '0');
 
-
-        // --- PERÍCIAS (TREINO, 1/2 NV, ATRIB, OUTROS E TOTAL) ---
+        // --- PERÍCIAS ---
         const skillSuffix = {
             'Acrobacia': 'acro', 'Adestramento': 'ades', 'Atletismo': 'atle', 'Atuação': 'atua',
             'Cavalgar': 'caval', 'Conhecimento': 'conhe', 'Cura': 'cura', 'Diplomacia': 'dipl',
@@ -1135,26 +1143,18 @@ async function exportarParaPDF() {
             if (suf) {
                 try {
                     const baseId = (i + 1).toString().padStart(2, '0');
-
-                    // 1. Checkbox de Treinamento
                     if (s.trained) { form.getCheckBox(`Mar Trei ${suf}`).check(); }
-
-                    // 2. Valores das Colunas (ID 0=Total, 1=1/2 Nível, 3=Treino, 4=Outros)
                     form.getTextField(`${baseId}0`).setText(document.getElementById(`skTotal${i}`)?.innerText || '0');
                     form.getTextField(`${baseId}1`).setText(halfLevel.toString());
                     form.getTextField(`${baseId}3`).setText(s.trained ? trainBonus.toString() : '0');
                     form.getTextField(`${baseId}4`).setText(s.other?.toString() || '0');
-
-                    // 3. Modificador de Atributo (Ex: ModAtribAcro)
-                    // O PDF usa CamelCase nos nomes (Acro, Ades, Fort...)
                     const attrFieldName = `ModAtrib${suf.charAt(0).toUpperCase() + suf.slice(1, 4)}`;
                     form.getTextField(attrFieldName).setText(data.attrs[s.a]?.toString() || '0');
-
                 } catch (e) { }
             }
         });
 
-        // Ataques (Exemplo para os 2 primeiros)
+        // --- ATAQUES ---
         if (data.attacks && data.attacks.length > 0) {
             data.attacks.slice(0, 5).forEach((atk, i) => {
                 const n = i + 1;
@@ -1167,9 +1167,15 @@ async function exportarParaPDF() {
             });
         }
 
-        // --- DEFESA (FÓRMULA E DETALHES) ---
+        // --- DEFESA (FÓRMULA E DETALHES CORRIGIDOS) ---
         try {
             form.getTextField('CA').setText(document.getElementById('defenseTotal')?.innerText || '10');
+
+            // Pegamos o atributo selecionado (DES, INT, SAB, etc.) e colocamos no campo ModAtribDefe
+            const defAttr = data.defense.config.attr || 'DES';
+            const defAttrVal = data.attrs[defAttr]?.toString() || '0';
+            form.getTextField('ModAtribDefe').setText(defAttrVal);
+
 
             // Armadura
             form.getTextField('Armadura').setText(data.defense.armor.name || '');
@@ -1192,12 +1198,15 @@ async function exportarParaPDF() {
 
         } catch (e) { }
 
-        // --- CARACTERÍSTICAS E PODERES ---
-        form.getTextField('Proficiencias e outras caracteristicas').setText(data.extras?.profs || '');
 
-        // Concatena todos os poderes para caber no campo grande do PDF
-        const poderesTexto = data.abilities.map(a => `${a.name.toUpperCase()}: ${a.desc}`).join('\n\n');
-        form.getTextField('Habilidades de Classe e poderes').setText(poderesTexto);
+        // --- PODERES E PROFICIÊNCIAS ---
+        const txtRace = data.raceAbilities ? data.raceAbilities.map(a => `${a.name.toUpperCase()}: ${a.desc}`).join('\n\n') : '';
+        try { form.getTextField('Habilidades de raca e origem').setText(txtRace); } catch (e) { }
+
+        const txtClass = data.classAbilities ? data.classAbilities.map(a => `${a.name.toUpperCase()}: ${a.desc}`).join('\n\n') : '';
+        try { form.getTextField('Habilidades de Classe e poderes').setText(txtClass); } catch (e) { }
+
+        try { form.getTextField('Proficiencias e outras caracteristicas').setText(data.extras?.profs || ''); } catch (e) { }
 
         // --- TAMANHO E DESLOCAMENTO ---
         form.getTextField('Deslocamento do personagem').setText(data.extras?.speed || '9m');
@@ -1228,15 +1237,11 @@ async function exportarParaPDF() {
             const magiasTexto = data.spells.list.map(m =>
                 `[${m.circle}º Circ] ${m.name.toUpperCase()} (${m.pm} PM) - Exec: ${m.exec}, Alc: ${m.range}, Dur: ${m.dur}`
             ).join('\n\n');
-
-            try {
-                form.getTextField('Magias').setText(magiasTexto);
-            } catch (e) {
-                console.warn("Campo 'Magias' não encontrado no PDF.");
-            }
+            try { form.getTextField('Magias').setText(magiasTexto); } catch (e) { }
         }
 
-        // --- EXPORTAÇÃO ---
+        // --- FINALIZAÇÃO ---
+        form.updateFieldAppearances(); // Força a atualização visual dos campos
         const pdfBytes = await pdfDoc.save();
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
         const link = document.createElement('a');
@@ -1248,7 +1253,4 @@ async function exportarParaPDF() {
         console.error("Erro na exportação completa:", error);
         alert("Erro ao exportar o PDF. Verifique os dados.");
     }
-
-
 }
-
