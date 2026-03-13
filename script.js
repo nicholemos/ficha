@@ -1,6 +1,8 @@
 // --- DADOS E CONFIGURAÇÕES ---
 const attrs = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
 
+const powers = JSON.parse(localStorage.getItem('selectedPowers')) || [];
+
 const defaultSkills = [
     { n: 'Acrobacia', a: 'DES' }, { n: 'Adestramento', a: 'CAR' }, { n: 'Atletismo', a: 'FOR' },
     { n: 'Atuação', a: 'CAR' }, { n: 'Cavalgar', a: 'DES' }, { n: 'Conhecimento', a: 'INT' },
@@ -20,12 +22,7 @@ let currentLoadBonus = 0; // Bônus manual para a carga
 let isLoading = false;    // Flag para suprimir saveData() durante o carregamento inicial
 
 // --- INICIALIZAÇÃO ---
-const originalOnload = window.onload;
 window.onload = () => {
-    if (originalOnload) originalOnload();
-
-    // Adicionamos a nossa verificação após o carregamento inicial da ficha
-    setTimeout(checkImportedPowers, 500);
     try {
         currentSkills = JSON.parse(JSON.stringify(defaultSkills));
         renderStructure();
@@ -1259,41 +1256,4 @@ async function exportarParaPDF() {
         alert("Erro ao exportar o PDF. Verifique os dados.");
     }
 }
-
-* Verifica se existem poderes salvos pelo Grimório e os importa para a ficha.
- */
-function checkImportedPowers() {
-    const importedPowers = JSON.parse(localStorage.getItem('selectedPowers'));
-
-    if (importedPowers && importedPowers.length > 0) {
-        // Mostra uma confirmação para o usuário
-        const confirmar = confirm(`Encontramos ${importedPowers.length} poderes vindo do Grimório. Deseja adicioná-los à ficha?`);
-        
-        if (confirmar) {
-            importedPowers.forEach(power => {
-                // Decide se vai para a lista de Raça ou de Classe com base no tipo
-                const targetList = (power.type === 'raca' || power.type === 'origin') 
-                    ? 'abilitiesRaceList' 
-                    : 'abilitiesClassList';
-                
-                // Formata os requisitos para a descrição se existirem
-                const requisitos = power.req ? `PRÉ-REQUISITOS: ${power.req}\n\n` : '';
-                const descCompleta = requisitos + power.desc;
-
-                // Chama a função addAbility que já existe no seu script.js
-                addAbility(targetList, power.name, descCompleta);
-            });
-
-            // Limpa o localStorage para não pedir para importar novamente no próximo F5
-            localStorage.removeItem('selectedPowers');
-            
-            // Força a ficha a salvar e recalcular os bônus
-            updateCalculations();
-            saveData();
-            
-            alert("Poderes importados com sucesso!");
-        }
-    }
-}
-
 
