@@ -1,8 +1,6 @@
 // --- DADOS E CONFIGURAÇÕES ---
 const attrs = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
 
-const powers = JSON.parse(localStorage.getItem('selectedPowers')) || [];
-
 const defaultSkills = [
     { n: 'Acrobacia', a: 'DES' }, { n: 'Adestramento', a: 'CAR' }, { n: 'Atletismo', a: 'FOR' },
     { n: 'Atuação', a: 'CAR' }, { n: 'Cavalgar', a: 'DES' }, { n: 'Conhecimento', a: 'INT' },
@@ -27,6 +25,7 @@ window.onload = () => {
         currentSkills = JSON.parse(JSON.stringify(defaultSkills));
         renderStructure();
         loadData();
+        importPoderesDoCarrinho(); // ← importa poderes vindos do Compilado de Poderes
         attachGlobalListeners();
         enableDragAndDrop();
         // combate removido (não existe no index.html)
@@ -836,6 +835,64 @@ function loadData() {
     }
 }
 
+// ============================================================
+//  IMPORTAÇÃO DO CARRINHO DE PODERES
+//  Lê a chave 't20PoderesCarrinho' gravada pelo Compilado de Poderes
+//  e mescla os itens em classAbilities, evitando duplicatas.
+// ============================================================
+function importPoderesDoCarrinho() {
+    const raw = localStorage.getItem('t20PoderesCarrinho');
+    if (!raw) return;
+
+    let incoming;
+    try { incoming = JSON.parse(raw); } catch { return; }
+    if (!Array.isArray(incoming) || incoming.length === 0) return;
+
+    // Remove a chave ANTES de qualquer coisa (evita loop em reloads)
+    localStorage.removeItem('t20PoderesCarrinho');
+
+    const list = document.getElementById('abilitiesClassList');
+    if (!list) return;
+
+    // Nomes já presentes na lista (case-insensitive)
+    const existing = new Set(
+        Array.from(list.querySelectorAll('.inp-name'))
+             .map(el => el.value.trim().toLowerCase())
+    );
+
+    let added = 0;
+    incoming.forEach(item => {
+        if (!item.name) return;
+        if (existing.has(item.name.trim().toLowerCase())) return; // não duplica
+        // Strip HTML da desc para manter a ficha limpa
+        const tmp = document.createElement('div');
+        tmp.innerHTML = item.desc || '';
+        const cleanDesc = tmp.textContent || tmp.innerText || '';
+        addAbility('abilitiesClassList', item.name.trim(), cleanDesc.trim());
+        existing.add(item.name.trim().toLowerCase());
+        added++;
+    });
+
+    if (added > 0) {
+        saveData();
+        // Toast de confirmação
+        const toast = document.createElement('div');
+        toast.textContent = `✅ ${added} poder(es) importado(s) do Compilado!`;
+        Object.assign(toast.style, {
+            position: 'fixed', bottom: '24px', left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#1a6636', color: '#fff',
+            padding: '12px 24px', borderRadius: '8px',
+            fontWeight: '700', fontSize: '0.95rem',
+            zIndex: '9999', boxShadow: '0 4px 18px rgba(0,0,0,.3)',
+            transition: 'opacity .4s'
+        });
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; }, 2800);
+        setTimeout(() => toast.remove(), 3300);
+    }
+}
+
 function clearSheet() {
     if (confirm("Tem certeza que deseja apagar todos os dados da ficha?")) {
         localStorage.removeItem('t20SheetData');
@@ -1256,4 +1313,3 @@ async function exportarParaPDF() {
         alert("Erro ao exportar o PDF. Verifique os dados.");
     }
 }
-
