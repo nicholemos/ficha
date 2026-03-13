@@ -25,14 +25,15 @@ window.onload = () => {
         currentSkills = JSON.parse(JSON.stringify(defaultSkills));
         renderStructure();
         loadData();
-        importPoderesDoCarrinho(); // ← importa poderes vindos do Compilado de Poderes
         attachGlobalListeners();
         enableDragAndDrop();
-        // combate removido (não existe no index.html)
     } catch (e) { console.error(e); }
+    
     setTimeout(updateCalculations, 100);
+    
+    // ADICIONE ESTA LINHA AQUI:
+    setTimeout(checkImportedPowers, 400); // 400ms garante que a ficha já carregou tudo antes de importar
 };
-
 
 function renderStructure() {
     const attrContainer = document.getElementById('attributesArea');
@@ -1313,3 +1314,52 @@ async function exportarParaPDF() {
         alert("Erro ao exportar o PDF. Verifique os dados.");
     }
 }
+
+
+
+// ============================================================
+// INTEGRAÇÃO COM O GRIMÓRIO DE PODERES
+// ============================================================
+function checkImportedPowers() {
+    const importedData = localStorage.getItem('selectedPowers');
+    
+    if (importedData) {
+        try {
+            const powers = JSON.parse(importedData);
+            
+            if (powers && powers.length > 0) {
+                // Pergunta ao usuário se ele quer importar
+                if (confirm(`Encontramos ${powers.length} poderes vindo do Grimório. Deseja adicioná-los à sua ficha?`)) {
+                    
+                    powers.forEach(power => {
+                        // 1. Define em qual lista o poder vai entrar
+                        // Se for Raça ou Origem, vai para a lista de raça. O resto vai para Classe/Poderes.
+                        const targetList = (power.type === 'raca' || power.type === 'origem') 
+                            ? 'abilitiesRaceList' 
+                            : 'abilitiesClassList';
+                        
+                        // 2. Formata a descrição para incluir os pré-requisitos, se existirem
+                        let descCompleta = power.desc;
+                        if (power.req && power.req.toLowerCase() !== 'nenhum' && power.req !== '—') {
+                            descCompleta = `Pré-requisitos: ${power.req}\n\n${power.desc}`;
+                        }
+
+                        // 3. Adiciona na ficha usando a sua própria função
+                        addAbility(targetList, power.name, descCompleta);
+                    });
+
+                    // 4. Salva a ficha com os novos dados e atualiza os cálculos
+                    updateCalculations();
+                    saveData();
+                    alert("Poderes importados com sucesso!");
+                }
+                
+                // 5. Limpa o carrinho do localStorage para não ficar perguntando toda vez que der F5
+                localStorage.removeItem('selectedPowers');
+            }
+        } catch (e) {
+            console.error("Erro ao importar poderes do Grimório:", e);
+        }
+    }
+}
+
