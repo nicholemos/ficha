@@ -1044,3 +1044,15 @@ h3,
 .ability-row {
     transition: all 0.3s ease;
 }
+
+
+/* Estilo suave para os botões de atalho */
+.btn-outline-secondary, .btn-outline-danger, .btn-outline-dark {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    text-decoration: none;
+}
+
+.btn-outline-secondary:hover, .btn-outline-danger:hover, .btn-outline-dark:hover {
+    opacity: 1;
+}
