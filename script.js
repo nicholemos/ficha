@@ -30,9 +30,8 @@ window.onload = () => {
     } catch (e) { console.error(e); }
     
     setTimeout(updateCalculations, 100);
-    
-    // ADICIONE ESTA LINHA AQUI:
-    setTimeout(checkImportedPowers, 400); // 400ms garante que a ficha já carregou tudo antes de importar
+    setTimeout(checkImportedPowers, 400);
+    setTimeout(checkCalculadoraData, 600); // ADICIONE ESTA NOVA!
 };
 
 function renderStructure() {
@@ -1363,3 +1362,52 @@ function checkImportedPowers() {
     }
 }
 
+// script.js (Da Ficha)
+
+function checkCalculadoraData() {
+    const calcDataRaw = localStorage.getItem('dadosCalculadoraT20');
+    
+    if (calcDataRaw) {
+        try {
+            const dadosCalc = JSON.parse(calcDataRaw);
+            
+            if (confirm(`Encontramos dados de Atributos para a raça ${dadosCalc.raca} vindos da Calculadora. Deseja aplicar na ficha?`)) {
+                
+                // 1. Aplica a Raça
+                if (dadosCalc.raca) {
+                    const racaInput = document.getElementById('charRace');
+                    if (racaInput) racaInput.value = dadosCalc.raca;
+                }
+
+                // 2. Aplica os Atributos
+                if (dadosCalc.atributos) {
+                    Object.keys(dadosCalc.atributos).forEach(attr => {
+                        const inputAttr = document.getElementById(`attr-${attr}`);
+                        if (inputAttr) inputAttr.value = dadosCalc.atributos[attr];
+                    });
+                }
+
+                // 3. Adiciona as Habilidades de Raça (como itens vazios, sem descrição)
+                if (dadosCalc.habilidadesRaca && dadosCalc.habilidadesRaca.length > 0) {
+                    dadosCalc.habilidadesRaca.forEach(nomeHabilidade => {
+                        // Verifica se não é vazio e se já não adicionou
+                        if (nomeHabilidade && !nomeHabilidade.includes('Inteligência +') && !nomeHabilidade.includes('Destreza +')) {
+                             addAbility('abilitiesRaceList', nomeHabilidade, '');
+                        }
+                    });
+                }
+
+                // 4. Salva e atualiza
+                updateCalculations();
+                saveData();
+                alert("Atributos e Raça importados com sucesso!");
+            }
+            
+            // Limpa para não perguntar de novo
+            localStorage.removeItem('dadosCalculadoraT20');
+            
+        } catch (e) {
+            console.error("Erro ao importar dados da Calculadora:", e);
+        }
+    }
+}
