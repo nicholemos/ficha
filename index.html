@@ -93,8 +93,9 @@
         <div class="row">
             <div class="col-lg-7">
                 <div class="d-flex align-items-center mb-2">
-                    <a href="https://nicholemos.github.io/CalculadoradeAtributos/" target="_blank" class="btn btn-sm btn-outline-secondary py-0" style="font-size: 0.75rem;">
-                        <i class="bi bi-calculator"></i> Calculadora
+                    <a href="https://nicholemos.github.io/CalculadoradeAtributos/" target="_blank"
+                        class="btn btn-sm btn-outline-secondary py-0" style="font-size: 0.75rem;">
+                        <i class="bi bi-calculator"></i> Calculadora de Atributos
                     </a>
                 </div>
 
@@ -339,8 +340,10 @@
                     <div class="border-top border-secondary pt-2">
                         <div class="text-center mb-2 d-flex justify-content-center align-items-center gap-2">
                             <span class="section-title-small">PODERES & HABILIDADES</span>
-                            <a href="https://nicholemos.github.io/poderes/" target="_blank" class="btn btn-sm btn-outline-danger py-0" style="font-size: 0.7rem; border-radius: 20px;">
-                                <i class="bi bi-book"></i> Lista de Poderes
+                            <a href="https://nicholemos.github.io/poderes/" target="_blank"
+                                class="btn btn-sm btn-outline-danger py-0"
+                                style="font-size: 0.7rem; border-radius: 20px;">
+                                <i class="bi bi-book"></i> Poderes
                             </a>
                         </div>
 
@@ -493,30 +496,40 @@
 
                 <div id="inventorySection"
                     class="border border-2 border-dark rounded p-3 mb-4 position-relative bg-white">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                            <a href="https://nicholemos.github.io/itens/" target="_blank" class="btn btn-sm btn-outline-dark py-0" style="font-size: 0.7rem;">
-                            <i class="bi bi-search"></i> Calculadora de Itens
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="t20-section-title mb-0" onclick="toggleSection('inventorySection')"
+                            style="cursor: pointer;">
+                            <i class="bi bi-chevron-down section-toggle"></i> EQUIPAMENTO
+                        </span>
+
+                        <a href="https://nicholemos.github.io/itens/" target="_blank"
+                            class="btn btn-sm btn-outline-dark py-0" style="font-size: 0.75rem; border-radius: 20px;">
+                            <i class="bi bi-search"></i> Buscar Itens
                         </a>
                     </div>
-                    <span class="t20-section-title" onclick="toggleSection('inventorySection')">
-                        <span class="t20-section-title" onclick="toggleSection('inventorySection')">
-                        <i class="bi bi-chevron-down section-toggle"></i>EQUIPAMENTO</span>
-                        <div class="inv-content">
-                            <div class="row fw-bold small text-center border-bottom border-dark pb-2 mb-2 mx-1">
-                                <div class="col-6 text-start">ITEM</div>
-                                <div class="col-2">QTD</div>
+
+                    <div class="inv-content">
+                        <div class="row fw-bold small text-center border-bottom border-dark pb-2 mb-2 mx-1">
+                            <div class="col-6 text-start">ITEM</div>
+                            <div class="col-2">QTD</div>
                             <div class="col-2">ESPAÇOS</div>
                             <div class="col-2"></div>
                         </div>
+
                         <div id="inventoryList" class="mb-3"></div>
-                        <button class="btn btn-dark w-100 fw-bold btn-sm mb-3 btn-add" onclick="addInventoryItem()"><i
-                                class="bi bi-backpack2"></i> ADICIONAR ITEM</button>
+
+                        <button class="btn btn-dark w-100 fw-bold btn-sm mb-3 btn-add" onclick="addInventoryItem()">
+                            <i class="bi bi-backpack2"></i> ADICIONAR ITEM
+                        </button>
+
                         <div class="row align-items-center bg-light rounded p-2 border mx-0">
-                            <div class="col-md-4 d-flex align-items-center gap-2"><span
-                                    class="fw-bold text-warning text-shadow"
-                                    style="text-shadow: 1px 1px 0 #000;">T$</span><input type="number"
-                                    inputmode="numeric" class="form-control form-control-sm fw-bold" id="charCash"
-                                    placeholder="0" oninput="saveData()"></div>
+                            <div class="col-md-4 d-flex align-items-center gap-2">
+                                <span class="fw-bold text-warning text-shadow"
+                                    style="text-shadow: 1px 1px 0 #000;">T$</span>
+                                <input type="number" inputmode="numeric" class="form-control form-control-sm fw-bold"
+                                    id="charCash" placeholder="0" oninput="saveData()">
+                            </div>
+
                             <div class="col-md-8 d-flex justify-content-end align-items-center gap-2 small flex-wrap">
                                 <span class="fw-bold">CARGA:</span>
                                 <select class="form-select form-select-sm fw-bold p-0 ps-1"
@@ -529,17 +542,24 @@
                                     <option value="SAB">SAB</option>
                                     <option value="CAR">CAR</option>
                                 </select>
-                                <div class="input-group input-group-sm" style="width: 150px;"><span
-                                        class="input-group-text bg-white fw-bold" id="loadCurrent">0</span><span
-                                        class="input-group-text">/</span><span <span
-                                        class="input-group-text bg-white text-muted" id="loadLimit">10</span></div>
+
+                                <div class="input-group input-group-sm" style="width: 150px;">
+                                    <span class="input-group-text bg-white fw-bold" id="loadCurrent">0</span>
+                                    <span class="input-group-text">/</span>
+                                    <span class="input-group-text bg-white text-muted" id="loadLimit">10</span>
+                                </div>
+
                                 <div class="input-group input-group-sm" style="width: 100px;">
                                     <button class="btn btn-outline-secondary btn-sm p-0 px-1" type="button"
-                                        onclick="changeLoadBonus(-1)"><i class="bi bi-dash"></i></button>
+                                        onclick="changeLoadBonus(-1)">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
                                     <span class="input-group-text bg-white fw-bold p-0 px-1" id="loadBonusDisplay"
                                         style="width: 40px;">0</span>
                                     <button class="btn btn-outline-secondary btn-sm p-0 px-1" type="button"
-                                        onclick="changeLoadBonus(1)"><i class="bi bi-plus"></i></button>
+                                        onclick="changeLoadBonus(1)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
                                 </div>
                                 <span class="text-muted" style="font-size: 0.7em;">(Slots)</span>
                             </div>
