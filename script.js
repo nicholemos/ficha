@@ -291,18 +291,15 @@ function addAbility(targetId = 'abilitiesClassList', name = '', desc = '') {
 
     div.innerHTML = `
         <div class="d-flex align-items-center gap-2">
-            <div class="p-1 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse_${abilityId}" style="cursor: pointer;">
+            <div class="p-1 ability-toggle" data-target="collapse_${abilityId}" style="cursor: pointer; flex-shrink: 0;">
                 <i class="bi bi-chevron-right collapse-icon text-danger"></i>
             </div>
             
             <input type="text" class="form-control form-control-sm fw-bold border-0 bg-transparent inp-name" 
                    placeholder="Nome da Habilidade" 
-                   value="${name}"
-                   data-bs-toggle="collapse" 
-                   data-bs-target="#collapse_${abilityId}"
-                   style="cursor: pointer;">
+                   value="${name}">
             
-            <button class="btn btn-outline-danger btn-sm border-0" onclick="this.closest('.ability-row').remove(); saveData();">
+            <button class="btn btn-outline-danger btn-sm border-0 ability-delete-btn" type="button" style="flex-shrink: 0;">
                 <i class="bi bi-trash"></i>
             </button>
         </div>
@@ -313,13 +310,33 @@ function addAbility(targetId = 'abilitiesClassList', name = '', desc = '') {
         </div>
     `;
 
-    // Evita que o clique para digitar no input feche o collapse se ele já estiver aberto
+    // Toggle collapse ao clicar no ícone de seta
+    const toggleBtn = div.querySelector('.ability-toggle');
+    toggleBtn.addEventListener('click', () => {
+        const collapseEl = document.getElementById(`collapse_${abilityId}`);
+        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+        bsCollapse.toggle();
+    });
+
+    // Botão de excluir — stopPropagation garante que o toque no mobile não dispare outros eventos
+    const deleteBtn = div.querySelector('.ability-delete-btn');
+    deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('Excluir poder?')) {
+            div.remove();
+            saveData();
+        }
+    });
+
+    // Permite abrir o collapse ao clicar no nome (quando já fechado)
     const inputField = div.querySelector('.inp-name');
     inputField.addEventListener('click', (e) => {
         const collapseEl = document.getElementById(`collapse_${abilityId}`);
-        if (collapseEl.classList.contains('show')) {
-            e.stopPropagation(); // Se já estiver aberto, permite apenas editar o texto
+        if (!collapseEl.classList.contains('show')) {
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+            bsCollapse.show();
         }
+        // Se já aberto, apenas foca para editar (não faz nada)
     });
 
     // Listeners para salvar mudanças
