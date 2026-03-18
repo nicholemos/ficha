@@ -284,42 +284,48 @@ function addAbility(targetId = 'abilitiesClassList', name = '', desc = '') {
     const list = document.getElementById(targetId);
     if (!list) return;
 
-    // Gerar um ID único para o colapso
-    const abilityId = 'ability_' + Math.random().toString(36).substr(2, 9);
     const div = document.createElement('div');
     div.className = 'ability-row list-group-item bg-light p-2 mb-2 border rounded shadow-sm';
 
+    // Layout: chevron (fixo) | input (flexível) | botão lixeira (fixo)
+    // Sem data-bs-toggle no input — evita conflito de toque no mobile
     div.innerHTML = `
-        <div class="d-flex align-items-center gap-2">
-            <div class="p-1 ability-toggle" data-target="collapse_${abilityId}" style="cursor: pointer; flex-shrink: 0;">
-                <i class="bi bi-chevron-right collapse-icon text-danger"></i>
-            </div>
-            
-            <input type="text" class="form-control form-control-sm fw-bold border-0 bg-transparent inp-name" 
-                   placeholder="Nome da Habilidade" 
-                   value="${name}">
-            
-            <button class="btn btn-outline-danger btn-sm border-0 ability-delete-btn" type="button" style="flex-shrink: 0;">
+        <div style="display:flex; align-items:center; gap:6px;">
+            <span class="ability-chevron text-danger" style="cursor:pointer; flex-shrink:0; padding:6px; font-size:1rem; line-height:1;">
+                <i class="bi bi-chevron-right collapse-icon"></i>
+            </span>
+            <input type="text"
+                   class="form-control form-control-sm fw-bold border-0 bg-transparent inp-name"
+                   placeholder="Nome da Habilidade"
+                   value="${name.replace(/"/g, '&quot;')}"
+                   style="flex:1 1 auto; min-width:0;">
+            <button type="button"
+                    class="btn btn-outline-danger btn-sm border-0 ability-delete-btn"
+                    style="flex-shrink:0; min-width:34px; min-height:34px; padding:4px 8px;">
                 <i class="bi bi-trash"></i>
             </button>
         </div>
-        
-        <div class="collapse mt-2" id="collapse_${abilityId}">
-            <textarea class="form-control form-control-sm inp-desc border-danger-subtle" rows="3" 
-                      placeholder="Descrição detalhada...">${desc}</textarea>
+        <div class="ability-body d-none mt-2">
+            <textarea class="form-control form-control-sm inp-desc border-danger-subtle"
+                      rows="3" placeholder="Descrição detalhada...">${desc}</textarea>
         </div>
     `;
 
-    // Toggle collapse ao clicar no ícone de seta
-    const toggleBtn = div.querySelector('.ability-toggle');
-    toggleBtn.addEventListener('click', () => {
-        const collapseEl = document.getElementById(`collapse_${abilityId}`);
-        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
-        bsCollapse.toggle();
+    const chevron  = div.querySelector('.ability-chevron');
+    const icon     = div.querySelector('.collapse-icon');
+    const body     = div.querySelector('.ability-body');
+    const deleteBtn = div.querySelector('.ability-delete-btn');
+
+    // --- Toggle (apenas pelo chevron, sem tocar no input) ---
+    chevron.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const hidden = body.classList.toggle('d-none');
+        icon.classList.toggle('bi-chevron-right', hidden);
+        icon.classList.toggle('bi-chevron-down', !hidden);
+        div.classList.toggle('border-danger', !hidden);
     });
 
-    // Botão de excluir — stopPropagation garante que o toque no mobile não dispare outros eventos
-    const deleteBtn = div.querySelector('.ability-delete-btn');
+    // --- Excluir (click normal — funciona em desktop e mobile) ---
     deleteBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (confirm('Excluir poder?')) {
@@ -328,33 +334,9 @@ function addAbility(targetId = 'abilitiesClassList', name = '', desc = '') {
         }
     });
 
-    // Permite abrir o collapse ao clicar no nome (quando já fechado)
-    const inputField = div.querySelector('.inp-name');
-    inputField.addEventListener('click', (e) => {
-        const collapseEl = document.getElementById(`collapse_${abilityId}`);
-        if (!collapseEl.classList.contains('show')) {
-            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
-            bsCollapse.show();
-        }
-        // Se já aberto, apenas foca para editar (não faz nada)
-    });
-
-    // Listeners para salvar mudanças
+    // --- Salvar ao editar ---
     div.querySelectorAll('input, textarea').forEach(el => {
         el.addEventListener('input', saveData);
-    });
-
-    // Animação do ícone de seta
-    const collapseEl = div.querySelector('.collapse');
-    const icon = div.querySelector('.collapse-icon');
-
-    collapseEl.addEventListener('show.bs.collapse', () => {
-        icon.classList.replace('bi-chevron-right', 'bi-chevron-down');
-        div.classList.add('border-danger'); // Destaque visual quando aberto
-    });
-    collapseEl.addEventListener('hide.bs.collapse', () => {
-        icon.classList.replace('bi-chevron-down', 'bi-chevron-right');
-        div.classList.remove('border-danger');
     });
 
     list.appendChild(div);
