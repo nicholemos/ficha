@@ -1,0 +1,1095 @@
+/* --- 1. FONTE TORMENTA --- */
+@font-face {
+    font-family: 'Tormenta';
+    src: url('Tormenta.ttf') format('truetype');
+}
+
+/* Aplica a fonte nos títulos e números grandes */
+.t20-section-title,
+.def-shield,
+.attr-val,
+h1,
+h2,
+h3,
+.fs-4 {
+    font-family: 'Tormenta', serif;
+    letter-spacing: 1px;
+}
+
+/* Ajuste para a fonte não ficar pequena demais nos inputs */
+.attr-val {
+    font-size: 2.8rem !important;
+    /* Aumentei pois a fonte Tormenta costuma ser menor */
+    text-shadow: 2px 2px 0px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+    /* Contorno para leitura */
+    color: #8b0000 !important;
+    /* Vermelho sangue */
+}
+
+/* --- 2. ESTILO DOS ATRIBUTOS (TOKENS) --- */
+.attr-token {
+    width: 100%;
+    max-width: 110px;
+    aspect-ratio: 1 / 1;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    border: 4px solid #333;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    transition: transform 0.2s;
+    position: relative;
+    /* Essencial para o overlay */
+    overflow: hidden;
+    /* Para garantir que o overlay não vaze */
+}
+
+/* Nova camada de overlay para controlar a transparência da IMAGEM */
+.attr-token::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    /* Cor branca com 20% de opacidade */
+    /* Ajuste o último número (0.2) para controlar a transparência:
+       0.0 = totalmente transparente (só o fundo original aparece)
+       0.1 = bem sutil
+       0.2 = levemente transparente (como no exemplo)
+       0.3 = um pouco mais visível
+       0.4 = perceptível
+       ...
+       1.0 = totalmente opaco (a imagem sumiria e ficaria só branco)
+    */
+    pointer-events: none;
+    /* Permite clicar no input por baixo */
+}
+
+.attr-token:hover {
+    transform: scale(1.05);
+    border-color: var(--t20-red);
+}
+
+/* O input fica transparente por cima da imagem */
+.attr-input-overlay {
+    background: transparent !important;
+    border: none !important;
+    text-align: center;
+    width: 80%;
+    height: 80%;
+    padding: 0;
+    margin: 0;
+    z-index: 2;
+    /* Garante que o número fique por cima do overlay */
+}
+
+.attr-input-overlay:focus {
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50%;
+}
+
+/* O Label (Nome do Atributo) agora fica embaixo, estilo legenda */
+.attr-footer-label {
+    text-align: center;
+    font-family: 'Tormenta', serif;
+    font-weight: bold;
+    color: var(--t20-red);
+    font-size: 1.2rem;
+    margin-top: 5px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 0 #fff;
+}
+
+:root {
+    --t20-red: #b22222;
+    --t20-bg: #fdfdfd;
+}
+
+/* Ajustes Gerais */
+.sheet {
+    max-width: 1100px;
+    border-top: 5px solid var(--t20-red);
+}
+
+/* Inputs Customizados T20 */
+.t20-label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--t20-red);
+    margin-left: 5px;
+}
+
+.t20-input {
+    border: 2px solid #333;
+    background-color: #f0f8ff;
+    font-weight: bold;
+    border-radius: 4px;
+    border-top-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.t20-input:focus {
+    border-color: var(--t20-red);
+    box-shadow: none;
+}
+
+/* Atributos (Escudos) */
+.attr-box {
+    position: relative;
+}
+
+.attr-label {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid black;
+    padding: 0 5px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+.attr-val {
+    width: 100%;
+    height: 80px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--t20-red);
+    border: 3px solid black;
+    border-radius: 5px 5px 50% 50%;
+    /* Formato de escudo */
+    padding-top: 10px;
+}
+
+.attr-val:focus {
+    outline: none;
+    border-color: var(--t20-red);
+    background-color: #fff0f0;
+}
+
+/* Labels flutuantes nas bordas */
+/* Labels flutuantes nas bordas */
+.t20-status-label,
+.t20-section-title {
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: white;
+    padding: 0 5px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: var(--t20-red);
+    text-transform: uppercase;
+    white-space: nowrap;
+    /* <--- ISSO IMPEDE A QUEBRA DE LINHA */
+    z-index: 5;
+    /* Garante que fique acima da borda e da barra */
+}
+
+/* Escudo da Defesa */
+.def-shield {
+    width: 70px;
+    height: 80px;
+    background: #e9ecef;
+    border: 3px solid black;
+    border-radius: 5px 5px 50% 50%;
+    color: black;
+}
+
+/* Perícias (Tabela zebrada customizada) */
+.skill-row:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.skill-row {
+    font-size: 0.8rem;
+    /* Reduzi um pouco para caber melhor */
+    background-color: white;
+    /* Garante fundo limpo */
+}
+
+.skill-row input[type="number"] {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+    width: 100%;
+    height: 20px;
+    /* Altura fixa compacta */
+    font-size: 0.8rem;
+}
+
+/* Ataques (Accordion) */
+.atk-summary input {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    background: transparent;
+    text-align: center;
+    font-weight: 600;
+}
+
+.atk-summary input:focus {
+    outline: none;
+    border-bottom: 2px solid var(--t20-red);
+}
+
+.atk-details {
+    background-color: #f8f9fa;
+    border-left: 3px solid var(--t20-red);
+}
+
+.form-label-sm {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #666;
+    border-top: 1px solid #dee2e6;
+    display: block;
+    text-align: center;
+}
+
+/* Adicione ao seu CSS */
+
+.def-row .inp-bonus {
+    text-align: center;
+    background: #f0fff4;
+    /* Verdinho claro para bônus */
+    border: 1px solid #c3e6cb;
+}
+
+.def-row .inp-penalty {
+    text-align: center;
+    background: #fff5f5;
+    /* Vermelhinho claro para penalidade */
+    border: 1px solid #f5c6cb;
+}
+
+.def-details {
+    background-color: #e9ecef;
+    margin-top: 5px;
+    border-left: 4px solid #6c757d;
+}
+
+/* Ajuste visual do seletor de atributo na fórmula */
+#defAttrSelect {
+    font-size: 1.1rem;
+    /* Maior */
+    font-weight: 800;
+    /* Mais negrito */
+    color: var(--t20-red);
+    /* Vermelho T20 */
+    border: 2px solid #ddd;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+#defAttrSelect:hover {
+    color: var(--t20-red) !important;
+}
+
+
+#defAttrSelect:focus {
+    border-color: var(--t20-red);
+    box-shadow: 0 0 5px rgba(178, 34, 34, 0.3);
+}
+
+/* Estilo dos Slots Fixos (Armadura/Escudo) */
+.fixed-slot {
+    border: 1px solid #999;
+    border-left: 5px solid #333;
+    /* Faixa preta para indicar item base */
+    background-color: #fdfdfd;
+}
+
+.fixed-slot.armor {
+    border-left-color: var(--t20-red);
+}
+
+/* Faixa vermelha para armadura */
+.fixed-slot.shield {
+    border-left-color: #0d6efd;
+}
+
+/* Faixa azul para escudo */
+
+/* Ajuste para o botão de detalhe fixo */
+.btn-detail-fixed {
+    width: 100%;
+    padding: 2px;
+}
+
+/* Estilo para Magias */
+.spell-row .inp-pm {
+    color: #6f42c1;
+    /* Roxo */
+    font-weight: bold;
+}
+
+.spell-details {
+    border-left: 4px solid #6f42c1;
+    background-color: #f8f4ff;
+    /* Fundo levemente lilás */
+}
+
+/* Labels específicos para os dados técnicos da magia */
+.spell-label {
+    font-size: 0.65em;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #6f42c1;
+    margin-bottom: 0;
+}
+
+/* Efeito na caixa de imagem */
+.char-img-container:hover {
+    border-color: var(--t20-red) !important;
+    opacity: 0.9;
+}
+
+.char-img-container:hover div {
+    background-color: var(--t20-red) !important;
+    /* Faixa inferior fica vermelha */
+}
+
+/* Deixa a espada mais visível */
+.bi-sword {
+    transform: rotate(-45deg);
+    /* Deixa ela inclinada pronta pro combate */
+    display: inline-block;
+}
+
+.bi-sword:hover {
+    transform: rotate(0deg) scale(1.2);
+    /* Animação de ataque ao passar o mouse */
+}
+
+/* --- 3. ESTILO DOS STATUS (BARRAS DINÂMICAS) --- */
+.status-card {
+    position: relative;
+    /* overflow: hidden;  <-- REMOVIDO para o título aparecer fora da caixa */
+    background-color: #e9ecef;
+    z-index: 1;
+    /* O Bootstrap 'rounded' aplica border-radius, a barra precisa acompanhar */
+}
+
+/* A barra colorida que fica atrás */
+.status-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    transition: width 0.4s ease-in-out;
+    opacity: 0.6;
+
+    /* ADICIONADO: Arredonda a barra para não vazar pelos cantos da caixa */
+    border-radius: 0.25rem;
+    /* Mesma curva do 'rounded' do Bootstrap */
+}
+
+/* Cores específicas */
+.bar-hp {
+    background-color: #dc3545;
+}
+
+/* Vermelho (Bootstrap danger) */
+.bar-mp {
+    background-color: #0d6efd;
+}
+
+/* Azul (Bootstrap primary) */
+
+/* Inputs transparentes para ver a barra */
+.status-card input {
+    background: transparent !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    color: #000 !important;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+    /* Sombra branca para ler texto sobre cor */
+}
+
+.status-card input:focus {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* --- BOTÕES FLUTUANTES DE ATRIBUTO --- */
+.attr-wrapper {
+    position: relative;
+    /* Para posicionar os botões absolutos */
+}
+
+.attr-btn-float {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #333;
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    /* Começa invisível e pequeno */
+    transition: transform 0.2s ease-out;
+    z-index: 10;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.attr-btn-float:active {
+    background-color: var(--t20-red);
+    color: white;
+    border-color: var(--t20-red);
+}
+
+/* Posições */
+.attr-btn-up {
+    top: -15px;
+}
+
+.attr-btn-down {
+    bottom: 25px;
+}
+
+/* Fica entre o token e o nome */
+
+/* Classe para mostrar os botões */
+.attr-wrapper.active .attr-btn-float {
+    transform: translateX(-50%) scale(1);
+    /* Aparece */
+}
+
+/* --- BOTÕES FLUTUANTES PARA PERÍCIAS --- */
+.skill-wrapper {
+    position: relative;
+}
+
+/* Versão mini dos botões */
+.skill-btn-mini {
+    width: 22px;
+    height: 22px;
+    font-size: 1rem;
+    z-index: 100 !important;
+    /* Garante que fique acima das outras linhas */
+}
+
+/* Ajuste de posição para a tabela */
+.skill-wrapper .attr-btn-up {
+    top: -22px;
+}
+
+.skill-wrapper .attr-btn-down {
+    bottom: -22px;
+}
+
+/* Estado Ativo */
+.skill-wrapper.active .attr-btn-float {
+    transform: translateX(-50%) scale(1);
+}
+
+/* --- SISTEMA DE COLAPSO (ACCORDION) --- */
+
+/* Ícone da setinha */
+.section-toggle {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    margin-right: 8px;
+    color: inherit;
+}
+
+/* Gira a seta quando fechado */
+.collapsed .section-toggle {
+    transform: rotate(-90deg);
+}
+
+/* REGRAS ESPECÍFICAS POR SEÇÃO */
+
+/* 1. HEADER: Esconde foto e linhas extras, mantém só a primeira linha (Nome) */
+#headerSection.collapsed .header-extra {
+    display: none !important;
+}
+
+#headerSection.collapsed .col-img {
+    display: none !important;
+}
+
+#headerSection.collapsed .col-data {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/* 2. ATAQUES: Mostra apenas o 1º ataque, esconde o resto e botões */
+#attacksSection.collapsed .atk-header-row {
+    display: none !important;
+}
+
+#attacksSection.collapsed .atk-row:nth-child(n+2) {
+    display: none !important;
+}
+
+/* Esconde do 2º em diante */
+#attacksSection.collapsed .atk-details {
+    display: none !important;
+}
+
+/* Fecha detalhes se aberto */
+#attacksSection.collapsed .btn-add {
+    display: none !important;
+}
+
+/* 3. DEFESA: Mostra apenas o Escudo Total */
+
+
+#defenseSection.collapsed .def-formula {
+    display: none !important;
+}
+
+#defenseSection.collapsed .fixed-slot {
+    display: none !important;
+}
+
+#defenseSection.collapsed .def-extras {
+    display: none !important;
+}
+
+#defenseSection.collapsed .def-shield {
+    margin: 0 auto;
+    transform: scale(0.8);
+}
+
+#defenseSection.collapsed .def-header {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Centraliza */
+
+/* 4. CARACTERÍSTICAS: Esconde Profs/Status, mostra só 2 primeiros poderes */
+#abilitiesSection.collapsed .ab-extras {
+    display: none !important;
+}
+
+#abilitiesSection.collapsed .ability-row:nth-child(n+3) {
+    display: none !important;
+}
+
+/* Esconde do 3º em diante */
+#abilitiesSection.collapsed .btn-add {
+    display: none !important;
+}
+
+/* 5. MAGIAS: Esconde tudo */
+#spellsSection.collapsed .spells-content {
+    display: none !important;
+}
+
+/* 6. PERÍCIAS: Esconde tudo */
+#skillsSection.collapsed .skills-content {
+    display: none !important;
+}
+
+#skillsSection.collapsed .btn-add {
+    display: none !important;
+}
+
+#skillsSection.collapsed {
+    height: auto !important;
+    flex-grow: 0 !important;
+}
+
+/* 7. INVENTÁRIO: Esconde tudo */
+#inventorySection.collapsed .inv-content {
+    display: none !important;
+}
+
+
+/* Ícone de Arrastar */
+.drag-handle {
+    cursor: grab;
+    color: #aaa;
+    padding: 5px;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+    color: var(--t20-red);
+}
+
+/* Classe visual enquanto arrasta (opcional, o Sortable já faz um efeito, mas esse melhora) */
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: #f0f0f0;
+}
+
+
+/* 8. ANOTAÇÕES: Regra para recolher a seção */
+#notesSection.collapsed .notes-content {
+    display: none !important;
+}
+
+
+
+
+/* =========================
+   ASSINATURA / CRÉDITOS (STR-style)
+   ========================= */
+
+.sig-wrap {
+    max-width: 1100px;
+    margin: 28px auto 40px;
+    padding: 0 16px;
+}
+
+.sig-card {
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, .12);
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    overflow: hidden;
+}
+
+.sig-summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 18px;
+    background: #2f3f4f;
+    /* header STR */
+    color: #ffffff;
+    position: relative;
+}
+
+.sig-summary::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+    background: #e0483f;
+    /* faixa vermelha */
+}
+
+.sig-summary::-webkit-details-marker {
+    display: none;
+}
+
+.sig-summary-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.sig-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .22);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+}
+
+.sig-title {
+    font-size: 16px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sig-summary-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: .95;
+}
+
+.sig-hint {
+    font-size: 12px;
+    opacity: .85;
+    white-space: nowrap;
+}
+
+.sig-chevron {
+    font-size: 16px;
+    transition: transform .18s ease;
+}
+
+.sig-card[open] .sig-chevron {
+    transform: rotate(180deg);
+}
+
+.sig-body {
+    padding: 18px;
+    background: #f6f7fb;
+    /* leve cinza como card do STR */
+}
+
+.sig-hero {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, .10);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
+    margin-bottom: 14px;
+}
+
+.sig-h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.sig-p {
+    margin: 0 0 10px;
+    color: rgba(15, 23, 42, .86);
+    line-height: 1.45;
+}
+
+.sig-grid {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 14px;
+}
+
+@media (max-width: 900px) {
+    .sig-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sig-hint {
+        display: none;
+    }
+}
+
+.sig-col {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, .10);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
+}
+
+.sig-h4 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 900;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+}
+
+.sig-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, .10);
+    text-decoration: none;
+    background: #ffffff;
+    transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease;
+    margin-bottom: 10px;
+}
+
+.sig-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, .08);
+    border-color: rgba(0, 0, 0, .16);
+}
+
+.sig-link:active {
+    transform: translateY(0px);
+}
+
+.sig-link-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.sig-link-name {
+    font-weight: 900;
+    color: #0f172a;
+    font-size: 14px;
+    line-height: 1.15;
+}
+
+.sig-link-url {
+    color: rgba(15, 23, 42, .62);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sig-ext {
+    color: rgba(15, 23, 42, .55);
+    font-size: 16px;
+    flex: 0 0 auto;
+}
+
+.sig-link-primary {
+    border-color: rgba(224, 72, 63, .35);
+    box-shadow: 0 10px 20px rgba(224, 72, 63, .10);
+}
+
+.sig-link-primary:hover {
+    border-color: rgba(224, 72, 63, .55);
+    box-shadow: 0 14px 24px rgba(224, 72, 63, .14);
+}
+
+.sig-note {
+    margin-top: 12px;
+    border-radius: 12px;
+    border: 1px dashed rgba(0, 0, 0, .16);
+    background: rgba(47, 63, 79, .04);
+    padding: 12px;
+}
+
+.sig-note-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: rgba(15, 23, 42, .72);
+    margin-bottom: 6px;
+}
+
+.sig-note-text {
+    color: rgba(15, 23, 42, .78);
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.sig-footer {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, .10);
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+}
+
+.sig-footer-text {
+    color: rgba(15, 23, 42, .68);
+    font-size: 12px;
+}
+
+
+/* Estilo para o indicador de excedente nas barras */
+.bar-plus {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    font-size: 1.2rem;
+    pointer-events: none;
+}
+
+/* Garante que o preenchimento da barra suporte conteúdo absoluto */
+.status-bar-fill {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Cores normais com opacidade baixa para leitura (mantendo seu padrão) */
+.bar-hp {
+    background-color: #dc3545;
+    opacity: 0.6;
+}
+
+.bar-mp {
+    background-color: #0d6efd;
+    opacity: 0.6;
+}
+
+/* Destaque quando excedido: Opacidade total e Brilho */
+.status-bar-fill.bar-exceeded {
+    opacity: 1 !important;
+    /* Cor fica sólida e forte */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.3);
+    filter: brightness(1.2);
+    /* Deixa a cor levemente mais clara/viva */
+}
+
+/* Estilo do símbolo + */
+.bar-plus {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 900;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+    font-size: 1.1rem;
+    pointer-events: none;
+    font-family: 'Tormenta', serif;
+    /* Mantendo a identidade visual */
+}
+
+/* Efeito opcional: Sutil animação de pulsação no brilho */
+.bar-exceeded {
+    animation: barPulse 2s infinite ease-in-out;
+}
+
+@keyframes barPulse {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    }
+
+    100% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    }
+}
+
+/* Indicador de excedente dourado */
+.bar-plus {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 900;
+    color: #ffd700;
+    /* Dourado */
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 1px 1px 2px black;
+    font-size: 1.4rem;
+    pointer-events: none;
+    font-family: 'Tormenta', serif;
+    animation: goldGlow 1.5s infinite alternate;
+}
+
+@keyframes goldGlow {
+    from {
+        filter: brightness(1);
+    }
+
+    to {
+        filter: brightness(1.5) drop-shadow(0 0 2px gold);
+    }
+}
+
+/* Rótulos pequenos dentro das caixas de status */
+.t20-mini-label {
+    position: absolute;
+    top: -18px;
+    left: 5px;
+    font-size: 0.6rem;
+    font-weight: bold;
+    color: var(--t20-red);
+    text-transform: uppercase;
+    background: white;
+    padding: 0 3px;
+    z-index: 10;
+}
+
+/* Separador vertical entre Atual/Máx */
+.vr {
+    width: 2px;
+    background-color: rgba(0, 0, 0, 0.2);
+    align-self: stretch;
+    margin: 5px 0;
+}
+
+
+.ability-row .inp-name:focus {
+    box-shadow: none;
+    border-bottom: 1px solid #dc3545 !important;
+}
+
+.ability-row .collapse-icon {
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+/* Deixa a linha mais fina quando fechada */
+.ability-row {
+    transition: all 0.3s ease;
+}
+
+
+/* Estilo suave para os botões de atalho */
+.btn-outline-secondary, .btn-outline-danger, .btn-outline-dark {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    text-decoration: none;
+}
+
+.btn-outline-secondary:hover, .btn-outline-danger:hover, .btn-outline-dark:hover {
+    opacity: 1;
+}
+
+
+/* --- DRAG HANDLE MOBILE --- */
+.ability-drag-handle {
+    cursor: grab;
+    touch-action: none; /* essencial para SortableJS no mobile */
+    -webkit-user-select: none;
+    user-select: none;
+    padding: 4px 6px;
+    color: #aaa;
+}
+.ability-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Garante que inputs/botões dentro de sortable capturem toque */
+.ability-row input,
+.ability-row textarea,
+.ability-row button,
+.atk-row input,
+.atk-row textarea,
+.atk-row select,
+.atk-row button,
+.def-row input,
+.def-row button,
+.inv-row input,
+.inv-row button,
+.spell-row input,
+.spell-row textarea,
+.spell-row select,
+.spell-row button {
+    touch-action: auto;
+    -webkit-user-select: text;
+    user-select: text;
+    position: relative;
+    z-index: 1;
+}
