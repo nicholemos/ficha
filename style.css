@@ -1057,15 +1057,3 @@ h3,
     opacity: 1;
 }
 
-
-.drag-handle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    touch-action: none; /* Melhora a resposta do toque no mobile */
-}
-
-.ability-row input.inp-name {
-    flex-grow: 1;
-    min-width: 0; /* Evita que o input empurre a lixeira para fora da tela */
-}
