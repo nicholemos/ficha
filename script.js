@@ -1,6 +1,12 @@
 // --- DADOS E CONFIGURAÇÕES ---
 const attrs = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
 
+// Perícias que só funcionam se treinadas (retornam 0 se não treinado)
+const TRAINED_ONLY_SKILLS = ['Adestramento', 'Conhecimento', 'Guerra', 'Jogatina', 'Ladinagem', 'Misticismo', 'Nobreza', 'Pilotagem', 'Religião'];
+
+// Tabela de XP por nível (T20)
+const XP_TABLE = [0, 1000, 3000, 6000, 10000, 15000, 21000, 28000, 36000, 45000, 55000, 66000, 78000, 91000, 105000, 120000, 136000, 153000, 171000, 190000];
+
 const defaultSkills = [
     { n: 'Acrobacia', a: 'DES' }, { n: 'Adestramento', a: 'CAR' }, { n: 'Atletismo', a: 'FOR' },
     { n: 'Atuação', a: 'CAR' }, { n: 'Cavalgar', a: 'DES' }, { n: 'Conhecimento', a: 'INT' },
@@ -17,6 +23,7 @@ const defaultSkills = [
 const spellCosts = { 1: 1, 2: 3, 3: 6, 4: 10, 5: 15 };
 let currentSkills = [];
 let currentLoadBonus = 0; // Bônus manual para a carga
+let currentArmorLoadBonus = 0; // Bônus de slots da armadura
 let isLoading = false;    // Flag para suprimir saveData() durante o carregamento inicial
 
 // --- INICIALIZAÇÃO ---
@@ -28,9 +35,9 @@ window.onload = () => {
         attachGlobalListeners();
         enableDragAndDrop();
     } catch (e) { console.error(e); }
-    
+
     setTimeout(updateCalculations, 100);
-    
+
     // ADICIONE ESTA LINHA AQUI:
     setTimeout(checkImportedPowers, 400); // 400ms garante que a ficha já carregou tudo antes de importar
 };
@@ -87,8 +94,12 @@ function renderSkills() {
         const attrOptions = attrs.map(a => `<option value="${a}" ${s.a === a ? 'selected' : ''}>${a}</option>`).join('');
         const isDefault = defaultSkills.some(ds => ds.n === s.n && !s.isCustom);
 
+        const isTrainedOnly = TRAINED_ONLY_SKILLS.includes(s.n);
+        const skillLabel = isDefault
+            ? `${s.n}${isTrainedOnly ? '<span class="text-danger" title="Somente treinada">*</span>' : ''}`
+            : s.n;
         const nameDisplay = isDefault
-            ? `<span class="fw-bold text-truncate d-block" title="${s.n}" style="font-size:0.9em; padding-top:2px;">${s.n}</span>`
+            ? `<span class="fw-bold text-truncate d-block" title="${s.n}${isTrainedOnly ? ' (somente treinada)' : ''}" style="font-size:0.9em; padding-top:2px;">${skillLabel}</span>`
             : `<input type="text" class="form-control form-control-sm p-0 fw-bold border-0 bg-transparent" value="${s.n}" onchange="updateSkillName(${i}, this.value)" placeholder="Nome">`;
 
         const deleteBtn = !isDefault
@@ -314,9 +325,9 @@ function addAbility(targetId = 'abilitiesClassList', name = '', desc = '') {
         </div>
     `;
 
-    const chevron  = div.querySelector('.ability-chevron');
-    const icon     = div.querySelector('.collapse-icon');
-    const body     = div.querySelector('.ability-body');
+    const chevron = div.querySelector('.ability-chevron');
+    const icon = div.querySelector('.collapse-icon');
+    const body = div.querySelector('.ability-body');
     const deleteBtn = div.querySelector('.ability-delete-btn');
 
     // --- Toggle (apenas pelo chevron, sem tocar no input) ---
@@ -384,6 +395,18 @@ function changeLoadBonus(amount) {
     saveData(); // Salva a alteração
 }
 
+function changeArmorLoadBonus(amount) {
+    currentArmorLoadBonus += amount;
+    const disp = document.getElementById('armorLoadBonusDisplay');
+    if (disp) {
+        // Mantém o sinal de + para positivos e mostra o - naturalmente para negativos
+        disp.innerText = currentArmorLoadBonus > 0 ? `+${currentArmorLoadBonus}` : currentArmorLoadBonus;
+    }
+
+    calcLoad();
+    saveData();
+}
+
 function calcLoad() {
     const selectedAttr = getVal('loadAttrSelect') || 'FOR';
     const attrVal = getInt(`attr-${selectedAttr}`);
@@ -396,8 +419,8 @@ function calcLoad() {
         baseLimit += attrVal;
     }
 
-    // Adiciona o bônus manual
-    const totalSlots = baseLimit + currentLoadBonus;
+    // Adiciona o bônus manual + bônus de armadura
+    const totalSlots = baseLimit + currentLoadBonus + currentArmorLoadBonus;
 
     const currentSlots = Array.from(document.querySelectorAll('#inventoryList .inv-row .inp-slots')).reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
 
@@ -435,16 +458,21 @@ function updateCalculations() {
             s.other = other; // Salva o valor no objeto global
             // ---------------------
 
-            let total = halfLevel + attrVal + trained + other;
-
-            // Penalidade de Armadura/Escudo
-            if (penaltySkills.includes(s.n)) {
-                total -= totalPenalty;
-            }
-
-            // Penalidade de Tamanho (Furtividade)
-            if (s.n === 'Furtividade') {
-                total += sizeVal;
+            // Perícias somente treinadas: se não treinar, total = 0
+            const isTrainedOnly = TRAINED_ONLY_SKILLS.includes(s.n);
+            let total;
+            if (isTrainedOnly && !s.trained) {
+                total = 0;
+            } else {
+                total = halfLevel + attrVal + trained + other;
+                // Penalidade de Armadura/Escudo
+                if (penaltySkills.includes(s.n)) {
+                    total -= totalPenalty;
+                }
+                // Penalidade de Tamanho (Furtividade)
+                if (s.n === 'Furtividade') {
+                    total += sizeVal;
+                }
             }
 
             setText(`skHalfLevel${i}`, halfLevel);
@@ -458,7 +486,8 @@ function updateCalculations() {
         const defAttr = getVal('defAttrSelect');
         const defAttrVal = getInt(`attr-${defAttr}`);
         const applyDefAttr = document.getElementById('applyDefAttr') ? document.getElementById('applyDefAttr').checked : true;
-        const armorBonus = getInt('armorBonus');
+        const armorHalfLevel = document.getElementById('armorHalfLevel') ? document.getElementById('armorHalfLevel').checked : false;
+        const armorBonus = getInt('armorBonus') + (armorHalfLevel ? halfLevel : 0);
         const shieldBonus = getInt('shieldBonus');
         let otherBonus = 0;
         document.querySelectorAll('#defenseList .def-row .inp-bonus').forEach(input => { otherBonus += (parseInt(input.value) || 0); });
@@ -569,7 +598,9 @@ function saveData() {
     // 2. Montagem do objeto principal
     const data = {
         loadBonus: typeof currentLoadBonus !== 'undefined' ? currentLoadBonus : 0,
-        version: 15.3,
+        armorLoadBonus: typeof currentArmorLoadBonus !== 'undefined' ? currentArmorLoadBonus : 0,
+        armorHalfLevel: document.getElementById('armorHalfLevel')?.checked ?? false,
+        version: 15.4,
         charName: getVal('charName'),
         playerName: getVal('playerName'),
         charRace: getVal('charRace'),
@@ -716,6 +747,15 @@ function loadData() {
         const loadBonusDisplay = document.getElementById('loadBonusDisplay');
         if (loadBonusDisplay) loadBonusDisplay.innerText = currentLoadBonus > 0 ? `+${currentLoadBonus}` : currentLoadBonus;
 
+        // Carregar bônus de carga da armadura
+        currentArmorLoadBonus = data.armorLoadBonus || 0;
+        const armorLoadBonusDisplay = document.getElementById('armorLoadBonusDisplay');
+        if (armorLoadBonusDisplay) armorLoadBonusDisplay.innerText = currentArmorLoadBonus > 0 ? `+${currentArmorLoadBonus}` : currentArmorLoadBonus;
+
+        // Carregar checkbox ½ nível na armadura
+        const armorHalfLevelEl = document.getElementById('armorHalfLevel');
+        if (armorHalfLevelEl && data.armorHalfLevel !== undefined) armorHalfLevelEl.checked = data.armorHalfLevel;
+
         // --- DADOS GERAIS ---
         if (data.charName) document.getElementById('charName').value = data.charName;
         if (data.playerName) document.getElementById('playerName').value = data.playerName;
@@ -730,7 +770,7 @@ function loadData() {
             if (data.extras.profs) document.getElementById('charProfs').value = data.extras.profs;
             if (data.extras.size) document.getElementById('charSize').value = data.extras.size;
             if (data.extras.speed) document.getElementById('charSpeed').value = data.extras.speed;
-            if (data.extras.xp) document.getElementById('charXP').value = data.extras.xp;
+            if (data.extras.xp) { document.getElementById('charXP').value = data.extras.xp; autoLevelFromXP(); }
             if (data.extras.cash) document.getElementById('charCash').value = data.extras.cash;
         }
 
@@ -860,7 +900,7 @@ function importPoderesDoCarrinho() {
     // Nomes já presentes na lista (case-insensitive)
     const existing = new Set(
         Array.from(list.querySelectorAll('.inp-name'))
-             .map(el => el.value.trim().toLowerCase())
+            .map(el => el.value.trim().toLowerCase())
     );
 
     let added = 0;
@@ -894,6 +934,64 @@ function importPoderesDoCarrinho() {
         setTimeout(() => { toast.style.opacity = '0'; }, 2800);
         setTimeout(() => toast.remove(), 3300);
     }
+}
+
+// --- RESET IMAGEM DO PERSONAGEM ---
+function resetCharImage(e) {
+    e.stopPropagation(); // evita abrir o file picker
+    const defaultSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 16 16'%3E%3Cpath fill='%23ccc' d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'/%3E%3Cpath fill='%23ccc' fill-rule='evenodd' d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z'/%3E%3C/svg%3E";
+    document.getElementById('charImgPreview').src = defaultSrc;
+    localStorage.removeItem('charImage');
+    const fileInput = document.getElementById('charImgInput');
+    if (fileInput) fileInput.value = '';
+}
+
+// --- AUTO-NÍVEL POR XP ---
+function autoLevelFromXP() {
+    const xp = parseInt(document.getElementById('charXP').value) || 0;
+    let newLevel = 1;
+    for (let i = XP_TABLE.length - 1; i >= 0; i--) {
+        if (xp >= XP_TABLE[i]) { newLevel = i + 1; break; }
+    }
+    if (newLevel > 20) newLevel = 20;
+    const levelEl = document.getElementById('charLevel');
+    if (levelEl && parseInt(levelEl.value) !== newLevel) {
+        levelEl.value = newLevel;
+        updateCalculations();
+    }
+    // Exibe XP para o próximo nível
+    const nextEl = document.getElementById('xpNextLevel');
+    if (nextEl) {
+        if (newLevel < 20) {
+            const nextXP = XP_TABLE[newLevel];
+            const diff = nextXP - xp;
+            nextEl.textContent = `Próx. nv: ${nextXP.toLocaleString('pt-BR')} (faltam ${diff.toLocaleString('pt-BR')})`;
+        } else {
+            nextEl.textContent = 'Nível máximo!';
+        }
+    }
+}
+
+// Atualiza o XP mínimo baseado no nível selecionado
+function autoXPFromLevel() {
+    const levelEl = document.getElementById('charLevel');
+    const xpEl = document.getElementById('charXP');
+    if (!levelEl || !xpEl) return;
+
+    let level = parseInt(levelEl.value) || 1;
+    if (level < 1) level = 1;
+    if (level > 20) level = 20;
+
+    // O índice na XP_TABLE é (nível - 1)
+    const minXP = XP_TABLE[level - 1];
+
+    // Só atualiza se o XP atual for menor que o mínimo do novo nível
+    // ou se o usuário estiver "rebaixando" o nível manualmente
+    xpEl.value = minXP;
+
+    // Atualiza o texto de "Próximo nível"
+    autoLevelFromXP();
+    saveData();
 }
 
 function clearSheet() {
@@ -1354,11 +1452,11 @@ async function exportarParaPDF() {
 // ============================================================
 function checkImportedPowers() {
     const importedData = localStorage.getItem('selectedPowers');
-    
+
     if (importedData) {
         try {
             const powers = JSON.parse(importedData);
-                        
+
         } catch (e) {
             console.error("Erro ao importar poderes do Grimório:", e);
         }
