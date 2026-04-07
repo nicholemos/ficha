@@ -14,9 +14,9 @@ const defaultSkills = [
     { n: 'Fortitude', a: 'CON' }, { n: 'Furtividade', a: 'DES' }, { n: 'Guerra', a: 'INT' },
     { n: 'Iniciativa', a: 'DES' }, { n: 'Intimidação', a: 'CAR' }, { n: 'Intuição', a: 'SAB' },
     { n: 'Investigação', a: 'INT' }, { n: 'Jogatina', a: 'CAR' }, { n: 'Ladinagem', a: 'DES' },
-    { n: 'Luta', a: 'FOR' }, { n: 'Misticismo', a: 'INT' }, { n: 'Nobreza', a: 'INT' },
+    { n: 'Misticismo', a: 'INT' }, { n: 'Nobreza', a: 'INT' },
     { n: 'Ofício', a: 'INT' }, { n: 'Percepção', a: 'SAB' }, { n: 'Pilotagem', a: 'DES' },
-    { n: 'Pontaria', a: 'DES' }, { n: 'Reflexos', a: 'DES' }, { n: 'Religião', a: 'SAB' },
+    { n: 'Reflexos', a: 'DES' }, { n: 'Religião', a: 'SAB' },
     { n: 'Sobrevivência', a: 'SAB' }, { n: 'Vontade', a: 'SAB' }
 ];
 
@@ -1462,3 +1462,711 @@ function checkImportedPowers() {
         }
     }
 }
+
+// ================================================================
+//  FICHA DE AMEAÇA
+// ================================================================
+
+let _fichaView = 'personagem'; // 'personagem' | 'ameaca'
+
+function toggleFichaView(mode) {
+    _fichaView = mode;
+    const personagem = document.getElementById('fichaPersonagemContent');
+    const ameaca = document.getElementById('fichaAmeacaSection');
+    const btnP = document.getElementById('btnViewPersonagem');
+    const btnA = document.getElementById('btnViewAmeaca');
+    const headerContent = document.querySelector('.header-content');
+    const btnsPerson = document.getElementById('headerBtnsPersonagem');
+    const btnsAmeaca = document.getElementById('headerBtnsAmeaca');
+    const btnPDF = document.getElementById('btnGerarPDF');
+
+    if (mode === 'ameaca') {
+        if (personagem) personagem.style.display = 'none';
+        if (ameaca) ameaca.style.display = 'block';
+        if (headerContent) headerContent.style.display = 'none';
+
+        // Esconde botões do personagem e mostra os da ameaça
+        if (btnsPerson) btnsPerson.style.setProperty('display', 'none', 'important');
+        if (btnsAmeaca) btnsAmeaca.style.removeProperty('display');
+
+        if (btnPDF) {
+            btnPDF.innerHTML = '<i class="bi bi-file-earmark-pdf"></i> PDF Ameaça';
+            btnPDF.onclick = exportarAmeacaPDF;
+            btnPDF.title = 'Gerar PDF da Ficha de Ameaça';
+        }
+        if (btnP) { btnP.classList.remove('btn-danger'); btnP.classList.add('btn-outline-danger'); }
+        if (btnA) { btnA.classList.remove('btn-outline-danger'); btnA.classList.add('btn-danger'); }
+        syncAmeacaFromSheet();
+    } else {
+        if (personagem) personagem.style.display = '';
+        if (ameaca) ameaca.style.display = 'none';
+        if (headerContent) headerContent.style.display = '';
+
+        // Mostra botões do personagem e força a ocultação dos de ameaça com !important
+        if (btnsPerson) btnsPerson.style.removeProperty('display');
+        if (btnsAmeaca) btnsAmeaca.style.setProperty('display', 'none', 'important');
+
+        if (btnPDF) {
+            btnPDF.innerHTML = '<i class="bi bi-file-earmark-pdf"></i> Gerar PDF Oficial';
+            btnPDF.onclick = exportarParaPDF;
+            btnPDF.title = 'Gerar PDF Oficial';
+        }
+        if (btnP) { btnP.classList.add('btn-danger'); btnP.classList.remove('btn-outline-danger'); }
+        if (btnA) { btnA.classList.add('btn-outline-danger'); btnA.classList.remove('btn-danger'); }
+    }
+}
+
+// Lê o valor calculado de uma perícia pelo nome
+function getSkillTotalByName(name) {
+    const idx = currentSkills.findIndex(s => s.n === name);
+    if (idx === -1) return null;
+    const el = document.getElementById(`skTotal${idx}`);
+    if (!el) return null;
+    const v = parseInt(el.innerText);
+    return isNaN(v) ? null : v;
+}
+
+function fmtBonus(v) {
+    if (v === null || v === undefined) return '–';
+    return v >= 0 ? `+${v}` : `${v}`;
+}
+
+// Sincroniza valores calculados da ficha principal para a visualização de ameaça
+function syncAmeacaFromSheet() {
+    updateCalculations();
+
+    // Helper: preenche o input apenas se estiver vazio (não sobrescreve edições do usuário)
+    const fill = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && !el.value) el.value = val || '';
+    };
+    // Helper: sempre atualiza (re-sync forçado)
+    const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || '';
+    };
+
+    // Iniciativa, Percepção, Fortitude, Reflexos, Vontade — sempre sincronizados
+    set('am-iniciativa', fmtBonus(getSkillTotalByName('Iniciativa')));
+    set('am-percepcao', fmtBonus(getSkillTotalByName('Percepção')));
+    set('am-fort', fmtBonus(getSkillTotalByName('Fortitude')));
+    set('am-ref', fmtBonus(getSkillTotalByName('Reflexos')));
+    set('am-von', fmtBonus(getSkillTotalByName('Vontade')));
+
+    // Defesa
+    set('am-defesa', document.getElementById('defenseTotal')?.innerText || '');
+
+    // PV / PM
+    set('am-pv', getVal('pvMax') || '');
+    const pmMax = getVal('pmMax') || '';
+    set('am-pm', (pmMax && pmMax !== '0') ? pmMax : '');
+
+    // Deslocamento
+    fill('am-desl', getVal('charSpeed') || '');
+
+    // Nome, tipo — preenche só se vazio
+    fill('am-nome', getVal('charName') || '');
+    const raca = getVal('charRace');
+    const classeEl = document.getElementById('charClass');
+    const tamanhoEl = document.getElementById('charSize');
+    const tamanho = tamanhoEl ? tamanhoEl.options[tamanhoEl.selectedIndex]?.text : '';
+    fill('am-tipo', [raca, tamanho].filter(Boolean).join(' '));
+
+    // Atributos — preenche só se vazio
+    [['FOR', 'am-for'], ['DES', 'am-des'], ['CON', 'am-con'], ['INT', 'am-int'], ['SAB', 'am-sab'], ['CAR', 'am-car']].forEach(([a, id]) => {
+        fill(id, fmtBonus(getInt(`attr-${a}`)));
+    });
+
+    // Proficiências (obs de percepção)
+    const profs = getVal('charProfs') || '';
+    fill('am-percepcao-obs', profs);
+}
+
+function getSavedAmeacaData() {
+    try { return JSON.parse(localStorage.getItem('t20AmeacaData') || '{}'); } catch { return {}; }
+}
+
+// ============================================================
+// FIX 3 — Importar Ataques da ficha
+// ============================================================
+function importarAtaquesDaFicha() {
+    const rows = document.querySelectorAll('#attacksList .atk-row');
+    if (!rows.length) { alert('Nenhum ataque encontrado na ficha.'); return; }
+
+    const existing = new Set(
+        Array.from(document.querySelectorAll('#am-ataques-list .am-atk-nome'))
+            .map(el => el.value.trim().toLowerCase())
+    );
+
+    let added = 0;
+    rows.forEach(row => {
+        const nome = row.querySelector('.inp-name')?.value?.trim() || '';
+        const bonus = row.querySelector('.inp-bonus')?.value?.trim() || '';
+        const dmg = row.querySelector('.inp-dmg')?.value?.trim() || '';
+        const critR = row.querySelector('.inp-crit-range')?.value?.trim() || '20';
+        const crit = row.querySelector('.inp-crit')?.value?.trim() || 'x2';
+        if (!nome || existing.has(nome.toLowerCase())) return;
+        const danoCompleto = critR && critR !== '20' ? `${dmg}, ${critR}-20/${crit}` : `${dmg}, ${crit}`;
+        const bonusFmt = (parseInt(bonus) >= 0 && !bonus.startsWith('-')) ? `+${bonus}` : bonus;
+        addAmeacaAtaque({ nome, bonus: bonusFmt, dano: danoCompleto });
+        existing.add(nome.toLowerCase());
+        added++;
+    });
+
+    saveAmeaca();
+    if (added > 0) mostrarToastAmeaca(`⚔️ ${added} ataque(s) importado(s)!`);
+    else mostrarToastAmeaca('Todos os ataques já estão na lista.');
+}
+
+// ============================================================
+// FIX 4 — Importar Magias como habilidades (com botão ocultar)
+// ============================================================
+function importarMagiasDaFicha() {
+    const magias = [];
+    [1, 2, 3, 4, 5].forEach(circulo => {
+        document.querySelectorAll(`#spellsList${circulo} .spell-row`).forEach(row => {
+            const nome = row.querySelector('.inp-name')?.value?.trim();
+            const pm = row.querySelector('.inp-pm')?.value?.trim();
+            const escola = row.querySelector('.inp-school')?.value?.trim();
+            const exec = row.querySelector('.inp-exec')?.value?.trim();
+            const alcance = row.querySelector('.inp-range')?.value?.trim();
+            const alvo = row.querySelector('.inp-target')?.value?.trim();
+            const dur = row.querySelector('.inp-dur')?.value?.trim();
+            const desc = row.querySelector('.inp-desc')?.value?.trim();
+            if (!nome) return;
+            const detalhes = [escola, exec && `Exec.: ${exec}`, alcance && `Alc.: ${alcance}`, alvo && `Alvo: ${alvo}`, dur && `Dur.: ${dur}`].filter(Boolean).join(' · ');
+            magias.push({ nome: `${nome}${pm ? ` (${pm} PM)` : ''}`, tipo: 'Passiva', desc: [detalhes, desc].filter(Boolean).join('\n') });
+        });
+    });
+
+    if (!magias.length) { alert('Nenhuma magia encontrada na ficha.'); return; }
+
+    const existing = new Set(Array.from(document.querySelectorAll('#am-habilidades-list .am-hab-nome')).map(el => el.value.trim().toLowerCase()));
+    let added = 0;
+    magias.forEach(m => {
+        if (existing.has(m.nome.toLowerCase())) return;
+        addAmeacaHabilidade(m);
+        existing.add(m.nome.toLowerCase());
+        added++;
+    });
+    saveAmeaca();
+    if (added > 0) mostrarToastAmeaca(`✨ ${added} magia(s) importada(s)!`);
+    else mostrarToastAmeaca('Todas as magias já estão na lista.');
+}
+
+function toggleMagiasAmeaca() {
+    document.querySelectorAll('#am-habilidades-list .am-row').forEach(row => {
+        // Identifica linhas de magia pela presença de " PM)" no nome
+        const nome = row.querySelector('.am-hab-nome')?.value || '';
+        if (nome.includes(' PM)') || nome.includes('PM)')) {
+            row.style.display = row.style.display === 'none' ? '' : 'none';
+        }
+    });
+}
+
+// ============================================================
+// FIX 5 — Importar Perícias com checklist modal
+// ============================================================
+const PERICIAS_FIXAS = ['Iniciativa', 'Percepção', 'Fortitude', 'Reflexos', 'Vontade']; // já têm campos próprios
+
+function abrirModalImportarPericias() {
+    // Monta lista de perícias (excluindo as 5 fixas)
+    const pericias = currentSkills
+        .map((s, i) => ({
+            nome: s.n,
+            total: parseInt(document.getElementById(`skTotal${i}`)?.innerText) || 0
+        }))
+        .filter(s => !PERICIAS_FIXAS.includes(s.nome));
+
+    if (!pericias.length) { alert('Nenhuma perícia disponível.'); return; }
+
+    const modal = document.getElementById('modalImportarPericias');
+    const lista = document.getElementById('pericias-import-list');
+    lista.innerHTML = pericias.map((s, i) => `
+        <label class="d-flex align-items-center gap-2 py-1 border-bottom" style="cursor:pointer;">
+            <input type="checkbox" class="form-check-input m-0" id="pck-${i}" value="${i}">
+            <span class="fw-bold" style="min-width:140px;">${s.nome}</span>
+            <span class="text-danger fw-bold">${s.total >= 0 ? '+' : ''}${s.total}</span>
+        </label>
+    `).join('');
+
+    // Guarda referência para confirmar
+    modal._pericias = pericias;
+    modal.style.display = 'flex';
+}
+
+function fecharModalPericias() {
+    document.getElementById('modalImportarPericias').style.display = 'none';
+}
+
+function confirmarImportarPericias() {
+    const modal = document.getElementById('modalImportarPericias');
+    const pericias = modal._pericias || [];
+    const checks = document.querySelectorAll('#pericias-import-list input[type=checkbox]:checked');
+    const existing = new Set(Array.from(document.querySelectorAll('#am-pericias-list .am-per-nome')).map(el => el.value.trim().toLowerCase()));
+    let added = 0;
+    checks.forEach(chk => {
+        const p = pericias[parseInt(chk.value)];
+        if (!p || existing.has(p.nome.toLowerCase())) return;
+        addAmeacaPericia({ nome: p.nome, valor: (p.total >= 0 ? '+' : '') + p.total });
+        existing.add(p.nome.toLowerCase());
+        added++;
+    });
+    saveAmeaca();
+    fecharModalPericias();
+    if (added > 0) mostrarToastAmeaca(`📋 ${added} perícia(s) importada(s)!`);
+}
+
+function marcarTodasPericias(val) {
+    document.querySelectorAll('#pericias-import-list input[type=checkbox]').forEach(c => c.checked = val);
+}
+
+// Toast simples para ameaça (sem depender do sistema principal)
+function mostrarToastAmeaca(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    Object.assign(t.style, {
+        position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+        background: '#1a2a1a', color: '#c8e6a0', padding: '10px 22px',
+        borderRadius: '8px', fontWeight: '700', zIndex: '9999',
+        boxShadow: '0 4px 14px rgba(0,0,0,.4)', fontSize: '0.9rem', transition: 'opacity .3s'
+    });
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; }, 2400);
+    setTimeout(() => t.remove(), 2800);
+}
+
+// ============================================================
+// FICHA DE AMEAÇA
+// ============================================================
+
+function saveAmeaca() {
+    const ataques = [];
+    document.querySelectorAll('#am-ataques-list .am-row').forEach(row => {
+        ataques.push({
+            nome: row.querySelector('.am-atk-nome')?.value || '',
+            tipo: row.querySelector('.am-atk-tipo')?.value || '',
+            bonus: row.querySelector('.am-atk-bonus')?.value || '',
+            dano: row.querySelector('.am-atk-dano')?.value || '',
+            desc: row.querySelector('.am-atk-desc')?.value || ''
+        });
+    });
+
+    const habilidades = [];
+    document.querySelectorAll('#am-habilidades-list .am-row').forEach(row => {
+        habilidades.push({
+            nome: row.querySelector('.am-hab-nome')?.value || '',
+            tipo: row.querySelector('.am-hab-tipo')?.value || '',
+            desc: row.querySelector('.am-hab-desc')?.value || ''
+        });
+    });
+
+    const pericias = [];
+    document.querySelectorAll('#am-pericias-list .am-row').forEach(row => {
+        pericias.push({
+            nome: row.querySelector('.am-per-nome')?.value || '',
+            valor: row.querySelector('.am-per-valor')?.value || ''
+        });
+    });
+
+    const data = {
+        nome: document.getElementById('am-nome')?.value || '',
+        tipo: document.getElementById('am-tipo')?.value || '',
+        nd: document.getElementById('am-nd')?.value || '',
+        iniciativa: document.getElementById('am-iniciativa')?.value || '',
+        percepcao: document.getElementById('am-percepcao')?.value || '',
+        percepcaoObs: document.getElementById('am-percepcao-obs')?.value || '',
+        defesa: document.getElementById('am-defesa')?.value || '',
+        fort: document.getElementById('am-fort')?.value || '',
+        ref: document.getElementById('am-ref')?.value || '',
+        von: document.getElementById('am-von')?.value || '',
+        defesaObs: document.getElementById('am-defesa-obs')?.value || '',
+        pv: document.getElementById('am-pv')?.value || '',
+        desl: document.getElementById('am-desl')?.value || '',
+        pm: document.getElementById('am-pm')?.value || '',
+        atributos: {
+            for: document.getElementById('am-for')?.value || '',
+            des: document.getElementById('am-des')?.value || '',
+            con: document.getElementById('am-con')?.value || '',
+            int: document.getElementById('am-int')?.value || '',
+            sab: document.getElementById('am-sab')?.value || '',
+            car: document.getElementById('am-car')?.value || ''
+        },
+        ataques,
+        habilidades,
+        pericias,
+        tesouro: document.getElementById('am-tesouro')?.value || ''
+    };
+
+    localStorage.setItem('t20AmeacaData', JSON.stringify(data));
+}
+
+function loadAmeaca() {
+    const raw = localStorage.getItem('t20AmeacaData');
+    if (!raw) return;
+    try {
+        const d = JSON.parse(raw);
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+
+        set('am-nome', d.nome);
+        set('am-tipo', d.tipo);
+        set('am-nd', d.nd);
+        set('am-iniciativa', d.iniciativa);
+        set('am-percepcao', d.percepcao);
+        set('am-percepcao-obs', d.percepcaoObs);
+        set('am-defesa', d.defesa);
+        set('am-fort', d.fort);
+        set('am-ref', d.ref);
+        set('am-von', d.von);
+        set('am-defesa-obs', d.defesaObs);
+        set('am-pv', d.pv);
+        set('am-desl', d.desl);
+        set('am-pm', d.pm);
+        set('am-tesouro', d.tesouro);
+
+        if (d.atributos) {
+            set('am-for', d.atributos.for);
+            set('am-des', d.atributos.des);
+            set('am-con', d.atributos.con);
+            set('am-int', d.atributos.int);
+            set('am-sab', d.atributos.sab);
+            set('am-car', d.atributos.car);
+        }
+
+        if (d.ataques) d.ataques.forEach(a => addAmeacaAtaque(a));
+        if (d.habilidades) d.habilidades.forEach(h => addAmeacaHabilidade(h));
+        if (d.pericias) d.pericias.forEach(p => addAmeacaPericia(p));
+    } catch (e) {
+        console.error('Erro ao carregar ficha de ameaça:', e);
+    }
+}
+
+function addAmeacaAtaque(data = {}) {
+    const container = document.getElementById('am-ataques-list');
+    const row = document.createElement('div');
+    row.className = 'am-row am-ataque-row';
+    row.innerHTML = `
+        <div class="am-row-grip"><i class="bi bi-grip-vertical text-muted"></i></div>
+        <div class="am-row-body">
+            <div class="am-row-line">
+                <input type="text" class="am-input am-atk-nome" placeholder="Nome (ex: Mordida)" value="${data.nome || ''}" oninput="saveAmeaca()">
+                <select class="am-select am-atk-tipo" onchange="saveAmeaca()">
+                    <option value="">Ação</option>
+                    <option value="Padrão" ${data.tipo === 'Padrão' ? 'selected' : ''}>Padrão</option>
+                    <option value="Livre" ${data.tipo === 'Livre' ? 'selected' : ''}>Livre</option>
+                    <option value="Completa" ${data.tipo === 'Completa' ? 'selected' : ''}>Completa</option>
+                    <option value="Movimento" ${data.tipo === 'Movimento' ? 'selected' : ''}>Movimento</option>
+                    <option value="Reação" ${data.tipo === 'Reação' ? 'selected' : ''}>Reação</option>
+                </select>
+                <input type="text" class="am-input am-atk-bonus am-val-sm" placeholder="Bônus (+12)" value="${data.bonus || ''}" oninput="saveAmeaca()">
+                <input type="text" class="am-input am-atk-dano am-val-md" placeholder="Dano (1d8+5, 19)" value="${data.dano || ''}" oninput="saveAmeaca()">
+            </div>
+            <textarea class="am-textarea am-atk-desc" placeholder="Descrição adicional (opcional)" oninput="saveAmeaca()">${data.desc || ''}</textarea>
+        </div>
+        <button class="am-row-del" onclick="this.closest('.am-row').remove(); saveAmeaca()" title="Remover"><i class="bi bi-x-lg"></i></button>
+    `;
+    container.appendChild(row);
+}
+
+function addAmeacaHabilidade(data = {}) {
+    const container = document.getElementById('am-habilidades-list');
+    const row = document.createElement('div');
+    row.className = 'am-row am-hab-row';
+    row.innerHTML = `
+        <div class="am-row-grip"><i class="bi bi-grip-vertical text-muted"></i></div>
+        <div class="am-row-body">
+            <div class="am-row-line">
+                <input type="text" class="am-input am-hab-nome fw-bold" placeholder="Nome da Habilidade" value="${data.nome || ''}" oninput="saveAmeaca()">
+                <span class="am-paren">(</span>
+                <select class="am-select am-hab-tipo" onchange="saveAmeaca()">
+                    <option value="" ${!data.tipo ? 'selected' : ''}>— tipo —</option>
+                    <option value="Padrão" ${data.tipo === 'Padrão' ? 'selected' : ''}>Padrão</option>
+                    <option value="Livre" ${data.tipo === 'Livre' ? 'selected' : ''}>Livre</option>
+                    <option value="Completa" ${data.tipo === 'Completa' ? 'selected' : ''}>Completa</option>
+                    <option value="Movimento" ${data.tipo === 'Movimento' ? 'selected' : ''}>Movimento</option>
+                    <option value="Reação" ${data.tipo === 'Reação' ? 'selected' : ''}>Reação</option>
+                    <option value="Passiva" ${data.tipo === 'Passiva' ? 'selected' : ''}>Passiva</option>
+                </select>
+                <span class="am-paren">)</span>
+            </div>
+            <textarea class="am-textarea am-hab-desc" placeholder="Descrição da habilidade..." oninput="saveAmeaca()">${data.desc || ''}</textarea>
+        </div>
+        <button class="am-row-del" onclick="this.closest('.am-row').remove(); saveAmeaca()" title="Remover"><i class="bi bi-x-lg"></i></button>
+    `;
+    container.appendChild(row);
+}
+
+function addAmeacaPericia(data = {}) {
+    const container = document.getElementById('am-pericias-list');
+    const row = document.createElement('div');
+    row.className = 'am-row am-per-row';
+    row.innerHTML = `
+        <input type="text" class="am-input am-per-nome" placeholder="Perícia" value="${data.nome || ''}" oninput="saveAmeaca()">
+        <input type="text" class="am-input am-per-valor am-val-sm" placeholder="+0" value="${data.valor || ''}" oninput="saveAmeaca()">
+        <button class="am-row-del" onclick="this.closest('.am-row').remove(); saveAmeaca()" title="Remover"><i class="bi bi-x-lg"></i></button>
+    `;
+    container.appendChild(row);
+}
+
+function limparAmeaca() {
+    if (!confirm('Limpar todos os dados da Ficha de Ameaça?')) return;
+    localStorage.removeItem('t20AmeacaData');
+    document.getElementById('am-ataques-list').innerHTML = '';
+    document.getElementById('am-habilidades-list').innerHTML = '';
+    document.getElementById('am-pericias-list').innerHTML = '';
+    ['am-nome', 'am-tipo', 'am-nd', 'am-iniciativa', 'am-percepcao', 'am-percepcao-obs',
+        'am-defesa', 'am-fort', 'am-ref', 'am-von', 'am-defesa-obs', 'am-pv', 'am-desl', 'am-pm',
+        'am-for', 'am-des', 'am-con', 'am-int', 'am-sab', 'am-car', 'am-tesouro'
+    ].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    mostrarToastAmeaca('🗑️ Ameaça limpa.');
+}
+
+// ─── PDF da Ameaça ──────────────────────────────────────────────
+function exportarAmeacaPDF() {
+    const nome = document.getElementById('am-nome')?.value || 'Ameaça';
+    const tipo = document.getElementById('am-tipo')?.value || '';
+    const nd = document.getElementById('am-nd')?.value || '—';
+
+    const g = id => document.getElementById(id)?.value || '—';
+
+    // Monta HTML para impressão
+    const ataques = Array.from(document.querySelectorAll('#am-ataques-list .am-row')).map(r => {
+        const nome = r.querySelector('.am-atk-nome')?.value || '';
+        const tipo = r.querySelector('.am-atk-tipo')?.value || '';
+        const bon = r.querySelector('.am-atk-bonus')?.value || '';
+        const dano = r.querySelector('.am-atk-dano')?.value || '';
+        const desc = r.querySelector('.am-atk-desc')?.value || '';
+        if (!nome) return '';
+        return `<div class="am-pdf-linha"><span class="am-pdf-chave">Ataque</span> ${nome}${tipo ? ' (' + tipo + ')' : ''} ${bon} (${dano})${desc ? '<br><small class="text-muted">' + desc + '</small>' : ''}</div>`;
+    }).join('');
+
+    const habilidades = Array.from(document.querySelectorAll('#am-habilidades-list .am-row')).map(r => {
+        const hn = r.querySelector('.am-hab-nome')?.value || '';
+        const htipo = r.querySelector('.am-hab-tipo')?.value || '';
+        const hdesc = r.querySelector('.am-hab-desc')?.value || '';
+        if (!hn) return '';
+        return `<div class="am-pdf-linha"><span class="am-pdf-chave">${hn}${htipo ? ' (' + htipo + ')' : ''}</span> ${hdesc}</div>`;
+    }).join('');
+
+    const pericias = Array.from(document.querySelectorAll('#am-pericias-list .am-per-row')).map(r => {
+        const pn = r.querySelector('.am-per-nome')?.value || '';
+        const pv = r.querySelector('.am-per-valor')?.value || '';
+        return pn ? `${pn} ${pv}` : '';
+    }).filter(Boolean).join(', ');
+
+    const atributos = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'].map(a => {
+        const v = document.getElementById(`am-${a.toLowerCase()}`)?.value || '—';
+        return `<span><strong>${a}</strong> ${v}</span>`;
+    }).join(' , ');
+
+    const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+    <title>${nome}</title>
+    <style>
+        body { font-family: Georgia, serif; font-size: 11pt; max-width: 680px; margin: 30px auto; color: #111; }
+        h1 { font-size: 20pt; color: #8b0000; text-transform: uppercase; letter-spacing: .06em; margin: 0; border-bottom: 3px solid #8b0000; padding-bottom: 6px; }
+        .tipo { font-style: italic; color: #444; font-size: 10pt; margin: 2px 0 10px; }
+        .nd-badge { float: right; background: #8b0000; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 14pt; font-weight: bold; margin-top: -4px; }
+        .bloco { margin-bottom: 6px; }
+        .chave { font-weight: bold; font-style: italic; color: #8b0000; }
+        .am-pdf-chave { font-weight: bold; font-style: italic; color: #8b0000; }
+        .am-pdf-linha { margin-bottom: 4px; }
+        hr { border: none; border-top: 1px solid #d0b0b0; margin: 8px 0; }
+        .atributos { background: #f9f4f4; border: 1px solid #e0c8c8; border-radius: 5px; padding: 6px 10px; text-align: center; display: flex; gap: 14px; justify-content: center; font-size: 10pt; }
+        @media print { body { margin: 15mm; } }
+    </style></head><body>
+    <div class="nd-badge">ND ${nd}</div>
+    <h1>${nome}</h1>
+    <div class="tipo">${tipo}</div>
+    <div class="bloco"><span class="chave">Iniciativa</span> ${g('am-iniciativa')} , <span class="chave">Percepção</span> ${g('am-percepcao')} ${g('am-percepcao-obs') !== '—' ? `<em>${g('am-percepcao-obs')}</em>` : ''}</div>
+    <div class="bloco"><span class="chave">Defesa</span> ${g('am-defesa')} , <span class="chave">Fort</span> ${g('am-fort')} , <span class="chave">Ref</span> ${g('am-ref')} , <span class="chave">Von</span> ${g('am-von')} ${g('am-defesa-obs') !== '—' ? `<em>${g('am-defesa-obs')}</em>` : ''}</div>
+    <div class="bloco"><span class="chave">Pontos de Vida</span> ${g('am-pv')}</div>
+    <div class="bloco"><span class="chave">Deslocamento</span> ${g('am-desl')}</div>
+    <hr>
+    ${g('am-pm') !== '—' ? `<div class="bloco"><span class="chave">Pontos de Mana</span> ${g('am-pm')}</div>` : ''}
+    ${ataques ? `<div class="bloco"><span class="chave" style="font-size:10.5pt;text-transform:uppercase;">Ataques</span>${ataques}</div><hr>` : ''}
+    ${habilidades ? `<div class="bloco"><span class="chave" style="font-size:10.5pt;text-transform:uppercase;">Habilidades Especiais</span>${habilidades}</div><hr>` : ''}
+    <div class="atributos">${atributos}</div>
+    <hr>
+    ${pericias ? `<div class="bloco"><span class="chave">Perícias</span> ${pericias}</div><hr>` : ''}
+    <div class="bloco"><span class="chave">Tesouro</span> ${g('am-tesouro')}</div>
+    </body></html>`;
+
+    const win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+    win.onload = () => win.print();
+}
+
+// ─── Copiar Resumo Ameaça (Discord) ─────────────────────────────
+function copiarResumoAmeaca() {
+    const g = id => document.getElementById(id)?.value?.trim() || '—';
+    const nome = g('am-nome');
+    const tipo = g('am-tipo');
+    const nd = g('am-nd');
+
+    const pericias = Array.from(document.querySelectorAll('#am-pericias-list .am-per-row')).map(r => {
+        const pn = r.querySelector('.am-per-nome')?.value || '';
+        const pv = r.querySelector('.am-per-valor')?.value || '';
+        return pn ? `${pn} ${pv}` : '';
+    }).filter(Boolean).join(', ');
+
+    const ataques = Array.from(document.querySelectorAll('#am-ataques-list .am-row')).map(r => {
+        const an = r.querySelector('.am-atk-nome')?.value || '';
+        const ab = r.querySelector('.am-atk-bonus')?.value || '';
+        const ad = r.querySelector('.am-atk-dano')?.value || '';
+        return an ? `${an} ${ab} (${ad})` : '';
+    }).filter(Boolean).join(' | ');
+
+    let txt = `**${nome.toUpperCase()}** — ND ${nd}\n`;
+    if (tipo && tipo !== '—') txt += `*${tipo}*\n`;
+    txt += `\`\`\`\n`;
+    txt += `Ini ${g('am-iniciativa')} · Per ${g('am-percepcao')}`;
+    if (g('am-percepcao-obs') !== '—') txt += ` (${g('am-percepcao-obs')})`;
+    txt += `\n`;
+    txt += `Def ${g('am-defesa')} · Fort ${g('am-fort')} · Ref ${g('am-ref')} · Von ${g('am-von')}\n`;
+    if (g('am-defesa-obs') !== '—') txt += `${g('am-defesa-obs')}\n`;
+    txt += `PV ${g('am-pv')} · Desl. ${g('am-desl')}\n`;
+    if (g('am-pm') !== '—') txt += `PM ${g('am-pm')}\n`;
+    if (ataques) txt += `Atq: ${ataques}\n`;
+    txt += `FOR ${g('am-for')} · DES ${g('am-des')} · CON ${g('am-con')} · INT ${g('am-int')} · SAB ${g('am-sab')} · CAR ${g('am-car')}\n`;
+    if (pericias) txt += `Perícias: ${pericias}\n`;
+    txt += `Tesouro: ${g('am-tesouro')}\n`;
+    txt += `\`\`\``;
+
+    navigator.clipboard.writeText(txt).then(() => mostrarToastAmeaca('📋 Resumo copiado para o Discord!'))
+        .catch(() => { prompt('Copie o texto abaixo:', txt); });
+}
+
+// ─── Exportar / Importar JSON da Ameaça ─────────────────────────
+function exportAmeaca() {
+    saveAmeaca();
+    const data = localStorage.getItem('t20AmeacaData') || '{}';
+    const nome = document.getElementById('am-nome')?.value?.trim() || 'ameaca';
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `ameaca_${nome.replace(/\s+/g, '_')}.json`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    mostrarToastAmeaca('💾 Ameaça salva como JSON!');
+}
+
+function importAmeacaArquivo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            const data = JSON.parse(e.target.result);
+            localStorage.setItem('t20AmeacaData', JSON.stringify(data));
+            // Limpa listas dinâmicas antes de recarregar
+            ['am-ataques-list', 'am-habilidades-list', 'am-pericias-list'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.innerHTML = '';
+            });
+            loadAmeaca();
+            mostrarToastAmeaca('✅ Ameaça carregada!');
+        } catch {
+            alert('Arquivo JSON inválido.');
+        }
+    };
+    reader.readAsText(file);
+    input.value = ''; // reset para permitir recarregar o mesmo arquivo
+}
+
+// Exporta habilidades especiais da ameaça → abilitiesClassList da ficha
+function exportarHabilidadesParaFicha() {
+    const habs = [];
+    document.querySelectorAll('#am-habilidades-list .am-row').forEach(row => {
+        const nome = row.querySelector('.am-hab-nome')?.value?.trim();
+        const tipo = row.querySelector('.am-hab-tipo')?.value;
+        const desc = row.querySelector('.am-hab-desc')?.value?.trim();
+        if (nome) {
+            const nomeCompleto = tipo ? `${nome} (${tipo})` : nome;
+            habs.push({ name: nomeCompleto, desc: desc || '' });
+        }
+    });
+    if (habs.length === 0) { alert('Nenhuma habilidade para exportar.'); return; }
+
+    const list = document.getElementById('abilitiesClassList');
+    if (!list) { alert('Aba de personagem não encontrada.'); return; }
+    const existing = new Set(Array.from(list.querySelectorAll('.inp-name')).map(el => el.value.trim().toLowerCase()));
+    let added = 0;
+    habs.forEach(h => {
+        if (!existing.has(h.name.toLowerCase())) {
+            addAbility('abilitiesClassList', h.name, h.desc);
+            existing.add(h.name.toLowerCase());
+            added++;
+        }
+    });
+    saveData();
+    alert(`✅ ${added} habilidade(s) exportada(s) para Poderes & Habilidades.`);
+    // Vai para a aba personagem
+    document.getElementById('tab-personagem-btn')?.click();
+}
+
+// Importa habilidades de classe/raça da ficha → Ficha de Ameaça
+function importarHabilidadesDaFicha() {
+    const habs = [];
+    ['#abilitiesRaceList', '#abilitiesClassList'].forEach(sel => {
+        document.querySelectorAll(`${sel} .ability-row`).forEach(row => {
+            const nome = row.querySelector('.inp-name')?.value?.trim();
+            const desc = row.querySelector('.inp-desc')?.value?.trim();
+            if (nome) habs.push({ nome, desc: desc || '' });
+        });
+    });
+    if (habs.length === 0) { alert('Nenhuma habilidade encontrada na aba Personagem.'); return; }
+
+    const existing = new Set(Array.from(document.querySelectorAll('#am-habilidades-list .am-hab-nome')).map(el => el.value.trim().toLowerCase()));
+    let added = 0;
+    habs.forEach(h => {
+        // Parse nome (tipo) se houver parêntese
+        const m = h.nome.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+        const data = m ? { nome: m[1].trim(), tipo: m[2].trim(), desc: h.desc } : { nome: h.nome, tipo: '', desc: h.desc };
+        if (!existing.has(data.nome.toLowerCase())) {
+            addAmeacaHabilidade(data);
+            existing.add(data.nome.toLowerCase());
+            added++;
+        }
+    });
+    saveAmeaca();
+    alert(`✅ ${added} habilidade(s) importada(s) da ficha.`);
+}
+
+// Preenche campos básicos da ameaça usando dados da ficha atual (personagem)
+function preencherAmeacaDaFicha() {
+    if (!confirm('Preencher campos da Ameaça com os dados atuais da ficha do Personagem? Os campos existentes serão sobrescritos.')) return;
+
+    const get = id => document.getElementById(id)?.value || '';
+
+    // Nome e tipo
+    const nome = get('charName'); if (nome) document.getElementById('am-nome').value = nome;
+    const raca = get('charRace');
+    const tamanho = document.getElementById('charSize');
+    const tamanhoTexto = tamanho ? tamanho.options[tamanho.selectedIndex]?.text : '';
+    if (raca || tamanhoTexto) document.getElementById('am-tipo').value = [raca, tamanhoTexto].filter(Boolean).join(' ');
+
+    // Defesa
+    const defTotal = document.getElementById('defenseTotal')?.textContent;
+    if (defTotal) document.getElementById('am-defesa').value = defTotal;
+
+    // PV e PM
+    const pv = get('pvMax'); if (pv) document.getElementById('am-pv').value = pv;
+    const pm = get('pmMax'); if (pm) document.getElementById('am-pm').value = pm;
+
+    // Deslocamento
+    const speed = get('charSpeed'); if (speed) document.getElementById('am-desl').value = speed;
+
+    // Atributos
+    ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'].forEach(a => {
+        const val = get(`attr-${a}`);
+        if (val) document.getElementById(`am-${a.toLowerCase()}`).value = val;
+    });
+
+    saveAmeaca();
+    alert('✅ Campos preenchidos da ficha do Personagem!');
+}
+
+// Inicialização da aba de ameaça
+document.addEventListener('DOMContentLoaded', () => {
+    loadAmeaca();
+});
