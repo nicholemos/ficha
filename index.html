@@ -17,31 +17,73 @@
     <div class="container sheet bg-white p-4 rounded shadow-lg">
 
         <header class="mb-4" id="headerSection">
-            <button class="btn btn-outline-danger btn-sm" onclick="exportarParaPDF()">
+            <!-- Botão PDF — troca conforme modo -->
+            <button class="btn btn-outline-danger btn-sm" id="btnGerarPDF" onclick="exportarParaPDF()"
+                title="Gerar PDF Oficial">
                 <i class="bi bi-file-earmark-pdf"></i> Gerar PDF Oficial
             </button>
-            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom flex-wrap gap-2">
                 <div>
                     <i class="bi bi-chevron-down section-toggle fs-4 text-danger"
                         onclick="toggleSection('headerSection')" title="Recolher/Expandir Cabeçalho"
                         style="cursor: pointer;"></i>
                     <span class="fw-bold text-danger fst-italic fs-4">Ficha T20 Digital</span>
                 </div>
-                <button class="btn btn-outline-primary btn-sm me-1" onclick="copyToClipboard()"
-                    title="Copiar resumo para Discord">
-                    <i class="bi bi-clipboard-plus"></i> Copiar Resumo
-                </button>
-                <div>
-                    <button class="btn btn-outline-secondary btn-sm me-1" onclick="exportSheet()"
-                        title="Salvar backup"><i class="bi bi-download"></i> Baixar</button>
+
+                <!-- Botões do PERSONAGEM (visíveis por padrão) -->
+                <div id="headerBtnsPersonagem" class="d-flex align-items-center gap-1 flex-wrap">
+                    <button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard()"
+                        title="Copiar resumo para Discord">
+                        <i class="bi bi-clipboard-plus"></i> Copiar Resumo
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="exportSheet()" title="Salvar backup"><i
+                            class="bi bi-download"></i> Baixar</button>
                     <button class="btn btn-outline-secondary btn-sm"
-                        onclick="document.getElementById('fileInput').click()" title="Carregar backup"><i
-                            class="bi bi-upload"></i> Carregar</button>
-                    <input type="file" id="fileInput" style="display: none;" accept=".json"
-                        onchange="importSheet(this)">
-                    <button class="btn btn-outline-danger btn-sm ms-2 fw-bold" onclick="clearSheet()"
-                        title="Apagar tudo"><i class="bi bi-trash-fill"></i></button>
+                        onclick="document.getElementById('fileInput').click()" title="Carregar backup">
+                        <i class="bi bi-upload"></i> Carregar</button>
+                    <input type="file" id="fileInput" style="display:none;" accept=".json" onchange="importSheet(this)">
+                    <button class="btn btn-outline-danger btn-sm fw-bold" onclick="clearSheet()" title="Apagar tudo"><i
+                            class="bi bi-trash-fill"></i></button>
                 </div>
+
+                <!-- Botões da AMEAÇA (ocultos por padrão) -->
+                <div id="headerBtnsAmeaca" class="d-flex align-items-center gap-1 flex-wrap"
+                    style="display:none !important;">
+                    <button class="btn btn-outline-primary btn-sm" onclick="copiarResumoAmeaca()"
+                        title="Copiar resumo de ameaça para Discord">
+                        <i class="bi bi-clipboard-plus"></i> Copiar Resumo
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="exportAmeaca()"
+                        title="Baixar JSON da ameaça"><i class="bi bi-download"></i> Baixar</button>
+                    <button class="btn btn-outline-secondary btn-sm"
+                        onclick="document.getElementById('fileInputAmeaca').click()" title="Carregar JSON de ameaça">
+                        <i class="bi bi-upload"></i> Carregar</button>
+                    <input type="file" id="fileInputAmeaca" style="display:none;" accept=".json"
+                        onchange="importAmeacaArquivo(this)">
+                    <div class="vr mx-1"></div>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="preencherAmeacaDaFicha()"
+                        title="Preencher da ficha do personagem">
+                        <i class="bi bi-arrow-down-circle"></i> Da Ficha
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="exportarHabilidadesParaFicha()"
+                        title="Exportar habilidades → Poderes da ficha">
+                        <i class="bi bi-arrow-up-circle"></i> → Poderes
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm fw-bold" onclick="limparAmeaca()"
+                        title="Limpar ameaça"><i class="bi bi-trash-fill"></i></button>
+                </div>
+            </div>
+
+            <!-- Toggle de Visualização -->
+            <div class="d-flex gap-2 mt-2" id="fichaViewToggle">
+                <button class="btn btn-sm btn-danger fw-bold" id="btnViewPersonagem"
+                    onclick="toggleFichaView('personagem')">
+                    <i class="bi bi-person-fill"></i> Personagem
+                </button>
+                <button class="btn btn-sm btn-outline-danger" id="btnViewAmeaca" onclick="toggleFichaView('ameaca')">
+                    <i class="bi bi-skull"></i> Ficha de Ameaça
+                </button>
             </div>
 
             <div class="row g-3 header-content">
@@ -97,7 +139,7 @@
             </div>
         </header>
 
-        <div class="row">
+        <div id="fichaPersonagemContent" class="row">
             <div class="col-lg-7">
                 <div class="d-flex align-items-center mb-2">
                     <a href="https://nicholemos.github.io/CalculadoradeAtributos/" target="_blank"
@@ -599,8 +641,202 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </div><!-- /.row (personagem) -->
+
+        <!-- ===== ABA FICHA DE AMEAÇA ===== -->
+        <div id="fichaAmeacaSection" style="display:none;">
+            <div class="ameaca-sheet" id="ameacaSection">
+
+                <!-- CABEÇALHO: nome + tipo + ND -->
+                <div class="ameaca-header">
+                    <div class="ameaca-header-left">
+                        <input type="text" id="am-nome" class="ameaca-nome-input" placeholder="Nome da Ameaça"
+                            oninput="saveAmeaca()">
+                        <div class="ameaca-tipo-linha">
+                            <input type="text" id="am-tipo" class="ameaca-tipo-input"
+                                placeholder="Ex: Humanoide (humano) Médio" oninput="saveAmeaca()">
+                        </div>
+                    </div>
+                    <div class="ameaca-nd-badge">
+                        <span class="ameaca-nd-label">ND</span>
+                        <input type="text" id="am-nd" class="ameaca-nd-val" placeholder="—" oninput="saveAmeaca()">
+                    </div>
+                </div>
+
+                <!-- BLOCO 1: Iniciativa e Percepção -->
+                <div class="ameaca-bloco">
+                    <div class="ameaca-linha">
+                        <span class="ameaca-key">Iniciativa</span>
+                        <input type="text" id="am-iniciativa" class="ameaca-val-input ameaca-val-sm" placeholder="+0"
+                            oninput="saveAmeaca()">
+                        <span class="ameaca-sep">,</span>
+                        <span class="ameaca-key">Percepção</span>
+                        <input type="text" id="am-percepcao" class="ameaca-val-input ameaca-val-sm" placeholder="+0"
+                            oninput="saveAmeaca()">
+                        <input type="text" id="am-percepcao-obs" class="ameaca-val-input ameaca-obs"
+                            placeholder="Ex: percepção às cegas 18m (médio)" oninput="saveAmeaca()">
+                    </div>
+                </div>
+
+                <!-- BLOCO 2: Defesa e Resistências -->
+                <div class="ameaca-bloco">
+                    <div class="ameaca-linha flex-wrap">
+                        <span class="ameaca-key">Defesa</span>
+                        <input type="text" id="am-defesa" class="ameaca-val-input ameaca-val-sm" placeholder="10"
+                            oninput="saveAmeaca()">
+                        <span class="ameaca-sep">,</span>
+                        <span class="ameaca-key">Fort</span>
+                        <input type="text" id="am-fort" class="ameaca-val-input ameaca-val-xs" placeholder="+0"
+                            oninput="saveAmeaca()">
+                        <span class="ameaca-sep">,</span>
+                        <span class="ameaca-key">Ref</span>
+                        <input type="text" id="am-ref" class="ameaca-val-input ameaca-val-xs" placeholder="+0"
+                            oninput="saveAmeaca()">
+                        <span class="ameaca-sep">,</span>
+                        <span class="ameaca-key">Von</span>
+                        <input type="text" id="am-von" class="ameaca-val-input ameaca-val-xs" placeholder="+0"
+                            oninput="saveAmeaca()">
+                        <input type="text" id="am-defesa-obs" class="ameaca-val-input ameaca-obs"
+                            placeholder="Ex: resistência à magia +5, imune a veneno" oninput="saveAmeaca()">
+                    </div>
+                </div>
+
+                <!-- BLOCO 3: PV e Deslocamento -->
+                <div class="ameaca-bloco">
+                    <div class="ameaca-linha">
+                        <span class="ameaca-key">Pontos de Vida</span>
+                        <input type="text" id="am-pv" class="ameaca-val-input ameaca-val-md" placeholder="1"
+                            oninput="saveAmeaca()">
+                    </div>
+                    <div class="ameaca-linha">
+                        <span class="ameaca-key">Deslocamento</span>
+                        <input type="text" id="am-desl" class="ameaca-val-input ameaca-obs"
+                            placeholder="9m (6q), natação 6m (4q), escalada 6m (4q)" oninput="saveAmeaca()">
+                    </div>
+                </div>
+
+                <hr class="ameaca-hr">
+
+                <!-- BLOCO 4: PM (opcional) -->
+                <div class="ameaca-bloco">
+                    <div class="ameaca-linha">
+                        <span class="ameaca-key">Pontos de Mana</span>
+                        <input type="text" id="am-pm" class="ameaca-val-input ameaca-val-md"
+                            placeholder="— (deixe vazio se não usar)" oninput="saveAmeaca()">
+                    </div>
+                </div>
+
+                <!-- BLOCO 5: Ataques -->
+                <div class="ameaca-bloco">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="ameaca-key ameaca-key-titulo">Ataques</span>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-sm btn-outline-secondary py-0" onclick="importarAtaquesDaFicha()"
+                                title="Importar ataques da aba Personagem" style="font-size:0.72rem;">
+                                <i class="bi bi-arrow-down-circle"></i> Importar da Ficha
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger py-0" onclick="addAmeacaAtaque()"
+                                style="font-size:0.75rem;">
+                                <i class="bi bi-plus-circle"></i> Adicionar Ataque
+                            </button>
+                        </div>
+                    </div>
+                    <div id="am-ataques-list"></div>
+                </div>
+
+                <hr class="ameaca-hr">
+
+                <!-- BLOCO 6: Habilidades Especiais -->
+                <div class="ameaca-bloco">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="ameaca-key ameaca-key-titulo">Habilidades Especiais</span>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-sm btn-outline-secondary py-0" onclick="importarHabilidadesDaFicha()"
+                                title="Importar habilidades de classe/raça da aba Personagem"
+                                style="font-size:0.72rem;">
+                                <i class="bi bi-arrow-down-circle"></i> Poderes
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary py-0" onclick="importarMagiasDaFicha()"
+                                title="Importar magias como habilidades" style="font-size:0.72rem;">
+                                <i class="bi bi-stars"></i> Magias
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning py-0" onclick="toggleMagiasAmeaca()"
+                                title="Ocultar/mostrar linhas de magia" style="font-size:0.72rem;">
+                                <i class="bi bi-eye-slash"></i> Ocultar Magias
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger py-0" onclick="addAmeacaHabilidade()"
+                                style="font-size:0.75rem;">
+                                <i class="bi bi-plus-circle"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                    <div id="am-habilidades-list"></div>
+                </div>
+
+                <hr class="ameaca-hr">
+
+                <!-- BLOCO 7: Atributos -->
+                <div class="ameaca-bloco ameaca-bloco-atributos">
+                    <div class="ameaca-atributos-row">
+                        <div class="ameaca-attr-item"><span class="ameaca-attr-label">FOR</span><input type="text"
+                                id="am-for" class="ameaca-attr-input" placeholder="—" oninput="saveAmeaca()"></div>
+                        <span class="ameaca-attr-sep">,</span>
+                        <div class="ameaca-attr-item"><span class="ameaca-attr-label">DES</span><input type="text"
+                                id="am-des" class="ameaca-attr-input" placeholder="—" oninput="saveAmeaca()"></div>
+                        <span class="ameaca-attr-sep">,</span>
+                        <div class="ameaca-attr-item"><span class="ameaca-attr-label">CON</span><input type="text"
+                                id="am-con" class="ameaca-attr-input" placeholder="—" oninput="saveAmeaca()"></div>
+                        <span class="ameaca-attr-sep">,</span>
+                        <div class="ameaca-attr-item"><span class="ameaca-attr-label">INT</span><input type="text"
+                                id="am-int" class="ameaca-attr-input" placeholder="—" oninput="saveAmeaca()"></div>
+                        <span class="ameaca-attr-sep">,</span>
+                        <div class="ameaca-attr-item"><span class="ameaca-attr-label">SAB</span><input type="text"
+                                id="am-sab" class="ameaca-attr-input" placeholder="—" oninput="saveAmeaca()"></div>
+                        <span class="ameaca-attr-sep">,</span>
+                        <div class="ameaca-attr-item"><span class="ameaca-attr-label">CAR</span><input type="text"
+                                id="am-car" class="ameaca-attr-input" placeholder="—" oninput="saveAmeaca()"></div>
+                    </div>
+                </div>
+
+                <hr class="ameaca-hr">
+
+                <!-- BLOCO 8: Perícias relevantes -->
+                <div class="ameaca-bloco">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="ameaca-key ameaca-key-titulo">Perícias Relevantes</span>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-sm btn-outline-secondary py-0" onclick="abrirModalImportarPericias()"
+                                title="Selecionar perícias da ficha para importar" style="font-size:0.72rem;">
+                                <i class="bi bi-list-check"></i> Importar da Ficha
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger py-0" onclick="addAmeacaPericia()"
+                                style="font-size:0.75rem;">
+                                <i class="bi bi-plus-circle"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted d-block mb-2" style="font-size:0.7rem;">Somente as que têm valor diferente
+                        do automático (treinadas, com bônus, etc.)</small>
+                    <div id="am-pericias-list"></div>
+                </div>
+
+                <hr class="ameaca-hr">
+
+                <!-- BLOCO 9: Tesouro -->
+                <div class="ameaca-bloco">
+                    <div class="ameaca-linha">
+                        <span class="ameaca-key ameaca-key-titulo">Tesouro</span>
+                        <input type="text" id="am-tesouro" class="ameaca-val-input ameaca-obs"
+                            placeholder="Nenhum. / Padrão. / Ex: 1d6×100 T$, espada longa +1." oninput="saveAmeaca()">
+                    </div>
+                </div>
+
+                <!-- Botões de ação removidos — agora estão na barra de cabeçalho -->
+
+            </div>
+        </div><!-- /#fichaAmeacaSection -->
+
+    </div><!-- /.container.sheet -->
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="rollToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -783,6 +1019,36 @@
             </div>
         </details>
     </section>
+
+    <!-- Modal: Importar Perícias para Ameaça -->
+    <div id="modalImportarPericias"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; align-items:center; justify-content:center; padding:16px;"
+        onclick="if(event.target===this)fecharModalPericias()">
+        <div
+            style="background:#fff; border-radius:12px; width:100%; max-width:420px; max-height:80vh; display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(0,0,0,.4); overflow:hidden;">
+            <div
+                style="background:#8b0000; color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                <strong style="font-size:1rem;">📋 Selecionar Perícias</strong>
+                <button onclick="fecharModalPericias()"
+                    style="background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer;line-height:1;padding:0 4px;">✕</button>
+            </div>
+            <div style="padding:10px 16px 6px; border-bottom:1px solid #eee; flex-shrink:0; display:flex; gap:10px;">
+                <button class="btn btn-sm btn-outline-secondary py-0" onclick="marcarTodasPericias(true)"
+                    style="font-size:0.75rem;">Marcar todas</button>
+                <button class="btn btn-sm btn-outline-secondary py-0" onclick="marcarTodasPericias(false)"
+                    style="font-size:0.75rem;">Desmarcar todas</button>
+                <small class="text-muted ms-auto" style="font-size:0.68rem; align-self:center;">Iniciativa, Percepção,
+                    Fort, Ref, Von já têm campos próprios.</small>
+            </div>
+            <div id="pericias-import-list" style="overflow-y:auto; padding:8px 16px; flex:1; font-size:0.88rem;"></div>
+            <div
+                style="padding:12px 16px; border-top:1px solid #eee; display:flex; justify-content:flex-end; gap:10px; flex-shrink:0;">
+                <button class="btn btn-secondary btn-sm" onclick="fecharModalPericias()">Cancelar</button>
+                <button class="btn btn-danger btn-sm fw-bold" onclick="confirmarImportarPericias()">Importar
+                    Selecionadas</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
