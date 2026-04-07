@@ -1047,13 +1047,17 @@ h3,
 
 
 /* Estilo suave para os botões de atalho */
-.btn-outline-secondary, .btn-outline-danger, .btn-outline-dark {
+.btn-outline-secondary,
+.btn-outline-danger,
+.btn-outline-dark {
     opacity: 0.7;
     transition: opacity 0.2s;
     text-decoration: none;
 }
 
-.btn-outline-secondary:hover, .btn-outline-danger:hover, .btn-outline-dark:hover {
+.btn-outline-secondary:hover,
+.btn-outline-danger:hover,
+.btn-outline-dark:hover {
     opacity: 1;
 }
 
@@ -1061,12 +1065,14 @@ h3,
 /* --- DRAG HANDLE MOBILE --- */
 .ability-drag-handle {
     cursor: grab;
-    touch-action: none; /* essencial para SortableJS no mobile */
+    touch-action: none;
+    /* essencial para SortableJS no mobile */
     -webkit-user-select: none;
     user-select: none;
     padding: 4px 6px;
     color: #aaa;
 }
+
 .ability-drag-handle:active {
     cursor: grabbing;
 }
@@ -1092,4 +1098,731 @@ h3,
     user-select: text;
     position: relative;
     z-index: 1;
+}
+
+/* ================================================================
+   FICHA DE AMEAÇA
+   ================================================================ */
+
+.ameaca-sheet {
+    font-family: Georgia, 'Times New Roman', serif;
+    max-width: 680px;
+    margin: 0 auto;
+    color: #1a1a1a;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+/* Cabeçalho: nome + ND badge */
+.ameaca-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #8b0000;
+    margin-bottom: 4px;
+}
+
+.ameaca-titulo-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+.ameaca-nome-input {
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 2px dashed #ccc;
+    background: transparent;
+    font-family: 'Tormenta', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #8b0000;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0 0 2px 0;
+    outline: none;
+}
+
+.ameaca-nome-input:focus {
+    border-bottom-color: #8b0000;
+}
+
+.ameaca-tipo-input {
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 1px dashed #ddd;
+    background: transparent;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #444;
+    padding: 2px 0;
+    outline: none;
+}
+
+/* ND Badge */
+.ameaca-nd-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #8b0000;
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 14px;
+    min-width: 72px;
+    flex-shrink: 0;
+}
+
+.ameaca-nd-label {
+    font-family: 'Tormenta', Georgia, serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    opacity: 0.85;
+    line-height: 1;
+}
+
+.ameaca-nd-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    font-family: 'Tormenta', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-align: center;
+    width: 52px;
+    outline: none;
+    padding: 0;
+    margin-top: 2px;
+}
+
+.ameaca-nd-input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* Blocos internos */
+.ameaca-bloco {
+    padding-bottom: 6px;
+}
+
+/* Linha de dados */
+.ameaca-linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 3px;
+    margin-bottom: 2px;
+    line-height: 1.6;
+}
+
+.ameaca-chave {
+    font-weight: 700;
+    font-variant: small-caps;
+    color: #8b0000;
+    white-space: nowrap;
+    font-size: 0.88rem;
+}
+
+.ameaca-chave-titulo {
+    font-family: 'Tormenta', Georgia, serif;
+    font-weight: 700;
+    font-variant: small-caps;
+    color: #8b0000;
+    font-size: 0.9rem;
+}
+
+.ameaca-val {
+    color: #1a1a1a;
+}
+
+.ameaca-sep {
+    color: #666;
+}
+
+/* Input inline (resistências, perícias, tesouro) */
+.ameaca-inline-input {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    color: #1a1a1a;
+    outline: none;
+    padding: 0 2px;
+    min-width: 80px;
+}
+
+.ameaca-inline-input:focus {
+    border-bottom-color: #8b0000;
+}
+
+/* Atributos em linha (FOR +2, DES +3 ...) */
+.ameaca-atributos-linha {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: #f7f0f0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+}
+
+.ameaca-attr-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+}
+
+.ameaca-attr-nome {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #8b0000;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.ameaca-attr-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+/* Habilidades especiais */
+.ameaca-habilidade {
+    margin-bottom: 3px;
+}
+
+.ameaca-hab-nome {
+    font-weight: 700;
+    font-variant: small-caps;
+    color: #1a1a1a;
+    margin-right: 3px;
+}
+
+.ameaca-hab-desc {
+    color: #333;
+}
+
+/* Responsivo mobile */
+@media (max-width: 600px) {
+    .ameaca-nome-input {
+        font-size: 1.2rem;
+    }
+
+    .ameaca-atributos-linha {
+        gap: 12px;
+    }
+
+    .ameaca-header {
+        flex-direction: column;
+    }
+
+    .ameaca-nd-badge {
+        align-self: flex-end;
+        flex-direction: row;
+        gap: 8px;
+        min-width: 0;
+        padding: 5px 12px;
+    }
+
+    .ameaca-nd-label {
+        font-size: 0.75rem;
+    }
+
+    .ameaca-nd-input {
+        font-size: 1.1rem;
+        width: 36px;
+    }
+}
+
+/* ================================================================
+   ABAS DA FICHA
+   ================================================================ */
+.sheet-tabs .nav-link {
+    font-family: 'Tormenta', 'Georgia', serif;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    color: #555;
+    border-bottom: 2px solid transparent;
+    padding: 8px 20px;
+}
+
+.sheet-tabs .nav-link.active {
+    color: #c0392b;
+    border-color: #c0392b;
+    font-weight: bold;
+}
+
+.sheet-tabs .nav-link:hover:not(.active) {
+    color: #c0392b;
+    border-color: #e0b0ae;
+}
+
+/* ================================================================
+   FICHA DE AMEAÇA — layout geral
+   ================================================================ */
+.ameaca-sheet {
+    max-width: 680px;
+    margin: 0 auto;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #1a1a1a;
+}
+
+/* CABEÇALHO: nome + ND */
+.ameaca-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 3px solid #8b0000;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.ameaca-header-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.ameaca-nome-input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: 'Tormenta', Georgia, serif;
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: #8b0000;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: transparent;
+    padding: 0;
+    outline: none;
+}
+
+.ameaca-nome-input:focus {
+    border-bottom-color: #8b0000;
+}
+
+.ameaca-tipo-linha {
+    margin-top: 2px;
+}
+
+.ameaca-tipo-input {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    font-style: italic;
+    color: #444;
+    font-size: 0.88rem;
+    background: transparent;
+    width: 100%;
+    outline: none;
+    padding: 0;
+}
+
+.ameaca-tipo-input:focus {
+    border-bottom-color: #8b0000;
+}
+
+/* Badge ND */
+.ameaca-nd-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #8b0000;
+    color: #fff;
+    border-radius: 6px;
+    min-width: 64px;
+    padding: 6px 10px;
+    flex-shrink: 0;
+}
+
+.ameaca-nd-label {
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    opacity: 0.85;
+}
+
+.ameaca-nd-val {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-align: center;
+    width: 50px;
+    padding: 0;
+    outline: none;
+}
+
+.ameaca-nd-val::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* BLOCOS */
+.ameaca-bloco {
+    margin-bottom: 6px;
+    padding: 4px 0;
+}
+
+.ameaca-bloco-atributos {
+    background: #f9f4f4;
+    border: 1px solid #e8d0d0;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.ameaca-hr {
+    border: none;
+    border-top: 1px solid #e0c8c8;
+    margin: 8px 0;
+}
+
+/* Linha inline */
+.ameaca-linha {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 3px;
+}
+
+.ameaca-key {
+    font-weight: bold;
+    font-style: italic;
+    color: #8b0000;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.ameaca-key-titulo {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.ameaca-sep {
+    color: #666;
+}
+
+.ameaca-hint {
+    font-size: 0.72rem;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Inputs dentro da ficha de ameaça */
+.ameaca-val-input {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    color: #1a1a1a;
+    padding: 0 2px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.ameaca-val-input:focus {
+    border-bottom-color: #8b0000;
+}
+
+.ameaca-val-xs {
+    width: 40px;
+    text-align: center;
+}
+
+.ameaca-val-sm {
+    width: 55px;
+    text-align: center;
+}
+
+.ameaca-val-md {
+    width: 80px;
+    text-align: center;
+}
+
+.ameaca-obs {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Atributos linha */
+.ameaca-atributos-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.ameaca-attr-item {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+}
+
+.ameaca-attr-label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #8b0000;
+    font-style: italic;
+}
+
+.ameaca-attr-input {
+    width: 40px;
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    text-align: center;
+    font-size: 0.9rem;
+    outline: none;
+    padding: 0;
+}
+
+.ameaca-attr-input:focus {
+    border-bottom-color: #8b0000;
+}
+
+.ameaca-attr-sep {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* ====== ROWS de Ataque, Habilidade, Perícia ====== */
+.am-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 6px 4px;
+    border-bottom: 1px solid #f0e4e4;
+    margin-bottom: 4px;
+}
+
+.am-row:last-child {
+    border-bottom: none;
+}
+
+.am-row-grip {
+    color: #ccc;
+    cursor: grab;
+    padding-top: 4px;
+    flex-shrink: 0;
+}
+
+.am-row-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.am-row-line {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.am-row-del {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px 4px;
+    flex-shrink: 0;
+    transition: color 0.15s;
+    line-height: 1;
+}
+
+.am-row-del:hover {
+    color: #c0392b;
+}
+
+.am-input {
+    border: 1px solid #e0c8c8;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    background: #fafafa;
+    outline: none;
+    flex: 1;
+    min-width: 80px;
+}
+
+.am-input.am-val-sm {
+    flex: 0 0 80px;
+    min-width: 0;
+}
+
+.am-input.am-val-md {
+    flex: 0 0 120px;
+    min-width: 0;
+}
+
+.am-input.fw-bold {
+    font-weight: bold;
+    color: #1a1a1a;
+}
+
+.am-input:focus {
+    border-color: #8b0000;
+    background: #fff;
+}
+
+.am-select {
+    border: 1px solid #e0c8c8;
+    border-radius: 4px;
+    padding: 3px 4px;
+    font-size: 0.82rem;
+    background: #fafafa;
+    color: #444;
+    flex: 0 0 auto;
+}
+
+.am-select:focus {
+    border-color: #8b0000;
+    outline: none;
+}
+
+.am-textarea {
+    width: 100%;
+    border: 1px solid #e8d8d8;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 52px;
+    background: #fafafa;
+    outline: none;
+    color: #333;
+}
+
+.am-textarea:focus {
+    border-color: #8b0000;
+    background: #fff;
+}
+
+.am-paren {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Perícia row — mais compacta */
+.am-per-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 0;
+}
+
+.am-per-row .am-input {
+    flex: 1;
+}
+
+.am-per-row .am-per-valor {
+    flex: 0 0 60px;
+    text-align: center;
+}
+
+/* ====== RESPONSIVO MOBILE ====== */
+@media (max-width: 576px) {
+    .ameaca-nome-input {
+        font-size: 1.3rem;
+    }
+
+    .ameaca-nd-badge {
+        min-width: 52px;
+    }
+
+    .ameaca-nd-val {
+        font-size: 1.3rem;
+    }
+
+    .am-row-line {
+        gap: 4px;
+    }
+
+    .am-input.am-val-sm {
+        flex: 0 0 65px;
+    }
+
+    .am-input.am-val-md {
+        flex: 0 0 95px;
+    }
+}
+
+/* Container vira flex-wrap inline */
+#am-pericias-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 2px;
+    align-items: center;
+}
+
+/* Separador vírgula entre perícias */
+.am-per-row:not(:last-child)::after {
+    content: ',';
+    color: #666;
+    margin-left: 1px;
+}
+
+.am-per-row .am-per-nome {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: auto;
+    min-width: 60px;
+    max-width: 160px;
+    padding: 0 2px;
+    outline: none;
+}
+
+.am-per-row .am-per-nome:focus {
+    border-bottom-color: #8b0000;
+}
+
+.am-per-row .am-per-valor {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    font-size: 0.9rem;
+    width: 38px;
+    text-align: center;
+    padding: 0 2px;
+    outline: none;
+    color: #8b0000;
+    font-weight: bold;
+}
+
+.am-per-row .am-per-valor:focus {
+    border-bottom-color: #8b0000;
+}
+
+.am-per-row .am-row-del {
+    font-size: 0.65rem;
+    padding: 0 2px;
+    color: #ddd;
+    line-height: 1;
+}
+
+.am-per-row .am-row-del:hover {
+    color: #c0392b;
 }
