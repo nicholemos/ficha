@@ -76,13 +76,16 @@
             </div>
 
             <!-- Toggle de Visualização -->
-            <div class="d-flex gap-2 mt-2" id="fichaViewToggle">
+            <div class="d-flex gap-2 mt-2 flex-wrap" id="fichaViewToggle">
                 <button class="btn btn-sm btn-danger fw-bold" id="btnViewPersonagem"
                     onclick="toggleFichaView('personagem')">
                     <i class="bi bi-person-fill"></i> Personagem
                 </button>
                 <button class="btn btn-sm btn-outline-danger" id="btnViewAmeaca" onclick="toggleFichaView('ameaca')">
                     <i class="bi bi-skull"></i> Ficha de Ameaça
+                </button>
+                <button class="btn btn-sm btn-outline-warning" id="btnViewMods" onclick="toggleFichaView('mods')">
+                    <i class="bi bi-lightning-charge-fill"></i> Modificadores
                 </button>
             </div>
 
@@ -105,6 +108,8 @@
                             <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
+                    <!-- HUD de Modificadores Ativos -->
+                    <div id="modHud" class="mod-hud d-none mt-1"></div>
                 </div>
 
                 <div class="col-md-9 col-data">
@@ -483,44 +488,88 @@
                         </div>
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                                style="border-left: 4px solid #6f42c1 !important;"><span
-                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">1º Círculo (1
-                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
-                                    style="color: #6f42c1;" onclick="addSpell(1)">+ Adicionar</button></div>
+                                style="border-left: 4px solid #6f42c1 !important;">
+                                <span class="fw-bold small text-uppercase" style="color: #6f42c1;">1º Círculo (1
+                                    PM)</span>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary py-0 fw-bold"
+                                        style="font-size: 0.7rem; border-radius: 20px;" onclick="abrirGrimorio(1)">
+                                        <i class="bi bi-book"></i> Grimório
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                        style="color: #6f42c1;" onclick="addSpell(1)">Adicionar</button>
+                                </div>
+                            </div>
                             <div id="spellsList1"></div>
                         </div>
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                                style="border-left: 4px solid #6f42c1 !important;"><span
-                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">2º Círculo (3
-                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
-                                    style="color: #6f42c1;" onclick="addSpell(2)">+ Adicionar</button></div>
+                                style="border-left: 4px solid #6f42c1 !important;">
+                                <span class="fw-bold small text-uppercase" style="color: #6f42c1;">2º Círculo (3
+                                    PM)</span>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary py-0 fw-bold"
+                                        style="font-size: 0.7rem; border-radius: 20px;" onclick="abrirGrimorio(2)">
+                                        <i class="bi bi-book"></i> Grimório
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                        style="color: #6f42c1;" onclick="addSpell(2)">Adicionar</button>
+                                </div>
+                            </div>
                             <div id="spellsList2"></div>
                         </div>
+
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                                style="border-left: 4px solid #6f42c1 !important;"><span
-                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">3º Círculo (6
-                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
-                                    style="color: #6f42c1;" onclick="addSpell(3)">+ Adicionar</button></div>
+                                style="border-left: 4px solid #6f42c1 !important;">
+                                <span class="fw-bold small text-uppercase" style="color: #6f42c1;">3º Círculo (6
+                                    PM)</span>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary py-0 fw-bold"
+                                        style="font-size: 0.7rem; border-radius: 20px;" onclick="abrirGrimorio(3)">
+                                        <i class="bi bi-book"></i> Grimório
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                        style="color: #6f42c1;" onclick="addSpell(3)">Adicionar</button>
+                                </div>
+                            </div>
                             <div id="spellsList3"></div>
                         </div>
+
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                                style="border-left: 4px solid #6f42c1 !important;"><span
-                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">4º Círculo (10
-                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
-                                    style="color: #6f42c1;" onclick="addSpell(4)">+ Adicionar</button></div>
+                                style="border-left: 4px solid #6f42c1 !important;">
+                                <span class="fw-bold small text-uppercase" style="color: #6f42c1;">4º Círculo (10
+                                    PM)</span>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary py-0 fw-bold"
+                                        style="font-size: 0.7rem; border-radius: 20px;" onclick="abrirGrimorio(4)">
+                                        <i class="bi bi-book"></i> Grimório
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                        style="color: #6f42c1;" onclick="addSpell(4)">Adicionar</button>
+                                </div>
+                            </div>
                             <div id="spellsList4"></div>
                         </div>
+
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center bg-light border rounded px-2 py-1 mb-1"
-                                style="border-left: 4px solid #6f42c1 !important;"><span
-                                    class="fw-bold small text-uppercase" style="color: #6f42c1;">5º Círculo (15
-                                    PM)</span><button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
-                                    style="color: #6f42c1;" onclick="addSpell(5)">+ Adicionar</button></div>
+                                style="border-left: 4px solid #6f42c1 !important;">
+                                <span class="fw-bold small text-uppercase" style="color: #6f42c1;">5º Círculo (15
+                                    PM)</span>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary py-0 fw-bold"
+                                        style="font-size: 0.7rem; border-radius: 20px;" onclick="abrirGrimorio(5)">
+                                        <i class="bi bi-book"></i> Grimório
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold"
+                                        style="color: #6f42c1;" onclick="addSpell(5)">Adicionar</button>
+                                </div>
+                            </div>
                             <div id="spellsList5"></div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -627,21 +676,182 @@
                     <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-journal-text fs-4 text-danger"></i>
-                            <h3 class="t20-section-title m-0 text-danger">História / Anotações</h3>
+                            <h3 class="t20-section-title m-0 text-danger">Anotações</h3>
                         </div>
                         <i class="bi bi-chevron-down section-toggle fs-4 text-danger"
                             onclick="toggleSection('notesSection')" style="cursor: pointer;"
                             title="Recolher/Expandir"></i>
                     </div>
 
+                    <ul class="nav nav-tabs border-0 mb-1" id="notesTabs" role="tablist" style="font-size: 0.75rem;">
+                        <li class="nav-item">
+                            <button class="nav-link active py-1 px-2 text-danger fw-bold"
+                                onclick="switchNoteTab('historia', this)">História</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-1 px-2 text-secondary"
+                                onclick="switchNoteTab('campanha', this)">Campanha</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-1 px-2 text-secondary"
+                                onclick="switchNoteTab('outros', this)">Outros</button>
+                        </li>
+                    </ul>
+
                     <div class="notes-content p-1">
-                        <textarea id="charNotes" class="form-control bg-light border-secondary" rows="10"
+                        <textarea id="charNotes" class="form-control bg-light border-secondary note-area" rows="10"
                             style="resize: vertical; min-height: 150px; font-family: inherit;"
-                            placeholder="Escreva aqui o background do personagem, anotações de campanha, aliados, inimigos, etc..."></textarea>
+                            placeholder="Background do personagem..." oninput="saveData()"></textarea>
+
+                        <textarea id="charNotesCampanha" class="form-control bg-light border-secondary note-area d-none"
+                            rows="10" style="resize: vertical; min-height: 150px; font-family: inherit;"
+                            placeholder="Anotações da aventura, NPCs conhecidos, locais visitados..."
+                            oninput="saveData()"></textarea>
+
+                        <textarea id="charNotesOutros" class="form-control bg-light border-secondary note-area d-none"
+                            rows="10" style="resize: vertical; min-height: 150px; font-family: inherit;"
+                            placeholder="Inventário extra, pets, alianças ou lembretes gerais..."
+                            oninput="saveData()"></textarea>
                     </div>
                 </div>
             </div>
         </div><!-- /.row (personagem) -->
+
+        <!-- ===== ABA MODIFICADORES TEMPORÁRIOS ===== -->
+
+        <div id="fichaModsSection" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center mt-3 mb-3 border-bottom pb-2">
+                <h4 class="text-danger fw-bold m-0"><i class="bi bi-lightning-charge-fill"></i> Modificadores Ativos
+                </h4>
+                <button class="btn btn-sm btn-outline-danger" onclick="limparModificadores()">
+                    <i class="bi bi-trash"></i> Limpar Tudo
+                </button>
+            </div>
+
+            <div class="mods-card mb-4 shadow-sm border-primary-subtle">
+                <div class="mods-card-title bg-primary text-white p-2 rounded-top">
+                    <i class="bi bi-person-up"></i> Buffs de Atributo (Itens/Magias)
+                </div>
+                <div class="row g-2 p-3 text-center">
+                    <div class="col-4 col-md-2">
+                        <div class="border rounded p-2 bg-white shadow-sm h-100 border-primary">
+                            <div class="fw-bold text-primary small mb-1">FOR</div>
+                            <input type="number" id="mod-attr-FOR"
+                                class="form-control form-control-sm text-center fw-bold border-0 bg-light"
+                                placeholder="+0" oninput="updateCalculations(); saveData()">
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <div class="border rounded p-2 bg-white shadow-sm h-100 border-primary">
+                            <div class="fw-bold text-primary small mb-1">DES</div>
+                            <input type="number" id="mod-attr-DES"
+                                class="form-control form-control-sm text-center fw-bold border-0 bg-light"
+                                placeholder="+0" oninput="updateCalculations(); saveData()">
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <div class="border rounded p-2 bg-white shadow-sm h-100 border-primary">
+                            <div class="fw-bold text-primary small mb-1">CON</div>
+                            <input type="number" id="mod-attr-CON"
+                                class="form-control form-control-sm text-center fw-bold border-0 bg-light"
+                                placeholder="+0" oninput="updateCalculations(); saveData()">
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <div class="border rounded p-2 bg-white shadow-sm h-100 border-primary">
+                            <div class="fw-bold text-primary small mb-1">INT</div>
+                            <input type="number" id="mod-attr-INT"
+                                class="form-control form-control-sm text-center fw-bold border-0 bg-light"
+                                placeholder="+0" oninput="updateCalculations(); saveData()">
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <div class="border rounded p-2 bg-white shadow-sm h-100 border-primary">
+                            <div class="fw-bold text-primary small mb-1">SAB</div>
+                            <input type="number" id="mod-attr-SAB"
+                                class="form-control form-control-sm text-center fw-bold border-0 bg-light"
+                                placeholder="+0" oninput="updateCalculations(); saveData()">
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <div class="border rounded p-2 bg-white shadow-sm h-100 border-primary">
+                            <div class="fw-bold text-primary small mb-1">CAR</div>
+                            <input type="number" id="mod-attr-CAR"
+                                class="form-control form-control-sm text-center fw-bold border-0 bg-light"
+                                placeholder="+0" oninput="updateCalculations(); saveData()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="mods-card h-100 shadow-sm">
+                        <div class="mods-card-title p-2 border-bottom bg-light">
+                            <i class="bi bi-sliders2"></i> Bônus Globais
+                        </div>
+                        <div class="p-3">
+                            <div class="mods-globais-grid">
+                                <div class="mods-campo">
+                                    <label class="mods-label"><i class="bi bi-dice-6"></i> Rolagens</label>
+                                    <input type="number" id="mod-rolagens" class="mods-input"
+                                        oninput="aplicarModificadores()">
+                                </div>
+                                <div class="mods-campo">
+                                    <label class="mods-label"><i class="bi bi-book"></i> Perícias</label>
+                                    <input type="number" id="mod-pericias" class="mods-input"
+                                        oninput="aplicarModificadores()">
+                                </div>
+                                <div class="mods-campo">
+                                    <label class="mods-label"><i class="bi bi-crosshair"></i> Ataque</label>
+                                    <input type="number" id="mod-ataque" class="mods-input"
+                                        oninput="aplicarModificadores()">
+                                </div>
+                                <div class="mods-campo">
+                                    <label class="mods-label"><i class="bi bi-fire"></i> Dano</label>
+                                    <input type="number" id="mod-dano" class="mods-input"
+                                        oninput="aplicarModificadores()">
+                                </div>
+                                <div class="mods-campo">
+                                    <label class="mods-label"><i class="bi bi-shield-fill"></i> Defesa</label>
+                                    <input type="number" id="mod-defesa" class="mods-input"
+                                        oninput="aplicarModificadores()">
+                                </div>
+                            </div>
+
+                            <div class="mt-4 pt-3 border-top">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold small text-muted">BÔNUS EM PERÍCIA ESPECÍFICA</span>
+                                    <button class="btn btn-xs btn-danger p-0 px-2" onclick="addModPericia()"
+                                        style="font-size:0.7rem;">+ Add</button>
+                                </div>
+                                <div id="mod-pericias-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mods-card h-100 shadow-sm border-warning-subtle">
+                        <div class="mods-card-title p-2 border-bottom bg-warning-subtle">
+                            <i class="bi bi-exclamation-triangle"></i> Condições de Jogo
+                        </div>
+                        <div id="condicoes-grid" class="row g-1 p-2 m-0"
+                            style="font-size: 0.8rem; overflow-y:auto; max-height:350px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mods-card mt-4 shadow-sm border-danger-subtle">
+                <div class="mods-card-title p-2 border-bottom bg-danger text-white d-flex justify-content-between">
+                    <span><i class="bi bi-people-fill"></i> Aliados e Parceiros</span>
+                    <button class="btn btn-sm btn-light py-0 px-2" onclick="addParceiro()" style="font-size:0.7rem;">+
+                        Novo</button>
+                </div>
+                <div id="mod-parceiros-list" class="p-2"></div>
+            </div>
+        </div>
 
         <!-- ===== ABA FICHA DE AMEAÇA ===== -->
         <div id="fichaAmeacaSection" style="display:none;">
@@ -1050,9 +1260,34 @@
         </div>
     </div>
 
+    <!-- Modal: Importar Magias -->
+    <div id="modalGrimorio"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:10001; align-items:center; justify-content:center; padding:16px;"
+        onclick="if(event.target===this)fecharGrimorio()">
+        <div
+            style="background:#fff; border-radius:12px; width:100%; max-width:500px; max-height:85vh; display:flex; flex-direction:column; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <div
+                style="background:#6f42c1; color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; border-radius:12px 12px 0 0;">
+                <strong id="grimorioTitulo">🔮 Grimório</strong>
+                <button onclick="fecharGrimorio()"
+                    style="background:none; border:none; color:#fff; font-size:1.2rem;">✕</button>
+            </div>
+
+            <div style="padding:15px; border-bottom:1px solid #eee;">
+                <input type="text" id="inputBuscaMagia" class="form-control" placeholder="Digite o nome da magia..."
+                    oninput="filtrarMagias()">
+            </div>
+
+            <div id="listaMagiasBusca" style="overflow-y:auto; padding:10px; flex:1; min-height: 200px;">
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="spells_db.js"></script>
+    <script src="pdf_base64.js"></script>
     <script src="script.js"></script>
 </body>
 
