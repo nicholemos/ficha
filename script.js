@@ -26,20 +26,56 @@ let currentLoadBonus = 0; // Bônus manual para a carga
 let currentArmorLoadBonus = 0; // Bônus de slots da armadura
 let isLoading = false;    // Flag para suprimir saveData() durante o carregamento inicial
 
+const CONDICOES_T20 = {
+    "abalado": { nome: "Abalado", pericias: -2, desc: "-2 em testes de perícia. Medo." },
+    "agarrado": { nome: "Agarrado", ataque: -2, defesa: -5, desc: "Desprevenido e imóvel, -2 em ataque. Só armas leves." },
+    "alquebrado": { nome: "Alquebrado", desc: "Custo de PM de habilidades aumenta em +1. Mental." },
+    "apavorado": { nome: "Apavorado", pericias: -5, desc: "–5 em perícias e não pode se aproximar da fonte. Medo." },
+    "atordoado": { nome: "Atordoado", defesa: -5, desc: "Desprevenido e não pode fazer ações. Mental." },
+    "caido": { nome: "Caído", ataque: -5, defesa: -5, desc: "–5 em ataques corpo a corpo e Defesa. +5 Defesa contra distância." },
+    "cego": { nome: "Cego", defesa: -5, pericias: -5, Reflexos: -2, desc: "Desprevenido, lento e –5 em perícias de FOR/DES. Sentidos." },
+    "confuso": { nome: "Confuso", desc: "Comporta-se de modo aleatório (1d6). Mental." },
+    "debilitado": { nome: "Debilitado", pericias: -5, desc: "–5 em testes de atributos físicos (FOR, DES, CON) e perícias relacionadas." },
+    "desprevenido": { nome: "Desprevenido", defesa: -5, Reflexos: -5, desc: "–5 na Defesa e Reflexos." },
+    "doente": { nome: "Doente", desc: "Sob efeito de uma doença. Metabolismo." },
+    "em_chamas": { nome: "Em Chamas", desc: "Sofre 1d6 de fogo no início do turno." },
+    "enfeitiçado": { nome: "Enfeitiçado", desc: "+10 em Diplomacia para a fonte contra o alvo. Mental." },
+    "enjoado": { nome: "Enjoado", desc: "Só pode fazer 1 ação padrão OU movimento. Metabolismo." },
+    "enredado": { nome: "Enredado", ataque: -2, defesa: -2, Reflexos: -2, desc: "Lento e vulnerável. Movimento." },
+    "envenenado": { nome: "Envenenado", desc: "Efeito varia conforme o veneno. Veneno." },
+    "esmorecido": { nome: "Esmorecido", pericias: -5, desc: "–5 em testes de atributos mentais (INT, SAB, CAR) e perícias relacionadas. Mental." },
+    "exausto": { nome: "Exausto", pericias: -5, defesa: -2, ataque: -2, desc: "Debilitado, lento e vulnerável. Cansaço." },
+    "fascinado": { nome: "Fascinado", pericias: -5, desc: "–5 em Percepção e não pode fazer ações. Mental." },
+    "fatigado": { nome: "Fatigado", ataque: -2, defesa: -2, pericias: -2, desc: "Fraco e vulnerável. Cansaço." },
+    "fraco": { nome: "Fraco", pericias: -2, desc: "–2 em testes de atributos físicos (FOR, DES, CON) e perícias relacionadas." },
+    "frustrado": { nome: "Frustrado", pericias: -2, desc: "–2 em testes de atributos mentais (INT, SAB, CAR) e perícias relacionadas. Mental." },
+    "imovel": { nome: "Imóvel", desc: "Deslocamento reduzido a 0m. Movimento." },
+    "inconsciente": { nome: "Inconsciente", defesa: -10, Reflexos: -99, desc: "Indefeso e não pode fazer ações." },
+    "indefeso": { nome: "Indefeso", defesa: -15, Reflexos: -99, desc: "Desprevenido e –10 na Defesa. Falha em Reflexos." },
+    "lento": { nome: "Lento", Reflexos: -2, desc: "Deslocamento à metade, não pode correr/investir. Movimento." },
+    "ofuscado": { nome: "Ofuscado", ataque: -2, pericias: -2, desc: "–2 em testes de ataque e Percepção. Sentidos." },
+    "paralisado": { nome: "Paralisado", defesa: -15, Reflexos: -99, desc: "Imóvel e indefeso. Movimento." },
+    "pasmo": { nome: "Pasmo", desc: "Não pode fazer ações. Mental." },
+    "petrificacao": { nome: "Petrificação", desc: "Inconsciente com RD 8. Metamorfose." },
+    "sangrando": { nome: "Sangrando", desc: "Teste de CON (CD 15) ou perde 1d6 PV. Metabolismo." },
+    "surdo": { nome: "Surdo", pericias: -5, desc: "Falha em Percepção (ouvir), –5 em Iniciativa. Sentidos." },
+    "surpreendido": { nome: "Surpreendido", defesa: -5, desc: "Desprevenido e não pode fazer ações." },
+    "vulneravel": { nome: "Vulnerável", defesa: -2, desc: "–2 na Defesa." }
+};
+
 // --- INICIALIZAÇÃO ---
 window.onload = () => {
     try {
         currentSkills = JSON.parse(JSON.stringify(defaultSkills));
         renderStructure();
+        renderCondicoes(); // <--- ADICIONE ESTA LINHA AQUI
         loadData();
         attachGlobalListeners();
         enableDragAndDrop();
     } catch (e) { console.error(e); }
 
     setTimeout(updateCalculations, 100);
-
-    // ADICIONE ESTA LINHA AQUI:
-    setTimeout(checkImportedPowers, 400); // 400ms garante que a ficha já carregou tudo antes de importar
+    setTimeout(checkImportedPowers, 400);
 };
 
 function renderStructure() {
@@ -63,6 +99,24 @@ function renderStructure() {
         }).join('');
     }
     renderSkills();
+}
+
+function renderCondicoes() {
+    const grid = document.getElementById('condicoes-grid');
+    if (!grid) return;
+
+    grid.innerHTML = Object.keys(CONDICOES_T20).map(key => {
+        const c = CONDICOES_T20[key];
+        return `
+        <div class="col-6 col-md-4 col-lg-3">
+        <div class="form-check h-100 border rounded p-1 ps-4 hover-bg-light shadow-sm bg-white">
+            <input class="form-check-input cond-check" type="checkbox" value="${key}" id="cond-${key}" onchange="updateCalculations(); saveData()">
+            <label class="form-check-label d-block" for="cond-${key}" title="${c.desc}" style="cursor:pointer; font-size:0.7rem; line-height: 1.1;">
+                ${c.nome}
+            </label>
+        </div>
+    </div>`;
+    }).join('');
 }
 
 // Novas Funções de Atributo
@@ -431,6 +485,15 @@ function calcLoad() {
 
 
 function updateCalculations() {
+    let condAtq = 0, condDef = 0, condPer = 0, condRef = 0;
+
+    document.querySelectorAll('.cond-check:checked').forEach(chk => {
+        const efeito = CONDICOES_T20[chk.value];
+        if (efeito.ataque) condAtq += efeito.ataque;
+        if (efeito.defesa) condDef += efeito.defesa;
+        if (efeito.pericias) condPer += efeito.pericias;
+        if (efeito.Reflexos) condRef += efeito.Reflexos;
+    });
     try {
         let level = getInt('charLevel');
         if (level < 1) level = 1; if (level > 20) level = 20;
@@ -449,7 +512,9 @@ function updateCalculations() {
         const skillValues = {};
 
         currentSkills.forEach((s, i) => {
-            const attrVal = getInt(`attr-${s.a}`);
+            const baseAttr = getInt(`attr-${s.a}`);
+            const tempAttr = getInt(`mod-attr-${s.a}`); // NOVO: Atributo temporário
+            const attrVal = baseAttr + tempAttr;
             const check = document.getElementById(`skTrain${i}`); if (check) s.trained = check.checked;
             const trained = s.trained ? trainBonus : 0;
 
@@ -464,7 +529,8 @@ function updateCalculations() {
             if (isTrainedOnly && !s.trained) {
                 total = 0;
             } else {
-                total = halfLevel + attrVal + trained + other;
+                total = halfLevel + attrVal + trained + other + condPer;
+                if (s.n === 'Reflexos') total += condRef;
                 // Penalidade de Armadura/Escudo
                 if (penaltySkills.includes(s.n)) {
                     total -= totalPenalty;
@@ -475,6 +541,23 @@ function updateCalculations() {
                 }
             }
 
+            // ── MODIFICADORES TEMPORÁRIOS ──────────────────────
+            if (total !== 0 || s.trained) { // só aplica se a perícia é funcional
+                const modPericias = getTempMod('mod-pericias');
+                const modRolagens = getTempMod('mod-rolagens');
+                const SKIP_PERICIAS = ['Luta', 'Pontaria'];
+                if (!SKIP_PERICIAS.includes(s.n)) {
+                    total += modPericias + modRolagens;
+                }
+                // Bônus em perícia específica
+                document.querySelectorAll('#mod-pericias-list .mod-pericia-row').forEach(row => {
+                    const sel = row.querySelector('.mod-per-sel')?.value;
+                    const val = parseInt(row.querySelector('.mod-per-val')?.value) || 0;
+                    if (sel === s.n) total += val;
+                });
+            }
+            // ───────────────────────────────────────────────────
+
             setText(`skHalfLevel${i}`, halfLevel);
             setText(`skAttrVal${i}`, attrVal);
             setText(`skTrainVal${i}`, trained);
@@ -484,14 +567,20 @@ function updateCalculations() {
 
         // --- DEFESA ---
         const defAttr = getVal('defAttrSelect');
-        const defAttrVal = getInt(`attr-${defAttr}`);
+        const defAttrVal = getInt(`attr-${defAttr}`) + getInt(`mod-attr-${defAttr}`);
         const applyDefAttr = document.getElementById('applyDefAttr') ? document.getElementById('applyDefAttr').checked : true;
         const armorHalfLevel = document.getElementById('armorHalfLevel') ? document.getElementById('armorHalfLevel').checked : false;
         const armorBonus = getInt('armorBonus') + (armorHalfLevel ? halfLevel : 0);
         const shieldBonus = getInt('shieldBonus');
         let otherBonus = 0;
         document.querySelectorAll('#defenseList .def-row .inp-bonus').forEach(input => { otherBonus += (parseInt(input.value) || 0); });
-        const totalDefense = 10 + (applyDefAttr ? defAttrVal : 0) + armorBonus + shieldBonus + otherBonus;
+        // ── Mod temp: defesa + outros bônus livres ──
+        otherBonus += getTempMod('mod-defesa');
+        document.querySelectorAll('#mod-bonus-list .mod-bonus-row').forEach(row => {
+            otherBonus += parseInt(row.querySelector('.mod-bonus-val')?.value) || 0;
+        });
+        // ────────────────────────────────────────────
+        const totalDefense = 10 + (applyDefAttr ? defAttrVal : 0) + armorBonus + shieldBonus + otherBonus + condDef;
 
         setText('defAttrVal', applyDefAttr ? defAttrVal : 0);
         setText('dispArmorBonus', armorBonus);
@@ -529,7 +618,7 @@ function updateCalculations() {
 
         // --- MAGIAS CD ---
         const spellCDAttr = getVal('spellCDAttrSelect');
-        const spellCDAttrVal = getInt(`attr-${spellCDAttr}`);
+        const spellCDAttrVal = getInt(`attr-${spellCDAttr}`) + getInt(`mod-attr-${spellCDAttr}`);
         const spellCDPowers = getInt('spellCDPowers');
         const spellCDItems = getInt('spellCDItems');
         const spellCDOther = getInt('spellCDOther');
@@ -539,7 +628,7 @@ function updateCalculations() {
         setText('spellCDAttrVal', spellCDAttrVal);
         setText('spellCDTotal', spellCDTotal);
 
-        // --- ATAQUES (Correção Final: Leitura Direta da Interface) ---
+        // --- ATAQUES ---
         document.querySelectorAll('.atk-row').forEach(row => {
             const skillSelect = row.querySelector('.inp-atk-skill');
             const bonusInput = row.querySelector('.inp-bonus');
@@ -547,22 +636,24 @@ function updateCalculations() {
 
             if (skillSelect && bonusInput && modInput) {
                 const selectedSkill = skillSelect.value;
-
-                // 1. Busca o índice da perícia no seu array global
                 const skillIndex = currentSkills.findIndex(s => s.n === selectedSkill);
                 let skillBonus = 0;
-                // 2. Tenta ler o valor que já está calculado e exibido na tabela de perícias
                 if (skillIndex !== -1) {
                     const skillTotalEl = document.getElementById(`skTotal${skillIndex}`);
-                    if (skillTotalEl) {
-                        skillBonus = parseInt(skillTotalEl.innerText) || 0;
-                    }
+                    if (skillTotalEl) skillBonus = parseInt(skillTotalEl.innerText) || 0;
                 }
                 const modBonus = parseInt(modInput.value) || 0;
-                const totalBonus = skillBonus + modBonus;
+                // ── Mod temp: ataque e rolagens ──
+                const modAtq = getTempMod('mod-ataque') + getTempMod('mod-rolagens');
+                // ────────────────────────────────
+                const totalBonus = skillBonus + modBonus + modAtq + condAtq;
                 bonusInput.value = totalBonus;
             }
         });
+
+        // ── Mod temp: atualiza HUD ──
+        atualizarHudMods();
+        // ────────────────────────────
 
     } catch (e) { console.error("Erro em updateCalculations:", e); }
 }
@@ -661,6 +752,8 @@ function saveData() {
         raceAbilities: raceAbilities,
         classAbilities: classAbilities,
         notes: document.getElementById('charNotes')?.value || '',
+        notesCampanha: document.getElementById('charNotesCampanha')?.value || '',
+        notesOutros: document.getElementById('charNotesOutros')?.value || '',
 
         spells: {
             config: {
@@ -733,10 +826,72 @@ function saveData() {
     });
 
     // --- SALVAMENTO FINAL ---
+    // --- COLETA DE MODIFICADORES TEMPORÁRIOS ---
+    data.tempMods = {
+        globais: {
+            rolagens: getVal('mod-rolagens'),
+            pericias: getVal('mod-pericias'),
+            ataque: getVal('mod-ataque'),
+            dano: getVal('mod-dano'),
+            defesa: getVal('mod-defesa'),
+            // Coleta os novos bônus de atributos
+            attrFOR: getVal('mod-attr-FOR'),
+            attrDES: getVal('mod-attr-DES'),
+            attrCON: getVal('mod-attr-CON'),
+            attrINT: getVal('mod-attr-INT'),
+            attrSAB: getVal('mod-attr-SAB'),
+            attrCAR: getVal('mod-attr-CAR')
+        },
+        // Mantém o salvamento das listas e condições
+        bonusLivres: Array.from(document.querySelectorAll('#mod-bonus-list .mod-bonus-row')).map(row => ({
+            nome: row.querySelector('.mod-bonus-nome').value,
+            val: row.querySelector('.mod-bonus-val').value
+        })),
+        periciasEspecificas: Array.from(document.querySelectorAll('#mod-pericias-list .mod-pericia-row')).map(row => ({
+            pericia: row.querySelector('.mod-per-sel').value,
+            val: row.querySelector('.mod-per-val').value
+        })),
+        parceiros: Array.from(document.querySelectorAll('#mod-parceiros-list .mod-parceiro-row')).map(row => ({
+            nome: row.querySelector('.mod-par-nome').value,
+            tipo: row.querySelector('.mod-par-tipo').value,
+            bonus: row.querySelector('.mod-par-bonus').value
+        })),
+        condicoes: Array.from(document.querySelectorAll('.cond-check:checked')).map(c => c.value)
+    };
+
+    // Coleta Bônus Livres
+    document.querySelectorAll('#mod-bonus-list .mod-bonus-row').forEach(row => {
+        data.tempMods.bonusLivres.push({
+            nome: row.querySelector('.mod-bonus-nome').value,
+            val: row.querySelector('.mod-bonus-val').value
+        });
+    });
+
+    // Coleta Perícias Específicas
+    document.querySelectorAll('#mod-pericias-list .mod-pericia-row').forEach(row => {
+        data.tempMods.periciasEspecificas.push({
+            pericia: row.querySelector('.mod-per-sel').value,
+            val: row.querySelector('.mod-per-val').value
+        });
+    });
+
+    data.condicoes = Array.from(document.querySelectorAll('.cond-check:checked')).map(c => c.value);
+
+    // Coleta Parceiros
+    document.querySelectorAll('#mod-parceiros-list .mod-parceiro-row').forEach(row => {
+        data.tempMods.parceiros.push({
+            nome: row.querySelector('.mod-par-nome').value,
+            tipo: row.querySelector('.mod-par-tipo').value,
+            bonus: row.querySelector('.mod-par-bonus').value
+        });
+    });
+
+
     localStorage.setItem('t20SheetData', JSON.stringify(data));
 }
 
 function loadData() {
+
     const savedData = localStorage.getItem('t20SheetData');
     if (savedData) {
         isLoading = true; // Impede que saveData() seja chamado durante o carregamento
@@ -848,9 +1003,9 @@ function loadData() {
         }
 
         // --- NOTAS  ---
-        if (data.notes !== undefined) {
-            document.getElementById('charNotes').value = data.notes;
-        }
+        if (data.notes !== undefined) document.getElementById('charNotes').value = data.notes;
+        if (data.notesCampanha !== undefined) document.getElementById('charNotesCampanha').value = data.notesCampanha;
+        if (data.notesOutros !== undefined) document.getElementById('charNotesOutros').value = data.notesOutros;
 
         // --- MAGIAS ---
         if (data.spells) {
@@ -870,12 +1025,99 @@ function loadData() {
             document.getElementById('loadAttrSelect').value = data.loadConfig.attr;
         }
 
+        if (data.condicoes) {
+            data.condicoes.forEach(key => {
+                const chk = document.getElementById(`cond-${key}`);
+                if (chk) chk.checked = true;
+            });
+        }
+
+        // --- CARREGAR MODIFICADORES TEMPORÁRIOS ---
+        if (data.tempMods) {
+            const m = data.tempMods;
+
+            // Globais
+            if (m.globais) {
+                const setMod = (id, val) => { if (document.getElementById(id)) document.getElementById(id).value = val || ''; };
+                setMod('mod-rolagens', m.globais.rolagens);
+                setMod('mod-pericias', m.globais.pericias);
+                setMod('mod-ataque', m.globais.ataque);
+                setMod('mod-dano', m.globais.dano);
+                setMod('mod-defesa', m.globais.defesa);
+                setMod('mod-attr-FOR', m.globais.attrFOR);
+                setMod('mod-attr-DES', m.globais.attrDES);
+                setMod('mod-attr-CON', m.globais.attrCON);
+                setMod('mod-attr-INT', m.globais.attrINT);
+                setMod('mod-attr-SAB', m.globais.attrSAB);
+                setMod('mod-attr-CAR', m.globais.attrCAR);
+            }
+
+            // Bônus Livres
+            if (m.bonusLivres) {
+                const container = document.getElementById('mod-bonus-list');
+                if (container) container.innerHTML = '';
+                m.bonusLivres.forEach(b => {
+                    addModBonus(); // Chama a função que cria a linha
+                    const rows = container.querySelectorAll('.mod-bonus-row');
+                    const lastRow = rows[rows.length - 1];
+                    lastRow.querySelector('.mod-bonus-nome').value = b.nome;
+                    lastRow.querySelector('.mod-bonus-val').value = b.val;
+                });
+            }
+
+            // Perícias Específicas
+            if (m.periciasEspecificas) {
+                const container = document.getElementById('mod-pericias-list');
+                if (container) container.innerHTML = '';
+                m.periciasEspecificas.forEach(p => {
+                    addModPericia();
+                    const rows = container.querySelectorAll('.mod-pericia-row');
+                    const lastRow = rows[rows.length - 1];
+                    lastRow.querySelector('.mod-per-sel').value = p.pericia;
+                    lastRow.querySelector('.mod-per-val').value = p.val;
+                });
+            }
+
+            // Parceiros
+            if (m.parceiros) {
+                const container = document.getElementById('mod-parceiros-list');
+                if (container) container.innerHTML = '';
+                m.parceiros.forEach(par => {
+                    addParceiro();
+                    const rows = container.querySelectorAll('.mod-parceiro-row');
+                    const lastRow = rows[rows.length - 1];
+                    lastRow.querySelector('.mod-par-nome').value = par.nome;
+                    lastRow.querySelector('.mod-par-tipo').value = par.tipo;
+                    lastRow.querySelector('.mod-par-bonus').value = par.bonus;
+                });
+            }
+        }
+
         isLoading = false; // Carregamento concluído - salvar normalmente a partir daqui
 
     } else {
         // Se não houver dados salvos, renderiza as perícias padrão
         renderSkills();
     }
+}
+
+//Abas de resumos
+function switchNoteTab(tabId, btn) {
+    // Esconde todos os textareas de notas
+    document.querySelectorAll('.note-area').forEach(el => el.classList.add('d-none'));
+
+    // Mostra o selecionado
+    if (tabId === 'historia') document.getElementById('charNotes').classList.remove('d-none');
+    if (tabId === 'campanha') document.getElementById('charNotesCampanha').classList.remove('d-none');
+    if (tabId === 'outros') document.getElementById('charNotesOutros').classList.remove('d-none');
+
+    // Atualiza o estilo dos botões
+    document.querySelectorAll('#notesTabs .nav-link').forEach(el => {
+        el.classList.remove('active', 'fw-bold', 'text-danger');
+        el.classList.add('text-secondary');
+    });
+    btn.classList.add('active', 'fw-bold', 'text-danger');
+    btn.classList.remove('text-secondary');
 }
 
 // ============================================================
@@ -1283,8 +1525,12 @@ function copyToClipboard() {
 
 async function exportarParaPDF() {
     try {
-        const response = await fetch('Ficha.pdf');
-        const arrayBuffer = await response.arrayBuffer();
+        const binaryString = window.atob(FICHA_PDF_BASE64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        const arrayBuffer = bytes.buffer;
         const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
         const form = pdfDoc.getForm();
         const data = JSON.parse(localStorage.getItem('t20SheetData'));
@@ -1400,10 +1646,13 @@ async function exportarParaPDF() {
 
         // --- TAMANHO E DESLOCAMENTO ---
         form.getTextField('Deslocamento do personagem').setText(data.extras?.speed || '9m');
+        let tamanhoTexto = '';
         try {
             const tamanhoSel = document.getElementById('charSize');
-            const tamanhoTexto = tamanhoSel.options[tamanhoSel.selectedIndex].text;
-            form.getDropdown('SeleTamanho').select(tamanhoTexto);
+            if (tamanhoSel && tamanhoSel.options.length > 0) {
+                tamanhoTexto = tamanhoSel.options[tamanhoSel.selectedIndex].text;
+                form.getDropdown('SeleTamanho').select(tamanhoTexto);
+            }
         } catch (e) {
             try { form.getTextField('SeleTamanho').setText(tamanhoTexto); } catch (err) { }
         }
@@ -1473,46 +1722,45 @@ function toggleFichaView(mode) {
     _fichaView = mode;
     const personagem = document.getElementById('fichaPersonagemContent');
     const ameaca = document.getElementById('fichaAmeacaSection');
+    const modsSection = document.getElementById('fichaModsSection');
     const btnP = document.getElementById('btnViewPersonagem');
     const btnA = document.getElementById('btnViewAmeaca');
+    const btnM = document.getElementById('btnViewMods');
     const headerContent = document.querySelector('.header-content');
     const btnsPerson = document.getElementById('headerBtnsPersonagem');
     const btnsAmeaca = document.getElementById('headerBtnsAmeaca');
     const btnPDF = document.getElementById('btnGerarPDF');
 
+    // Reset all
+    [personagem, ameaca, modsSection].forEach(el => { if (el) el.style.display = 'none'; });
+    if (headerContent) headerContent.style.display = 'none';
+    if (btnsPerson) btnsPerson.style.setProperty('display', 'none', 'important');
+    if (btnsAmeaca) btnsAmeaca.style.setProperty('display', 'none', 'important');
+    if (btnPDF) btnPDF.style.display = '';
+    [btnP, btnA, btnM].forEach(b => {
+        if (!b) return;
+        b.classList.remove('btn-danger', 'btn-warning', 'fw-bold');
+        b.classList.add('btn-outline-danger');
+    });
+    if (btnM) { btnM.classList.remove('btn-outline-danger'); btnM.classList.add('btn-outline-warning'); }
+
     if (mode === 'ameaca') {
-        if (personagem) personagem.style.display = 'none';
         if (ameaca) ameaca.style.display = 'block';
-        if (headerContent) headerContent.style.display = 'none';
-
-        // Esconde botões do personagem e mostra os da ameaça
-        if (btnsPerson) btnsPerson.style.setProperty('display', 'none', 'important');
         if (btnsAmeaca) btnsAmeaca.style.removeProperty('display');
-
-        if (btnPDF) {
-            btnPDF.innerHTML = '<i class="bi bi-file-earmark-pdf"></i> PDF Ameaça';
-            btnPDF.onclick = exportarAmeacaPDF;
-            btnPDF.title = 'Gerar PDF da Ficha de Ameaça';
-        }
-        if (btnP) { btnP.classList.remove('btn-danger'); btnP.classList.add('btn-outline-danger'); }
+        if (btnPDF) { btnPDF.innerHTML = '<i class="bi bi-file-earmark-pdf"></i> PDF Ameaça'; btnPDF.onclick = exportarAmeacaPDF; btnPDF.title = 'Gerar PDF da Ficha de Ameaça'; }
         if (btnA) { btnA.classList.remove('btn-outline-danger'); btnA.classList.add('btn-danger'); }
         syncAmeacaFromSheet();
-    } else {
-        if (personagem) personagem.style.display = '';
-        if (ameaca) ameaca.style.display = 'none';
-        if (headerContent) headerContent.style.display = '';
-
-        // Mostra botões do personagem e força a ocultação dos de ameaça com !important
+    } else if (mode === 'mods') {
+        if (modsSection) modsSection.style.display = 'block';
         if (btnsPerson) btnsPerson.style.removeProperty('display');
-        if (btnsAmeaca) btnsAmeaca.style.setProperty('display', 'none', 'important');
-
-        if (btnPDF) {
-            btnPDF.innerHTML = '<i class="bi bi-file-earmark-pdf"></i> Gerar PDF Oficial';
-            btnPDF.onclick = exportarParaPDF;
-            btnPDF.title = 'Gerar PDF Oficial';
-        }
-        if (btnP) { btnP.classList.add('btn-danger'); btnP.classList.remove('btn-outline-danger'); }
-        if (btnA) { btnA.classList.add('btn-outline-danger'); btnA.classList.remove('btn-danger'); }
+        if (btnPDF) btnPDF.style.display = 'none';
+        if (btnM) { btnM.classList.remove('btn-outline-warning'); btnM.classList.add('btn-warning', 'fw-bold'); }
+    } else { // personagem
+        if (personagem) personagem.style.display = '';
+        if (headerContent) headerContent.style.display = '';
+        if (btnsPerson) btnsPerson.style.removeProperty('display');
+        if (btnPDF) { btnPDF.innerHTML = '<i class="bi bi-file-earmark-pdf"></i> Gerar PDF Oficial'; btnPDF.onclick = exportarParaPDF; btnPDF.title = 'Gerar PDF Oficial'; }
+        if (btnP) { btnP.classList.remove('btn-outline-danger'); btnP.classList.add('btn-danger'); }
     }
 }
 
@@ -1863,7 +2111,7 @@ function addAmeacaAtaque(data = {}) {
             </div>
             <textarea class="am-textarea am-atk-desc" placeholder="Descrição adicional (opcional)" oninput="saveAmeaca()">${data.desc || ''}</textarea>
         </div>
-        <button class="am-row-del" onclick="this.closest('.am-row').remove(); saveAmeaca()" title="Remover"><i class="bi bi-x-lg"></i></button>
+        <button class="am-row-del" onclick="this.closest('.am-row').remove(); updateCalculations(); saveAmeaca()" title="Remover"><i class="bi bi-x-lg"></i></button>
     `;
     container.appendChild(row);
 }
@@ -2016,6 +2264,46 @@ function copiarResumoAmeaca() {
         const ad = r.querySelector('.am-atk-dano')?.value || '';
         return an ? `${an} ${ab} (${ad})` : '';
     }).filter(Boolean).join(' | ');
+    // --- LÓGICA DE COLETA DE MAGIAS CORRIGIDA ---
+    const habs = Array.from(document.querySelectorAll('#am-habilidades-list .am-row'));
+    let magiasPorCirculo = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+    let temMagia = false;
+
+    habs.forEach(row => {
+        const nomeHab = row.querySelector('.am-hab-nome')?.value?.trim() || '';
+        const descHab = row.querySelector('.am-hab-desc')?.value?.trim() || '';
+
+        // SÓ PROCESSA SE O NOME NÃO ESTIVER VAZIO
+        if (nomeHab !== '') {
+            const matchCirculo = descHab.match(/\[(\d)º\s*Circ\]/i);
+            const matchPM = nomeHab.match(/\((\d+)\s*PM\)/i);
+            const pmToCirculo = { "1": 1, "3": 2, "6": 3, "10": 4, "15": 5 };
+
+            let circ = null;
+            if (matchCirculo) {
+                circ = parseInt(matchCirculo[1]);
+            } else if (matchPM) {
+                circ = pmToCirculo[matchPM[1]] || null;
+            }
+
+            if (circ && circ >= 1 && circ <= 5) {
+                const nomeLimpo = nomeHab.split(' (')[0];
+                magiasPorCirculo[circ].push(nomeLimpo);
+                temMagia = true;
+            }
+        }
+    });
+
+    let txtMagias = "";
+    if (temMagia) {
+        txtMagias = "Magias:\n";
+        for (let c = 1; c <= 5; c++) {
+            if (magiasPorCirculo[c].length > 0) {
+                txtMagias += `* ${c}º círculo: ${magiasPorCirculo[c].join(', ')}\n`;
+            }
+        }
+    }
+    // --------------------------------------------
 
     let txt = `**${nome.toUpperCase()}** — ND ${nd}\n`;
     if (tipo && tipo !== '—') txt += `*${tipo}*\n`;
@@ -2028,6 +2316,7 @@ function copiarResumoAmeaca() {
     txt += `PV ${g('am-pv')} · Desl. ${g('am-desl')}\n`;
     if (g('am-pm') !== '—') txt += `PM ${g('am-pm')}\n`;
     if (ataques) txt += `Atq: ${ataques}\n`;
+    if (txtMagias) txt += txtMagias;
     txt += `FOR ${g('am-for')} · DES ${g('am-des')} · CON ${g('am-con')} · INT ${g('am-int')} · SAB ${g('am-sab')} · CAR ${g('am-car')}\n`;
     if (pericias) txt += `Perícias: ${pericias}\n`;
     txt += `Tesouro: ${g('am-tesouro')}\n`;
@@ -2170,3 +2459,228 @@ function preencherAmeacaDaFicha() {
 document.addEventListener('DOMContentLoaded', () => {
     loadAmeaca();
 });
+
+
+// Grimorio
+
+let circuloAtual = 1;
+
+function abrirGrimorio(circulo) {
+    circuloAtual = circulo;
+    document.getElementById('grimorioTitulo').innerText = `🔮 Grimório: ${circulo}º Círculo`;
+    document.getElementById('modalGrimorio').style.display = 'flex';
+    document.getElementById('inputBuscaMagia').value = '';
+    filtrarMagias();
+}
+
+function fecharGrimorio() {
+    document.getElementById('modalGrimorio').style.display = 'none';
+}
+
+function filtrarMagias() {
+    const termo = document.getElementById('inputBuscaMagia').value.toLowerCase();
+    const lista = document.getElementById('listaMagiasBusca');
+
+    // Filtra pelo círculo e pelo nome (buscando no spells_db.js)
+    const magiasFiltradas = SPELLS_DB.filter(m => m.c === circuloAtual && m.n.toLowerCase().includes(termo));
+
+    lista.innerHTML = magiasFiltradas.map(m => `
+        <div class="d-flex justify-content-between align-items-center p-2 border-bottom hover-bg-light" style="cursor:pointer;" onclick="selecionarMagia('${m.n}')">
+            <div>
+                <div class="fw-bold" style="color: #6f42c1;">${m.n}</div>
+                <small class="text-muted">${m.e} | ${m.ex}</small>
+            </div>
+            <i class="bi bi-plus-circle-fill text-primary"></i>
+        </div>
+    `).join('');
+}
+
+function selecionarMagia(nomeMagia) {
+    const magia = SPELLS_DB.find(m => m.n === nomeMagia);
+    if (magia) {
+        // Formata os aprimoramentos para texto
+        let descCompleta = magia.desc;
+
+        if (magia.aprimoramentos && magia.aprimoramentos.length > 0) {
+            descCompleta += "\n\n--- APRIMORAMENTOS ---";
+            magia.aprimoramentos.forEach(aprim => {
+                descCompleta += `\n• +${aprim.cost} PM: ${aprim.desc}`;
+            });
+        }
+
+        const spellData = {
+            name: magia.n,
+            pm: spellCosts[magia.c], // Puxa 1, 3, 6, 10 ou 15 conforme o círculo
+            school: magia.e,
+            exec: magia.ex,
+            range: magia.a,
+            target: magia.al,
+            dur: magia.d,
+            res: magia.r,
+            desc: descCompleta // Agora inclui a descrição + aprimoramentos formatados
+        };
+
+        addSpell(magia.c, spellData); // Insere na ficha
+        fecharGrimorio(); // Fecha o modal
+    }
+}
+// ================================================================
+// SISTEMA DE MODIFICADORES TEMPORÁRIOS
+// ================================================================
+
+// Helper: lê um input de modificador como inteiro (0 se vazio)
+function getTempMod(id) {
+    return parseInt(document.getElementById(id)?.value) || 0;
+}
+
+// Chamado em oninput de qualquer campo de modificador
+function aplicarModificadores() {
+    updateCalculations();
+}
+
+// ── Adicionar/remover linhas dinâmicas ──────────────────────────
+
+function addModBonus() {
+    const container = document.getElementById('mod-bonus-list');
+    const row = document.createElement('div');
+    row.className = 'mod-bonus-row d-flex align-items-center gap-2 mb-2';
+    row.innerHTML = `
+        <input type="text" class="form-control form-control-sm mod-bonus-nome" placeholder="Nome do bônus (ex: Benção)" style="flex:1;">
+        <input type="number" class="form-control form-control-sm mod-bonus-val" placeholder="+0" style="width:70px;" oninput="aplicarModificadores()">
+        <button class="btn btn-sm btn-outline-danger p-0 px-1" onclick="this.closest('.mod-bonus-row').remove(); aplicarModificadores();" title="Remover">
+            <i class="bi bi-x-lg"></i>
+        </button>`;
+    container.appendChild(row);
+}
+
+function addModPericia() {
+    const container = document.getElementById('mod-pericias-list');
+    // Monta opções a partir das perícias atuais
+    const opts = currentSkills.map(s => `<option value="${s.n}">${s.n}</option>`).join('');
+    const row = document.createElement('div');
+    row.className = 'mod-pericia-row d-flex align-items-center gap-2 mb-2';
+    row.innerHTML = `
+        <select class="form-select form-select-sm mod-per-sel" style="flex:1;" onchange="aplicarModificadores()">
+            <option value="">— Perícia —</option>${opts}
+        </select>
+        <input type="number" class="form-control form-control-sm mod-per-val" placeholder="+0" style="width:70px;" oninput="aplicarModificadores()">
+        <button class="btn btn-sm btn-outline-danger p-0 px-1" onclick="this.closest('.mod-pericia-row').remove(); aplicarModificadores();" title="Remover">
+            <i class="bi bi-x-lg"></i>
+        </button>`;
+    container.appendChild(row);
+}
+
+function addParceiro() {
+    const container = document.getElementById('mod-parceiros-list');
+    const row = document.createElement('div');
+    // d-flex com flex-wrap permite que os itens se organizem conforme a largura
+    row.className = 'mod-parceiro-row d-flex flex-wrap align-items-start gap-2 mb-3 p-2 border-bottom';
+
+    row.innerHTML = `
+        <div class="d-flex gap-2 flex-grow-1" style="min-width: 250px;">
+            <input type="text" class="form-control form-control-sm mod-par-nome" placeholder="Nome" style="flex: 2;" oninput="atualizarHudMods()">
+            <input type="text" class="form-control form-control-sm mod-par-tipo" placeholder="Tipo" style="flex: 1;" oninput="atualizarHudMods()">
+            <button class="btn btn-sm btn-outline-danger p-0 px-2" onclick="this.closest('.mod-parceiro-row').remove(); atualizarHudMods();" title="Remover">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+        
+        <div class="flex-grow-1" style="min-width: 300px;">
+            <textarea class="form-control form-control-sm mod-par-bonus" placeholder="Bônus e Habilidades do Parceiro" rows="2" style="width: 100%;" oninput="atualizarHudMods()"></textarea>
+        </div>`;
+
+    container.appendChild(row);
+}
+
+// ── Limpar tudo ─────────────────────────────────────────────────
+
+function limparModificadores() {
+    if (!confirm('Limpar todos os modificadores temporários e condições?')) return;
+
+    // 1. Limpa os inputs numéricos globais
+    ['mod-rolagens', 'mod-pericias', 'mod-ataque', 'mod-dano', 'mod-defesa',
+        'mod-attr-FOR', 'mod-attr-DES', 'mod-attr-CON', 'mod-attr-INT', 'mod-attr-SAB', 'mod-attr-CAR'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+
+    // 2. Limpa as listas dinâmicas (Bônus, Perícias e Parceiros)
+    ['mod-bonus-list', 'mod-pericias-list', 'mod-parceiros-list'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
+
+    // 3. Desmarca todas as condições de jogo
+    document.querySelectorAll('.cond-check').forEach(chk => {
+        chk.checked = false;
+    });
+
+    // 4. Salva o estado limpo e atualiza toda a ficha
+    saveData();
+    updateCalculations();
+}
+
+// ── HUD: indicador compacto abaixo da foto ──────────────────────
+
+function atualizarHudMods() {
+    const hud = document.getElementById('modHud');
+    if (!hud) return;
+
+    const partes = [];
+
+    // Ícones de modificadores ativos
+    const checks = [
+        { id: 'mod-rolagens', icon: '🎲', label: 'Rolagens' },
+        { id: 'mod-pericias', icon: '📖', label: 'Perícias' },
+        { id: 'mod-ataque', icon: '⚔️', label: 'Ataque' },
+        { id: 'mod-dano', icon: '🔥', label: 'Dano' },
+        { id: 'mod-defesa', icon: '🛡️', label: 'Defesa' },
+    ];
+    checks.forEach(({ id, icon, label }) => {
+        const v = parseInt(document.getElementById(id)?.value) || 0;
+        if (v !== 0) {
+            const sinal = v > 0 ? `+${v}` : `${v}`;
+            partes.push(`<span class="mod-hud-item" title="${label} ${sinal}">${icon}<span class="mod-hud-val">${sinal}</span></span>`);
+        }
+    });
+
+    // Bônus livres ativos
+    document.querySelectorAll('#mod-bonus-list .mod-bonus-row').forEach(row => {
+        const nome = row.querySelector('.mod-bonus-nome')?.value?.trim() || 'Bônus';
+        const v = parseInt(row.querySelector('.mod-bonus-val')?.value) || 0;
+        if (v !== 0) partes.push(`<span class="mod-hud-item" title="${nome}">✨<span class="mod-hud-val">${v > 0 ? '+' : ''}${v}</span></span>`);
+    });
+
+    // Perícias específicas
+    document.querySelectorAll('#mod-pericias-list .mod-pericia-row').forEach(row => {
+        const per = row.querySelector('.mod-per-sel')?.value;
+        const v = parseInt(row.querySelector('.mod-per-val')?.value) || 0;
+        if (per && v !== 0) partes.push(`<span class="mod-hud-item" title="${per}">📊<span class="mod-hud-val">${v > 0 ? '+' : ''}${v}</span></span>`);
+    });
+
+    // Parceiros
+    document.querySelectorAll('#mod-parceiros-list .mod-parceiro-row').forEach(row => {
+        const nome = row.querySelector('.mod-par-nome')?.value?.trim();
+        const bonus = row.querySelector('.mod-par-bonus')?.value?.trim();
+        if (nome) partes.push(`<span class="mod-hud-parceiro" title="${bonus || ''}">👥 ${nome}</span>`);
+    });
+
+    //Condições
+    document.querySelectorAll('.cond-check:checked').forEach(chk => {
+        const nome = CONDICOES_T20[chk.value].nome;
+        partes.push(`<span class="mod-hud-item bg-warning text-dark" title="${nome}">⚠️<span class="mod-hud-val">${nome}</span></span>`);
+    });
+
+    ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'].forEach(a => {
+        const v = getInt(`mod-attr-${a}`);
+        if (v !== 0) partes.push(`<span class="mod-hud-item bg-primary text-white" title="${a} Temp">${a} <span class="mod-hud-val">${v > 0 ? '+' : ''}${v}</span></span>`);
+    });
+
+    if (partes.length === 0) {
+        hud.classList.add('d-none');
+        hud.innerHTML = '';
+    } else {
+        hud.classList.remove('d-none');
+        hud.innerHTML = partes.join('');
+    }
+}
