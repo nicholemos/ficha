@@ -1826,3 +1826,153 @@ h3,
 .am-per-row .am-row-del:hover {
     color: #c0392b;
 }
+/* ================================================================
+   MODIFICADORES TEMPORÁRIOS
+   ================================================================ */
+
+.mods-sheet {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 8px 0;
+}
+
+.mods-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+
+.mods-card-title {
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #8b0000;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Grid dos 4 bônus rápidos */
+.mods-globais-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 600px) {
+    .mods-globais-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.mods-campo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.mods-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #444;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.mods-input {
+    width: 76px;
+    height: 44px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #8b0000;
+    transition: border-color .15s;
+    padding: 0;
+}
+
+.mods-input:focus {
+    border-color: #8b0000;
+    outline: none;
+    background: #fff;
+}
+
+.mods-input:not(:placeholder-shown) {
+    border-color: #e0483f;
+    background: #fff5f5;
+}
+
+/* Parceiros header */
+.mods-parceiros-header {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 80px 32px;
+    gap: 8px;
+    padding: 0 4px 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.mod-parceiro-row {
+    display: grid !important;
+    grid-template-columns: 2fr 1.5fr 80px 32px;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Área reservada */
+.mods-area-reservada {
+    min-height: 60px;
+}
+
+/* ── HUD abaixo da foto ─────────────────────────────────────── */
+.mod-hud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px 6px;
+    background: rgba(139,0,0,.06);
+    border: 1px solid rgba(139,0,0,.18);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    line-height: 1.3;
+}
+
+.mod-hud-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: #fff;
+    border: 1px solid #e0c0c0;
+    border-radius: 4px;
+    padding: 1px 5px;
+    white-space: nowrap;
+}
+
+.mod-hud-val {
+    font-weight: 700;
+    color: #8b0000;
+}
+
+.mod-hud-parceiro {
+    display: inline-flex;
+    align-items: center;
+    background: #f0f8f0;
+    border: 1px solid #b0d0b0;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #1a4a1a;
+    font-weight: 600;
+    white-space: nowrap;
+}
