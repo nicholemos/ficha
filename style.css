@@ -1857,10 +1857,10 @@ h3,
     gap: 6px;
 }
 
-/* Grid dos 4 bônus rápidos */
+/* Grid dos bônus globais — 3 colunas para comportar as listas expans\u00edveis */
 .mods-globais-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
 }
 
@@ -1906,7 +1906,8 @@ h3,
     background: #fff;
 }
 
-.mods-input:not(:placeholder-shown) {
+.mods-input:not(:placeholder-shown),
+.mods-input.has-value {
     border-color: #e0483f;
     background: #fff5f5;
 }
