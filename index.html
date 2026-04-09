@@ -792,31 +792,82 @@
                         </div>
                         <div class="p-3">
                             <div class="mods-globais-grid">
+                                <!-- Rolagens -->
                                 <div class="mods-campo">
                                     <label class="mods-label"><i class="bi bi-dice-6"></i> Rolagens</label>
-                                    <input type="number" id="mod-rolagens" class="mods-input"
-                                        oninput="aplicarModificadores()">
+                                    <input type="number" id="mod-rolagens" class="mods-input" readonly tabindex="-1"
+                                        style="cursor:default; background:#f8f9fa;">
+                                    <button class="btn btn-xs btn-outline-secondary p-0 px-1 mt-1 w-100"
+                                        style="font-size:0.65rem;" onclick="toggleModGlobalList('rolagens')">
+                                        <i class="bi bi-list-ul"></i> Bônus
+                                    </button>
+                                    <div id="mod-rolagens-list-wrap" class="d-none mt-2">
+                                        <div id="mod-rolagens-list"></div>
+                                        <button class="btn btn-xs btn-outline-danger p-0 px-2 mt-1 w-100"
+                                            style="font-size:0.65rem;" onclick="addModGlobal('rolagens')">+ Add</button>
+                                    </div>
                                 </div>
+                                <!-- Perícias -->
                                 <div class="mods-campo">
                                     <label class="mods-label"><i class="bi bi-book"></i> Perícias</label>
-                                    <input type="number" id="mod-pericias" class="mods-input"
-                                        oninput="aplicarModificadores()">
+                                    <input type="number" id="mod-pericias" class="mods-input" readonly tabindex="-1"
+                                        style="cursor:default; background:#f8f9fa;">
+                                    <button class="btn btn-xs btn-outline-secondary p-0 px-1 mt-1 w-100"
+                                        style="font-size:0.65rem;" onclick="toggleModGlobalList('pericias')">
+                                        <i class="bi bi-list-ul"></i> Bônus
+                                    </button>
+                                    <div id="mod-pericias-list-wrap" class="d-none mt-2">
+                                        <div id="mod-pericias-global-list"></div>
+                                        <button class="btn btn-xs btn-outline-danger p-0 px-2 mt-1 w-100"
+                                            style="font-size:0.65rem;" onclick="addModGlobal('pericias')">+ Add</button>
+                                    </div>
                                 </div>
-                                <div class="mods-campo">
-                                    <label class="mods-label"><i class="bi bi-crosshair"></i> Ataque</label>
-                                    <input type="number" id="mod-ataque" class="mods-input"
-                                        oninput="aplicarModificadores()">
-                                </div>
-                                <div class="mods-campo">
-                                    <label class="mods-label"><i class="bi bi-fire"></i> Dano</label>
-                                    <input type="number" id="mod-dano" class="mods-input"
-                                        oninput="aplicarModificadores()">
-                                </div>
+                                <!-- Defesa -->
                                 <div class="mods-campo">
                                     <label class="mods-label"><i class="bi bi-shield-fill"></i> Defesa</label>
-                                    <input type="number" id="mod-defesa" class="mods-input"
-                                        oninput="aplicarModificadores()">
+                                    <input type="number" id="mod-defesa" class="mods-input" readonly tabindex="-1"
+                                        style="cursor:default; background:#f8f9fa;">
+                                    <button class="btn btn-xs btn-outline-secondary p-0 px-1 mt-1 w-100"
+                                        style="font-size:0.65rem;" onclick="toggleModGlobalList('defesa')">
+                                        <i class="bi bi-list-ul"></i> Bônus
+                                    </button>
+                                    <div id="mod-defesa-list-wrap" class="d-none mt-2">
+                                        <div id="mod-defesa-list"></div>
+                                        <button class="btn btn-xs btn-outline-danger p-0 px-2 mt-1 w-100"
+                                            style="font-size:0.65rem;" onclick="addModGlobal('defesa')">+ Add</button>
+                                    </div>
                                 </div>
+                                <!-- Ataque -->
+                                <div class="mods-campo">
+                                    <label class="mods-label"><i class="bi bi-crosshair"></i> Ataque</label>
+                                    <input type="number" id="mod-ataque" class="mods-input" readonly tabindex="-1"
+                                        style="cursor:default; background:#f8f9fa;">
+                                    <button class="btn btn-xs btn-outline-secondary p-0 px-1 mt-1 w-100"
+                                        style="font-size:0.65rem;" onclick="toggleModGlobalList('ataque')">
+                                        <i class="bi bi-list-ul"></i> Bônus
+                                    </button>
+                                    <div id="mod-ataque-list-wrap" class="d-none mt-2">
+                                        <div id="mod-ataque-list"></div>
+                                        <button class="btn btn-xs btn-outline-danger p-0 px-2 mt-1 w-100"
+                                            style="font-size:0.65rem;" onclick="addModGlobal('ataque')">+ Add</button>
+                                    </div>
+                                </div>
+                                <!-- Dano -->
+                                <div class="mods-campo">
+                                    <label class="mods-label"><i class="bi bi-fire"></i> Dano</label>
+                                    <input type="number" id="mod-dano" class="mods-input" readonly tabindex="-1"
+                                        style="cursor:default; background:#f8f9fa;">
+                                    <button class="btn btn-xs btn-outline-secondary p-0 px-1 mt-1 w-100"
+                                        style="font-size:0.65rem;" onclick="toggleModGlobalList('dano')">
+                                        <i class="bi bi-list-ul"></i> Bônus
+                                    </button>
+                                    <div id="mod-dano-list-wrap" class="d-none mt-2">
+                                        <div id="mod-dano-list"></div>
+                                        <button class="btn btn-xs btn-outline-danger p-0 px-2 mt-1 w-100"
+                                            style="font-size:0.65rem;" onclick="addModGlobal('dano')">+ Add</button>
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div class="mt-4 pt-3 border-top">
