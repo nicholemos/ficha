@@ -849,7 +849,8 @@ function saveData() {
         })),
         periciasEspecificas: Array.from(document.querySelectorAll('#mod-pericias-list .mod-pericia-row')).map(row => ({
             pericia: row.querySelector('.mod-per-sel').value,
-            val: row.querySelector('.mod-per-val').value
+            val: row.querySelector('.mod-per-val').value,
+            origem: row.querySelector('.mod-per-origem')?.value || ''
         })),
         parceiros: Array.from(document.querySelectorAll('#mod-parceiros-list .mod-parceiro-row')).map(row => ({
             nome: row.querySelector('.mod-par-nome').value,
@@ -858,24 +859,6 @@ function saveData() {
         })),
         condicoes: Array.from(document.querySelectorAll('.cond-check:checked')).map(c => c.value)
     };
-
-    // Coleta Bônus Livres
-    document.querySelectorAll('#mod-bonus-list .mod-bonus-row').forEach(row => {
-        data.tempMods.bonusLivres.push({
-            nome: row.querySelector('.mod-bonus-nome').value,
-            val: row.querySelector('.mod-bonus-val').value
-        });
-    });
-
-    // Coleta Perícias Específicas
-    document.querySelectorAll('#mod-pericias-list .mod-pericia-row').forEach(row => {
-        data.tempMods.periciasEspecificas.push({
-            pericia: row.querySelector('.mod-per-sel').value,
-            val: row.querySelector('.mod-per-val').value
-        });
-    });
-
-    data.condicoes = Array.from(document.querySelectorAll('.cond-check:checked')).map(c => c.value);
 
     // Coleta Parceiros
     document.querySelectorAll('#mod-parceiros-list .mod-parceiro-row').forEach(row => {
@@ -1075,6 +1058,9 @@ function loadData() {
                     const lastRow = rows[rows.length - 1];
                     lastRow.querySelector('.mod-per-sel').value = p.pericia;
                     lastRow.querySelector('.mod-per-val').value = p.val;
+                    if (lastRow.querySelector('.mod-per-origem')) {
+                        lastRow.querySelector('.mod-per-origem').value = p.origem || '';
+                    }
                 });
             }
 
@@ -2564,6 +2550,7 @@ function addModPericia() {
             <option value="">— Perícia —</option>${opts}
         </select>
         <input type="number" class="form-control form-control-sm mod-per-val" placeholder="+0" style="width:70px;" oninput="aplicarModificadores()">
+        <input type="text" class="form-control form-control-sm mod-per-origem" placeholder="Fonte" style="width:100px;" oninput="aplicarModificadores()">
         <button class="btn btn-sm btn-outline-danger p-0 px-1" onclick="this.closest('.mod-pericia-row').remove(); aplicarModificadores();" title="Remover">
             <i class="bi bi-x-lg"></i>
         </button>`;
@@ -2655,7 +2642,11 @@ function atualizarHudMods() {
     document.querySelectorAll('#mod-pericias-list .mod-pericia-row').forEach(row => {
         const per = row.querySelector('.mod-per-sel')?.value;
         const v = parseInt(row.querySelector('.mod-per-val')?.value) || 0;
-        if (per && v !== 0) partes.push(`<span class="mod-hud-item" title="${per}">📊<span class="mod-hud-val">${v > 0 ? '+' : ''}${v}</span></span>`);
+        const origem = row.querySelector('.mod-per-origem')?.value;
+        if (per && v !== 0) {
+            const origemStr = origem ? ` (${origem})` : '';
+            partes.push(`<span class="mod-hud-item" title="${per}${origemStr}">📊<span class="mod-hud-val">${v > 0 ? '+' : ''}${v}</span></span>`);
+        }
     });
 
     // Parceiros
