@@ -13,9 +13,9 @@ const defaultSkills = [
     { n: 'Cura', a: 'SAB' }, { n: 'Diplomacia', a: 'CAR' }, { n: 'Enganação', a: 'CAR' },
     { n: 'Fortitude', a: 'CON' }, { n: 'Furtividade', a: 'DES' }, { n: 'Guerra', a: 'INT' },
     { n: 'Iniciativa', a: 'DES' }, { n: 'Intimidação', a: 'CAR' }, { n: 'Intuição', a: 'SAB' },
-    { n: 'Investigação', a: 'INT' }, { n: 'Jogatina', a: 'CAR' }, { n: 'Ladinagem', a: 'DES' },
+    { n: 'Investigação', a: 'INT' }, { n: 'Jogatina', a: 'CAR' }, { n: 'Ladinagem', a: 'DES' },{ n: 'Luta', a: 'FOR' },
     { n: 'Misticismo', a: 'INT' }, { n: 'Nobreza', a: 'INT' },
-    { n: 'Ofício', a: 'INT' }, { n: 'Percepção', a: 'SAB' }, { n: 'Pilotagem', a: 'DES' },
+    { n: 'Ofício', a: 'INT' }, { n: 'Percepção', a: 'SAB' }, { n: 'Pilotagem', a: 'DES' },{ n: 'Pontaria', a: 'DES' },
     { n: 'Reflexos', a: 'DES' }, { n: 'Religião', a: 'SAB' },
     { n: 'Sobrevivência', a: 'SAB' }, { n: 'Vontade', a: 'SAB' }
 ];
