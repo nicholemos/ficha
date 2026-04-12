@@ -15,7 +15,7 @@ const defaultSkills = [
     { n: 'Iniciativa', a: 'DES' }, { n: 'Intimidação', a: 'CAR' }, { n: 'Intuição', a: 'SAB' },
     { n: 'Investigação', a: 'INT' }, { n: 'Jogatina', a: 'CAR' }, { n: 'Ladinagem', a: 'DES' },{ n: 'Luta', a: 'FOR' },
     { n: 'Misticismo', a: 'INT' }, { n: 'Nobreza', a: 'INT' },
-    { n: 'Ofício', a: 'INT' }, { n: 'Percepção', a: 'SAB' }, { n: 'Pilotagem', a: 'DES' },{ n: 'Pontaria', a: 'DES' },
+    { n: 'Ofício', a: 'INT' }, { n: 'Ofício', a: 'INT' }, { n: 'Percepção', a: 'SAB' }, { n: 'Pilotagem', a: 'DES' },{ n: 'Pontaria', a: 'DES' },
     { n: 'Reflexos', a: 'DES' }, { n: 'Religião', a: 'SAB' },
     { n: 'Sobrevivência', a: 'SAB' }, { n: 'Vontade', a: 'SAB' }
 ];
@@ -152,9 +152,22 @@ function renderSkills() {
         const skillLabel = isDefault
             ? `${s.n}${isTrainedOnly ? '<span class="text-danger" title="Somente treinada">*</span>' : ''}`
             : s.n;
-        const nameDisplay = isDefault
-            ? `<span class="fw-bold text-truncate d-block" title="${s.n}${isTrainedOnly ? ' (somente treinada)' : ''}" style="font-size:0.9em; padding-top:2px;">${skillLabel}</span>`
-            : `<input type="text" class="form-control form-control-sm p-0 fw-bold border-0 bg-transparent" value="${s.n}" onchange="updateSkillName(${i}, this.value)" placeholder="Nome">`;
+
+        const isOficio = isDefault && s.n === 'Ofício';
+        const nameDisplay = isOficio
+            ? `<div class="d-flex align-items-center gap-1" style="overflow:hidden;">
+                 <span class="fw-bold" style="font-size:0.9em; white-space:nowrap;">Ofício</span>
+                 <input type="text" class="form-control form-control-sm p-0 border-0 bg-transparent oficio-specialty"
+                        data-skill-idx="${i}"
+                        style="font-size:0.8em; min-width:0; width:100%; color:#555;"
+                        value="${s.specialty || ''}"
+                        placeholder="(tipo)"
+                        oninput="updateSkillSpecialty(${i}, this.value)"
+                        title="Ex: Metalurgia, Culinária...">
+               </div>`
+            : isDefault
+                ? `<span class="fw-bold text-truncate d-block" title="${s.n}${isTrainedOnly ? ' (somente treinada)' : ''}" style="font-size:0.9em; padding-top:2px;">${skillLabel}</span>`
+                : `<input type="text" class="form-control form-control-sm p-0 fw-bold border-0 bg-transparent" value="${s.n}" onchange="updateSkillName(${i}, this.value)" placeholder="Nome">`;
 
         const deleteBtn = !isDefault
             ? `<i class="bi bi-x text-danger" style="cursor:pointer; margin-left:2px;" onclick="deleteSkill(${i})" title="Remover"></i>`
@@ -224,6 +237,7 @@ function addSkill() { currentSkills.push({ n: 'Nova Perícia', a: 'INT', trained
 function deleteSkill(index) { if (confirm("Remover perícia?")) { currentSkills.splice(index, 1); renderSkills(); saveData(); } }
 function updateSkillAttr(index, newAttr) { currentSkills[index].a = newAttr; updateCalculations(); saveData(); }
 function updateSkillName(index, newName) { currentSkills[index].n = newName; saveData(); updateCalculations(); }
+function updateSkillSpecialty(index, value) { if (currentSkills[index]) currentSkills[index].specialty = value; saveData(); }
 
 // --- ROLAGEM ---
 function roll20() { return Math.floor(Math.random() * 20) + 1; }
@@ -670,6 +684,8 @@ function saveData() {
         if (chk) s.trained = chk.checked;
         const otherEl = document.getElementById(`skOther${i}`);
         if (otherEl) s.other = parseInt(otherEl.value) || 0;
+        const specEl = document.querySelector(`.oficio-specialty[data-skill-idx="${i}"]`);
+        if (specEl) s.specialty = specEl.value;
     });
 
     // 1. Coletamos as novas listas primeiro para evitar erros de escopo
@@ -747,7 +763,8 @@ function saveData() {
             a: s.a,
             trained: s.trained,
             other: s.other,
-            isCustom: s.isCustom
+            isCustom: s.isCustom,
+            specialty: s.specialty || ''
         })),
 
         attacks: [],
@@ -1610,7 +1627,14 @@ async function exportarParaPDF() {
         };
 
         data.skills.forEach((s, i) => {
-            const suf = skillSuffix[s.n] || (s.n.includes('Ofício') ? 'ofi1' : null);
+            // Determine suffix: for Ofício default skills, use ofi1 for the first and ofi2 for the second
+            let suf = skillSuffix[s.n];
+            if (!suf && s.n === 'Ofício') {
+                const oficiosBefore = data.skills.slice(0, i).filter(sk => sk.n === 'Ofício').length;
+                suf = oficiosBefore === 0 ? 'ofi1' : 'ofi2';
+            } else if (!suf && s.n.includes('Ofício')) {
+                suf = 'ofi1';
+            }
             if (suf) {
                 try {
                     const baseId = (i + 1).toString().padStart(2, '0');
@@ -1950,16 +1974,19 @@ function toggleMagiasAmeaca() {
 // ============================================================
 // FIX 5 — Importar Perícias com checklist modal
 // ============================================================
-const PERICIAS_FIXAS = ['Iniciativa', 'Percepção', 'Fortitude', 'Reflexos', 'Vontade']; // já têm campos próprios
+const PERICIAS_FIXAS = ['Iniciativa', 'Percepção', 'Fortitude', 'Reflexos', 'Vontade', 'Luta', 'Pontaria']; // já têm campos próprios
 
 function abrirModalImportarPericias() {
     // Monta lista de perícias (excluindo as 5 fixas)
     const pericias = currentSkills
         .map((s, i) => ({
-            nome: s.n,
+            nome: s.n === 'Ofício' && s.specialty ? `Ofício (${s.specialty})` : s.n,
             total: parseInt(document.getElementById(`skTotal${i}`)?.innerText) || 0
         }))
-        .filter(s => !PERICIAS_FIXAS.includes(s.nome));
+        .filter(s => {
+            const base = s.nome.startsWith('Ofício') ? 'Ofício' : s.nome;
+            return !PERICIAS_FIXAS.includes(s.nome) && !PERICIAS_FIXAS.includes(base);
+        });
 
     if (!pericias.length) { alert('Nenhuma perícia disponível.'); return; }
 
