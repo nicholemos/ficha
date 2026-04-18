@@ -2541,7 +2541,7 @@ const SPELLS_DB = [
         "a": "médio",
         "al": "1 criatura",
         "d": "cena.",
-        "r": "Nenhuma",
+        "r": "Reflexos anula",
         "desc": "Três laços de energia surgem do chão e se enroscam no alvo, deixando-o agarrado. A vítima pode tentar se livrar, gastando uma ação padrão para fazer um teste de Atletismo (CD igual à da magia). Se passar, destrói um laço, mais um laço adicional para cada 2 pontos pelos quais superou a CD. Os laços também podem ser atacados e destruídos: cada um tem Defesa 10, 10 PV, RD 5 e imunidade a dano mágico. Se todos os laços forem destruídos, a magia é dissipada. Por serem feitos de energia, os laços afetam criaturas incorpóreas.",
         "aprimoramentos": [
             {
