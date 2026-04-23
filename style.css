@@ -1,1948 +1,1979 @@
-/* ==============================
-   ITENS FINDER — STR STYLE (LIMPO)
-   (organizado + sem regras duplicadas)
-   ============================== */
-
+/* --- 1. FONTE TORMENTA --- */
 @font-face {
-  font-family: "Tormenta";
-  src: url("Tormenta.ttf") format("truetype");
-}
-
-/* ===== PALETA ===== */
-:root {
-  --str-slate: #2f3f4f;
-  --str-slate-2: #344a5c;
-  --str-accent: #e0483f;
-
-  --bg-main: #f2f4f7;
-  --card-bg: #fff;
-
-  --border: #111;
-  --radius: 14px;
-
-  --text-main: #0f172a;
-}
-
-/* ===== BASE ===== */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: var(--bg-main);
-  color: var(--text-main);
-}
-
-/* ===== HEADER ===== */
-.header {
-  background: var(--str-slate);
-  color: #fff;
-  padding: 18px 16px 12px;
-  text-align: center;
-}
-
-.header-title {
-  font-family: "Tormenta";
-  letter-spacing: 1px;
-  font-size: 3.5rem;
-  margin: 0;
-}
-
-.header-subtitle {
-  opacity: .9;
-  margin: 6px 0 0;
-  font-size: .9rem;
-}
-
-.header::after {
-  content: "";
-  display: block;
-  height: 4px;
-  background: var(--str-accent);
-  margin-top: 12px;
-}
-
-/* ===== CONTAINER ===== */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 16px;
-}
-
-.container-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-}
-
-/* ===== CARDS ===== */
-.filters-section,
-.inventory-container {
-  background: var(--card-bg);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  overflow: hidden;
-  /* evita “vazamentos” visuais */
-}
-
-/* ===== INPUTS ===== */
-.search-bar {
-  position: relative;
-  width: 100%;
-}
-
-.search-icon {
-  width: 18px;
-  height: 18px;
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: .55;
-  pointer-events: none;
-}
-
-.search-input,
-select {
-  width: 100%;
-  max-width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 2px solid var(--border);
-  background: #f4fbff;
-  font-family: "Tormenta";
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-
-}
-
-.search-input {
-  padding-left: 42px;
-}
-
-/* espaço da lupa */
-
-/* ===== BOTÕES ===== */
-.filter-btn,
-.view-btn {
-  border: 2px solid var(--border);
-  background: #fff;
-  border-radius: 10px;
-  padding: 6px 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: .15s;
-}
-
-.filter-btn:hover,
-.view-btn:hover {
-  background: #eaf4ff;
-}
-
-.filter-btn.active,
-.view-btn.active {
-  background: var(--str-accent);
-  color: #fff;
-}
-
-/* ===== GRID DE ITENS ===== */
-.items-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
-}
-
-.item-card {
-  background: var(--card-bg);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-  transition: .12s;
-}
-
-.item-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, .08);
-}
-
-.item-name {
-  font-family: "Tormenta";
-  font-size: 1.1rem;
-  color: var(--str-accent);
-  margin: 0 0 6px;
-}
-
-/* ===== BADGE ===== */
-.badge {
-  background: var(--str-slate-2);
-  color: #fff;
-  padding: 3px 7px;
-  border-radius: 999px;
-  font-size: 11px;
-}
-
-/* ===== TABELA (itens) ===== */
-.item-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border: 2px solid var(--border);
-}
-
-.item-table th {
-  background: var(--str-slate);
-  color: #ffffff;
-  font-family: "Tormenta";
-  text-align: left;
-  padding: 10px;
-  border-bottom: 2px solid var(--str-slate);
-}
-
-.item-table td {
-  padding: 10px;
-  border-bottom: 1px solid #e8ecf1;
-}
-
-.item-table tr:hover {
-  background: #f0f5fa;
-}
-
-/* ==============================
-   MODAL (equipamentos)
-   ============================== */
-
-.modal-overlay,
-.modal {
-  position: fixed;
-  inset: 0;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.modal-overlay {
-  background: rgba(10, 15, 25, .55);
-  backdrop-filter: blur(2px);
-  z-index: 9998;
-}
-
-.modal {
-  display: grid;
-  place-items: center;
-  padding: 18px;
-  z-index: 9999;
-}
-
-.modal-overlay.active,
-.modal.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-.modal-content {
-  width: min(720px, calc(100vw - 24px));
-  max-height: min(86vh, 900px);
-  overflow: auto;
-  background: #fff;
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, .25);
-  position: relative;
-  padding: 16px;
-}
-
-.modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 2px solid var(--border);
-  background: #fff;
-  cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
-}
-
-.modal-close:hover {
-  background: #f6f7fb;
-}
-
-.modal-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  padding-right: 42px;
-  margin-bottom: 10px;
-}
-
-.modal-title {
-  font-family: "Tormenta";
-  color: var(--str-accent);
-  font-size: 1.4rem;
-  margin: 0;
-}
-
-.modal-price {
-  font-weight: 700;
-  color: #111827;
-  background: #f6f7fb;
-  border: 1px solid var(--border);
-  padding: 6px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-.modal-body {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  align-items: start;
-}
-
-.modal-image-container {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-  height: 240px;
-  display: grid;
-  place-items: center;
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  background: #fafafa;
-  padding: 10px;
-}
-
-.modal-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-#modalBadges,
-.modal-badges {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 2px;
-  align-items: flex-start;
-}
-
-.modal-section {
-  border-top: 1px solid rgba(0, 0, 0, .12);
-  padding-top: 10px;
-}
-
-.modal-section h3 {
-  font-family: "Tormenta";
-  font-size: 1rem;
-  margin: 0 0 6px;
-  color: #111827;
-}
-
-.modal-section p {
-  margin: 0;
-  line-height: 1.6;
-  color: #374151;
-}
-
-.modal-stats {
-  display: flex;
-  gap: 8px;
-  width: 100%;
-  padding: 10px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  background: #f6f7fb;
-  overflow-x: auto;
-}
-
-.modal-stats::-webkit-scrollbar {
-  height: 6px;
-}
-
-.modal-stats::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 999px;
-}
-
-.stat-box {
-  min-width: 110px;
-  flex: 0 0 auto;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 8px 10px;
-  display: grid;
-  gap: 4px;
-}
-
-.stat-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #6b7280;
-  margin: 0;
-  white-space: nowrap;
-}
-
-.stat-value {
-  font-size: 14px;
-  font-weight: 800;
-  color: #111827;
-  margin: 0;
-  white-space: nowrap;
-}
-
-.modal-add-item {
-  display: grid;
-  grid-template-columns: auto 90px 1fr;
-  gap: 10px;
-  align-items: center;
-  padding: 12px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  background: #fff;
-}
-
-.modal-add-item label {
-  font-weight: 700;
-  color: #111827;
-}
-
-.quantity-input {
-  height: 40px;
-  border-radius: 12px;
-  border: 2px solid var(--border);
-  padding: 0 10px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.add-item-btn {
-  height: 40px;
-  border-radius: 12px;
-  border: 2px solid #111827;
-  background: var(--str-accent);
-  color: #fff;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.add-item-btn:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
-}
-
-/* ==============================
-   INVENTÁRIO (título + tabela)
-   ============================== */
-
-.inventory-title {
-  font-family: "Tormenta";
-  color: var(--str-accent);
-  margin: 0 0 10px;
-}
-
-.inventory-list {
-  margin-top: 10px;
-}
-
-.inventory-table-wrap {
-  overflow-x: auto;
-  border: 1px solid rgba(0, 0, 0, .12);
-  border-radius: 12px;
-}
-
-.inventory-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.inventory-table thead th {
-  text-align: left;
-  font-weight: 700;
-  padding: 10px;
-  background: #f6f7f9;
-  border-bottom: 1px solid rgba(0, 0, 0, .10);
-  white-space: nowrap;
-}
-
-.inventory-table tbody td {
-  padding: 10px;
-  border-bottom: 1px solid rgba(0, 0, 0, .08);
-  vertical-align: middle;
-}
-
-.inventory-table tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.inv-name {
-  font-weight: 700;
-}
-
-.inv-muted {
-  opacity: .75;
-  font-size: 12px;
-  margin-left: 6px;
-}
-
-.inv-num {
-  text-align: center;
-  white-space: nowrap;
-}
-
-.inv-actions {
-  text-align: right;
-  width: 44px;
-}
-
-.remove-item-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, .2);
-  background: #fff;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.remove-item-btn:hover {
-  filter: brightness(.96);
-}
-
-/* Botão "voltar ao topo" dentro do inventário */
-.inventory-top-btn {
-  margin: 12px auto 0;
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
-  border: 2px solid rgba(0, 0, 0, .20);
-  background: var(--str-accent);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, .18);
-}
-
-.inventory-top-btn:hover {
-  filter: brightness(.98);
-  transform: translateY(-1px);
-}
-
-/* ===== Remover "lixeira" antiga (se existir) ===== */
-button[title*="limpar"],
-button[title*="Limpar"],
-.clear-btn,
-.clear-all,
-.trash-btn,
-.floating-trash {
-  display: none !important;
-}
-
-/* ==============================
-   BOTÃO FLUTUANTE DO INVENTÁRIO (MOBILE)
-   ============================== */
-
-.floating-buttons {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-#mobileInventoryBtn.float-btn {
-  pointer-events: auto;
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  border: 2px solid var(--border);
-  background: var(--str-accent);
-  color: #fff;
-  display: none;
-  /* desktop: escondido */
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, .18);
-  cursor: pointer;
-  position: relative;
-}
-
-#mobileInventoryBtn.float-btn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.05);
-}
-
-#mobileInvCount.mobile-badge {
-  position: absolute;
-  top: -7px;
-  right: -7px;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: #e53935;
-  color: #fff;
-  border: 2px solid #fff;
-  font-size: 12px;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-}
-
-/* ==============================
-   RESPONSIVO (DESKTOP / MOBILE)
-   ============================== */
-
-/* DESKTOP */
-@media (min-width:1024px) {
-  .container-grid {
-    grid-template-columns: 3fr 1.1fr;
-    align-items: start;
-  }
-
-  .inventory-container {
-    position: sticky;
-    top: 18px;
-    max-height: calc(100vh - 36px);
-    overflow: auto;
-  }
-}
-
-/* MOBILE (mantém o comportamento atual, mas sem afetar o PC) */
-@media (max-width:1023px) {
-
-  /* botão flutuante aparece */
-  #mobileInventoryBtn.float-btn {
+    font-family: 'Tormenta';
+    src: url('Tormenta.ttf') format('truetype');
+}
+
+/* Aplica a fonte nos títulos e números grandes */
+.t20-section-title,
+.def-shield,
+.attr-val,
+h1,
+h2,
+h3,
+.fs-4 {
+    font-family: 'Tormenta', serif;
+    letter-spacing: 1px;
+}
+
+/* Ajuste para a fonte não ficar pequena demais nos inputs */
+.attr-val {
+    font-size: 2.8rem !important;
+    /* Aumentei pois a fonte Tormenta costuma ser menor */
+    text-shadow: 2px 2px 0px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+    /* Contorno para leitura */
+    color: #8b0000 !important;
+    /* Vermelho sangue */
+}
+
+/* --- 2. ESTILO DOS ATRIBUTOS (TOKENS) --- */
+.attr-token {
+    width: 100%;
+    max-width: 110px;
+    aspect-ratio: 1 / 1;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    border: 4px solid #333;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
     display: flex;
-  }
-
-  /* inventário vira "gaveta" lateral */
-  .inventory-container.calc-panel {
-    position: static;
-    /* ou relative */
-    right: auto;
-    top: auto;
-    width: 100%;
-    max-width: none;
-    height: auto;
-    z-index: auto;
-    border-left: 2px solid var(--border);
-    border-radius: var(--radius);
-    overflow: visible;
-    transition: none;
-    box-shadow: none;
-  }
-
-
-  .inventory-container.calc-panel.active {
-    right: auto;
-  }
-
-
-  .inventory-close-mobile {
-    display: block;
-    z-index: 2001;
-  }
-
-  .inventory-list {
-    max-height: calc(100vh - 280px);
-  }
-}
-
-/* Ajustes específicos do modal no mobile */
-@media (max-width:720px) {
-  .modal-content {
-    width: calc(100vw - 20px);
-    max-height: calc(100svh - 20px);
-    padding: 12px;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .modal-image-container {
-    width: 100%;
-    max-height: 220px;
-    border-radius: 16px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    transition: transform 0.2s;
+    position: relative;
+    /* Essencial para o overlay */
     overflow: hidden;
-  }
+    /* Para garantir que o overlay não vaze */
+}
 
-  .modal-image-container img,
-  #modalImage {
+/* Nova camada de overlay para controlar a transparência da IMAGEM */
+.attr-token::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 220px;
-    object-fit: contain;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    /* Cor branca com 20% de opacidade */
+    /* Ajuste o último número (0.2) para controlar a transparência:
+       0.0 = totalmente transparente (só o fundo original aparece)
+       0.1 = bem sutil
+       0.2 = levemente transparente (como no exemplo)
+       0.3 = um pouco mais visível
+       0.4 = perceptível
+       ...
+       1.0 = totalmente opaco (a imagem sumiria e ficaria só branco)
+    */
+    pointer-events: none;
+    /* Permite clicar no input por baixo */
+}
+
+.attr-token:hover {
+    transform: scale(1.05);
+    border-color: var(--t20-red);
+}
+
+/* O input fica transparente por cima da imagem */
+.attr-input-overlay {
+    background: transparent !important;
+    border: none !important;
+    text-align: center;
+    width: 80%;
+    height: 80%;
+    padding: 0;
+    margin: 0;
+    z-index: 2;
+    /* Garante que o número fique por cima do overlay */
+}
+
+.attr-input-overlay:focus {
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50%;
+}
+
+/* O Label (Nome do Atributo) agora fica embaixo, estilo legenda */
+.attr-footer-label {
+    text-align: center;
+    font-family: 'Tormenta', serif;
+    font-weight: bold;
+    color: var(--t20-red);
+    font-size: 1.2rem;
+    margin-top: 5px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 0 #fff;
+}
+
+:root {
+    --t20-red: #b22222;
+    --t20-bg: #fdfdfd;
+}
+
+/* Ajustes Gerais */
+.sheet {
+    max-width: 1100px;
+    border-top: 5px solid var(--t20-red);
+}
+
+/* Inputs Customizados T20 */
+.t20-label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--t20-red);
+    margin-left: 5px;
+}
+
+.t20-input {
+    border: 2px solid #333;
+    background-color: #f0f8ff;
+    font-weight: bold;
+    border-radius: 4px;
+    border-top-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.t20-input:focus {
+    border-color: var(--t20-red);
+    box-shadow: none;
+}
+
+/* Atributos (Escudos) */
+.attr-box {
+    position: relative;
+}
+
+.attr-label {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid black;
+    padding: 0 5px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+.attr-val {
+    width: 100%;
+    height: 80px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--t20-red);
+    border: 3px solid black;
+    border-radius: 5px 5px 50% 50%;
+    /* Formato de escudo */
+    padding-top: 10px;
+}
+
+.attr-val:focus {
+    outline: none;
+    border-color: var(--t20-red);
+    background-color: #fff0f0;
+}
+
+/* Labels flutuantes nas bordas */
+/* Labels flutuantes nas bordas */
+.t20-status-label,
+.t20-section-title {
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: white;
+    padding: 0 5px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: var(--t20-red);
+    text-transform: uppercase;
+    white-space: nowrap;
+    /* <--- ISSO IMPEDE A QUEBRA DE LINHA */
+    z-index: 5;
+    /* Garante que fique acima da borda e da barra */
+}
+
+/* Escudo da Defesa */
+.def-shield {
+    width: 70px;
+    height: 80px;
+    background: #e9ecef;
+    border: 3px solid black;
+    border-radius: 5px 5px 50% 50%;
+    color: black;
+}
+
+/* Perícias (Tabela zebrada customizada) */
+.skill-row:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.skill-row {
+    font-size: 0.8rem;
+    /* Reduzi um pouco para caber melhor */
+    background-color: white;
+    /* Garante fundo limpo */
+}
+
+.skill-row input[type="number"] {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+    width: 100%;
+    height: 20px;
+    /* Altura fixa compacta */
+    font-size: 0.8rem;
+}
+
+/* Ataques (Accordion) */
+.atk-summary input {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    background: transparent;
+    text-align: center;
+    font-weight: 600;
+}
+
+.atk-summary input:focus {
+    outline: none;
+    border-bottom: 2px solid var(--t20-red);
+}
+
+.atk-details {
+    background-color: #f8f9fa;
+    border-left: 3px solid var(--t20-red);
+}
+
+.form-label-sm {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #666;
+    border-top: 1px solid #dee2e6;
     display: block;
-  }
+    text-align: center;
+}
 
-  .modal-stats {
-    flex-wrap: wrap;
+/* Adicione ao seu CSS */
+
+.def-row .inp-bonus {
+    text-align: center;
+    background: #f0fff4;
+    /* Verdinho claro para bônus */
+    border: 1px solid #c3e6cb;
+}
+
+.def-row .inp-penalty {
+    text-align: center;
+    background: #fff5f5;
+    /* Vermelhinho claro para penalidade */
+    border: 1px solid #f5c6cb;
+}
+
+.def-details {
+    background-color: #e9ecef;
+    margin-top: 5px;
+    border-left: 4px solid #6c757d;
+}
+
+/* Ajuste visual do seletor de atributo na fórmula */
+#defAttrSelect {
+    font-size: 1.1rem;
+    /* Maior */
+    font-weight: 800;
+    /* Mais negrito */
+    color: var(--t20-red);
+    /* Vermelho T20 */
+    border: 2px solid #ddd;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+#defAttrSelect:hover {
+    color: var(--t20-red) !important;
+}
+
+
+#defAttrSelect:focus {
+    border-color: var(--t20-red);
+    box-shadow: 0 0 5px rgba(178, 34, 34, 0.3);
+}
+
+/* Estilo dos Slots Fixos (Armadura/Escudo) */
+.fixed-slot {
+    border: 1px solid #999;
+    border-left: 5px solid #333;
+    /* Faixa preta para indicar item base */
+    background-color: #fdfdfd;
+}
+
+.fixed-slot.armor {
+    border-left-color: var(--t20-red);
+}
+
+/* Faixa vermelha para armadura */
+.fixed-slot.shield {
+    border-left-color: #0d6efd;
+}
+
+/* Faixa azul para escudo */
+
+/* Ajuste para o botão de detalhe fixo */
+.btn-detail-fixed {
+    width: 100%;
+    padding: 2px;
+}
+
+/* Estilo para Magias */
+.spell-row .inp-pm {
+    color: #6f42c1;
+    /* Roxo */
+    font-weight: bold;
+}
+
+.spell-details {
+    border-left: 4px solid #6f42c1;
+    background-color: #f8f4ff;
+    /* Fundo levemente lilás */
+}
+
+/* Labels específicos para os dados técnicos da magia */
+.spell-label {
+    font-size: 0.65em;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #6f42c1;
+    margin-bottom: 0;
+}
+
+/* Efeito na caixa de imagem */
+.char-img-container:hover {
+    border-color: var(--t20-red) !important;
+    opacity: 0.9;
+}
+
+.char-img-container:hover div {
+    background-color: var(--t20-red) !important;
+    /* Faixa inferior fica vermelha */
+}
+
+/* Deixa a espada mais visível */
+.bi-sword {
+    transform: rotate(-45deg);
+    /* Deixa ela inclinada pronta pro combate */
+    display: inline-block;
+}
+
+.bi-sword:hover {
+    transform: rotate(0deg) scale(1.2);
+    /* Animação de ataque ao passar o mouse */
+}
+
+/* --- 3. ESTILO DOS STATUS (BARRAS DINÂMICAS) --- */
+.status-card {
+    position: relative;
+    /* overflow: hidden;  <-- REMOVIDO para o título aparecer fora da caixa */
+    background-color: #e9ecef;
+    z-index: 1;
+    /* O Bootstrap 'rounded' aplica border-radius, a barra precisa acompanhar */
+}
+
+/* A barra colorida que fica atrás */
+.status-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    transition: width 0.4s ease-in-out;
+    opacity: 0.6;
+
+    /* ADICIONADO: Arredonda a barra para não vazar pelos cantos da caixa */
+    border-radius: 0.25rem;
+    /* Mesma curva do 'rounded' do Bootstrap */
+}
+
+/* Cores específicas */
+.bar-hp {
+    background-color: #dc3545;
+}
+
+/* Vermelho (Bootstrap danger) */
+.bar-mp {
+    background-color: #0d6efd;
+}
+
+/* Azul (Bootstrap primary) */
+
+/* Inputs transparentes para ver a barra */
+.status-card input {
+    background: transparent !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    color: #000 !important;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+    /* Sombra branca para ler texto sobre cor */
+}
+
+.status-card input:focus {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* --- BOTÕES FLUTUANTES DE ATRIBUTO --- */
+.attr-wrapper {
+    position: relative;
+    /* Para posicionar os botões absolutos */
+}
+
+.attr-btn-float {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #333;
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    /* Começa invisível e pequeno */
+    transition: transform 0.2s ease-out;
+    z-index: 10;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.attr-btn-float:active {
+    background-color: var(--t20-red);
+    color: white;
+    border-color: var(--t20-red);
+}
+
+/* Posições */
+.attr-btn-up {
+    top: -15px;
+}
+
+.attr-btn-down {
+    bottom: 25px;
+}
+
+/* Fica entre o token e o nome */
+
+/* Classe para mostrar os botões */
+.attr-wrapper.active .attr-btn-float {
+    transform: translateX(-50%) scale(1);
+    /* Aparece */
+}
+
+/* --- BOTÕES FLUTUANTES PARA PERÍCIAS --- */
+.skill-wrapper {
+    position: relative;
+}
+
+/* Versão mini dos botões */
+.skill-btn-mini {
+    width: 22px;
+    height: 22px;
+    font-size: 1rem;
+    z-index: 100 !important;
+    /* Garante que fique acima das outras linhas */
+}
+
+/* Ajuste de posição para a tabela */
+.skill-wrapper .attr-btn-up {
+    top: -22px;
+}
+
+.skill-wrapper .attr-btn-down {
+    bottom: -22px;
+}
+
+/* Estado Ativo */
+.skill-wrapper.active .attr-btn-float {
+    transform: translateX(-50%) scale(1);
+}
+
+/* --- SISTEMA DE COLAPSO (ACCORDION) --- */
+
+/* Ícone da setinha */
+.section-toggle {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    margin-right: 8px;
+    color: inherit;
+}
+
+/* Gira a seta quando fechado */
+.collapsed .section-toggle {
+    transform: rotate(-90deg);
+}
+
+/* REGRAS ESPECÍFICAS POR SEÇÃO */
+
+/* 1. HEADER: Esconde foto e linhas extras, mantém só a primeira linha (Nome) */
+#headerSection.collapsed .header-extra {
+    display: none !important;
+}
+
+#headerSection.collapsed .col-img {
+    display: none !important;
+}
+
+#headerSection.collapsed .col-data {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/* 2. ATAQUES: Mostra apenas o 1º ataque, esconde o resto e botões */
+#attacksSection.collapsed .atk-header-row {
+    display: none !important;
+}
+
+#attacksSection.collapsed .atk-row:nth-child(n+2) {
+    display: none !important;
+}
+
+/* Esconde do 2º em diante */
+#attacksSection.collapsed .atk-details {
+    display: none !important;
+}
+
+/* Fecha detalhes se aberto */
+#attacksSection.collapsed .btn-add {
+    display: none !important;
+}
+
+/* 3. DEFESA: Mostra apenas o Escudo Total */
+
+
+#defenseSection.collapsed .def-formula {
+    display: none !important;
+}
+
+#defenseSection.collapsed .fixed-slot {
+    display: none !important;
+}
+
+#defenseSection.collapsed .def-extras {
+    display: none !important;
+}
+
+#defenseSection.collapsed .def-shield {
+    margin: 0 auto;
+    transform: scale(0.8);
+}
+
+#defenseSection.collapsed .def-header {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Centraliza */
+
+/* 4. CARACTERÍSTICAS: Esconde Profs/Status, mostra só 2 primeiros poderes */
+#abilitiesSection.collapsed .ab-extras {
+    display: none !important;
+}
+
+#abilitiesSection.collapsed .ability-row:nth-child(n+3) {
+    display: none !important;
+}
+
+/* Esconde do 3º em diante */
+#abilitiesSection.collapsed .btn-add {
+    display: none !important;
+}
+
+/* 5. MAGIAS: Esconde tudo */
+#spellsSection.collapsed .spells-content {
+    display: none !important;
+}
+
+/* 6. PERÍCIAS: Esconde tudo */
+#skillsSection.collapsed .skills-content {
+    display: none !important;
+}
+
+#skillsSection.collapsed .btn-add {
+    display: none !important;
+}
+
+#skillsSection.collapsed {
+    height: auto !important;
+    flex-grow: 0 !important;
+}
+
+/* 7. INVENTÁRIO: Esconde tudo */
+#inventorySection.collapsed .inv-content {
+    display: none !important;
+}
+
+
+/* Ícone de Arrastar */
+.drag-handle {
+    cursor: grab;
+    color: #aaa;
+    padding: 5px;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+    color: var(--t20-red);
+}
+
+/* Classe visual enquanto arrasta (opcional, o Sortable já faz um efeito, mas esse melhora) */
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: #f0f0f0;
+}
+
+
+/* 8. ANOTAÇÕES: Regra para recolher a seção */
+#notesSection.collapsed .notes-content {
+    display: none !important;
+}
+
+
+
+
+/* =========================
+   ASSINATURA / CRÉDITOS (STR-style)
+   ========================= */
+
+.sig-wrap {
+    max-width: 1100px;
+    margin: 28px auto 40px;
+    padding: 0 16px;
+}
+
+.sig-card {
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, .12);
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    overflow: hidden;
+}
+
+.sig-summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 18px;
+    background: #2f3f4f;
+    /* header STR */
+    color: #ffffff;
+    position: relative;
+}
+
+.sig-summary::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+    background: #e0483f;
+    /* faixa vermelha */
+}
+
+.sig-summary::-webkit-details-marker {
+    display: none;
+}
+
+.sig-summary-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.sig-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .22);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+}
+
+.sig-title {
+    font-size: 16px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sig-summary-right {
+    display: flex;
+    align-items: center;
     gap: 10px;
-  }
-}
-
-/* grid do "adicionar item" no mobile */
-@media (max-width:520px) {
-  .modal-add-item {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-  }
-}
-
-
-
-/* =========================
-   ASSINATURA / CRÉDITOS (STR-style)
-   ========================= */
-
-.sig-wrap {
-  max-width: 1100px;
-  margin: 28px auto 40px;
-  padding: 0 16px;
-}
-
-.sig-card {
-  border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, .12);
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
-  overflow: hidden;
-}
-
-.sig-summary {
-  list-style: none;
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 18px;
-  background: #2f3f4f;
-  /* header STR */
-  color: #ffffff;
-  position: relative;
-}
-
-.sig-summary::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 4px;
-  background: #e0483f;
-  /* faixa vermelha */
-}
-
-.sig-summary::-webkit-details-marker {
-  display: none;
-}
-
-.sig-summary-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.sig-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .14);
-  border: 1px solid rgba(255, 255, 255, .22);
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: .4px;
-  text-transform: uppercase;
-}
-
-.sig-title {
-  font-size: 16px;
-  font-weight: 800;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sig-summary-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  opacity: .95;
+    opacity: .95;
 }
 
 .sig-hint {
-  font-size: 12px;
-  opacity: .85;
-  white-space: nowrap;
+    font-size: 12px;
+    opacity: .85;
+    white-space: nowrap;
 }
 
 .sig-chevron {
-  font-size: 16px;
-  transition: transform .18s ease;
+    font-size: 16px;
+    transition: transform .18s ease;
 }
 
 .sig-card[open] .sig-chevron {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
 .sig-body {
-  padding: 18px;
-  background: #f6f7fb;
-  /* leve cinza como card do STR */
+    padding: 18px;
+    background: #f6f7fb;
+    /* leve cinza como card do STR */
 }
 
 .sig-hero {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, .10);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
-  margin-bottom: 14px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, .10);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
+    margin-bottom: 14px;
 }
 
 .sig-h3 {
-  margin: 0 0 8px;
-  font-size: 20px;
-  font-weight: 900;
-  color: #0f172a;
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 900;
+    color: #0f172a;
 }
 
 .sig-p {
-  margin: 0 0 10px;
-  color: rgba(15, 23, 42, .86);
-  line-height: 1.45;
+    margin: 0 0 10px;
+    color: rgba(15, 23, 42, .86);
+    line-height: 1.45;
 }
 
 .sig-grid {
-  display: grid;
-  grid-template-columns: 1.2fr .8fr;
-  gap: 14px;
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 14px;
 }
 
 @media (max-width: 900px) {
-  .sig-grid {
-    grid-template-columns: 1fr;
-  }
+    .sig-grid {
+        grid-template-columns: 1fr;
+    }
 
-  .sig-hint {
-    display: none;
-  }
+    .sig-hint {
+        display: none;
+    }
 }
 
 .sig-col {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, .10);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, .10);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
 }
 
 .sig-h4 {
-  margin: 0 0 12px;
-  font-size: 14px;
-  font-weight: 900;
-  color: #0f172a;
-  text-transform: uppercase;
-  letter-spacing: .7px;
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 900;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: .7px;
 }
 
 .sig-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, .10);
-  text-decoration: none;
-  background: #ffffff;
-  transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease;
-  margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, .10);
+    text-decoration: none;
+    background: #ffffff;
+    transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease;
+    margin-bottom: 10px;
 }
 
 .sig-link:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, .08);
-  border-color: rgba(0, 0, 0, .16);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, .08);
+    border-color: rgba(0, 0, 0, .16);
 }
 
 .sig-link:active {
-  transform: translateY(0px);
+    transform: translateY(0px);
 }
 
 .sig-link-main {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 .sig-link-name {
-  font-weight: 900;
-  color: #0f172a;
-  font-size: 14px;
-  line-height: 1.15;
+    font-weight: 900;
+    color: #0f172a;
+    font-size: 14px;
+    line-height: 1.15;
 }
 
 .sig-link-url {
-  color: rgba(15, 23, 42, .62);
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    color: rgba(15, 23, 42, .62);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .sig-ext {
-  color: rgba(15, 23, 42, .55);
-  font-size: 16px;
-  flex: 0 0 auto;
+    color: rgba(15, 23, 42, .55);
+    font-size: 16px;
+    flex: 0 0 auto;
 }
 
 .sig-link-primary {
-  border-color: rgba(224, 72, 63, .35);
-  box-shadow: 0 10px 20px rgba(224, 72, 63, .10);
+    border-color: rgba(224, 72, 63, .35);
+    box-shadow: 0 10px 20px rgba(224, 72, 63, .10);
 }
 
 .sig-link-primary:hover {
-  border-color: rgba(224, 72, 63, .55);
-  box-shadow: 0 14px 24px rgba(224, 72, 63, .14);
+    border-color: rgba(224, 72, 63, .55);
+    box-shadow: 0 14px 24px rgba(224, 72, 63, .14);
 }
 
 .sig-note {
-  margin-top: 12px;
-  border-radius: 12px;
-  border: 1px dashed rgba(0, 0, 0, .16);
-  background: rgba(47, 63, 79, .04);
-  padding: 12px;
+    margin-top: 12px;
+    border-radius: 12px;
+    border: 1px dashed rgba(0, 0, 0, .16);
+    background: rgba(47, 63, 79, .04);
+    padding: 12px;
 }
 
 .sig-note-title {
-  font-weight: 900;
-  font-size: 12px;
-  letter-spacing: .6px;
-  text-transform: uppercase;
-  color: rgba(15, 23, 42, .72);
-  margin-bottom: 6px;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: rgba(15, 23, 42, .72);
+    margin-bottom: 6px;
 }
 
 .sig-note-text {
-  color: rgba(15, 23, 42, .78);
-  font-size: 13px;
-  line-height: 1.35;
+    color: rgba(15, 23, 42, .78);
+    font-size: 13px;
+    line-height: 1.35;
 }
 
 .sig-footer {
-  margin-top: 14px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, .10);
-  background: #ffffff;
-  display: flex;
-  justify-content: center;
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, .10);
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
 }
 
 .sig-footer-text {
-  color: rgba(15, 23, 42, .68);
-  font-size: 12px;
+    color: rgba(15, 23, 42, .68);
+    font-size: 12px;
+}
+
+
+/* Estilo para o indicador de excedente nas barras */
+.bar-plus {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    font-size: 1.2rem;
+    pointer-events: none;
+}
+
+/* Garante que o preenchimento da barra suporte conteúdo absoluto */
+.status-bar-fill {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Cores normais com opacidade baixa para leitura (mantendo seu padrão) */
+.bar-hp {
+    background-color: #dc3545;
+    opacity: 0.6;
+}
+
+.bar-mp {
+    background-color: #0d6efd;
+    opacity: 0.6;
+}
+
+/* Destaque quando excedido: Opacidade total e Brilho */
+.status-bar-fill.bar-exceeded {
+    opacity: 1 !important;
+    /* Cor fica sólida e forte */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.3);
+    filter: brightness(1.2);
+    /* Deixa a cor levemente mais clara/viva */
 }
 
-
-/* ==============================
-   CALCULADORA — ajustes / componentes
-   ============================== */
-
-.calc-grid {
-  grid-template-columns: 1fr;
-}
-
-@media (min-width:1024px) {
-  .calc-grid {
-    grid-template-columns: 1.05fr 1.4fr;
-  }
-}
-
-.section-title {
-  font-family: "Tormenta";
-  color: var(--str-accent);
-  margin: 0 0 8px;
-  font-size: 1.2rem;
-}
-
-.calc-left-top {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 12px;
-}
-
-/* Botão engrenagem */
-.selector-button {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  border: 2px solid var(--border);
-  background: #fff;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  z-index: 3000;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, .12);
-  transition: transform .12s, filter .12s;
-}
-
-.selector-button:hover {
-  transform: translateY(-1px);
-  filter: brightness(.98);
-}
-
-.selector-icon {
-  width: 22px;
-  height: 22px;
-  display: block;
-  opacity: .9;
-}
-
-/* Modal de config (reusa modal base) */
-#configModal.active,
-#configOverlay.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-#configModal,
-#configOverlay {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-/* Conteúdo do modal: reaproveita .modal-content */
-.options-box {
-  display: block;
-}
-
-/* já está dentro do modal */
-
-/* Toggle switch */
-.config-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border: 1px solid rgba(0, 0, 0, .10);
-  border-radius: 12px;
-  background: #fff;
-}
-
-.toggle {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-}
-
-.toggle input[type="checkbox"] {
-  display: none;
-}
-
-.slider {
-  position: absolute;
-  inset: 0;
-  cursor: pointer;
-  background: #cbd5e1;
-  border-radius: 999px;
-  transition: .18s;
-  border: 1px solid rgba(0, 0, 0, .15);
-}
-
-.slider:before {
-  content: "";
-  position: absolute;
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #fff;
-  border-radius: 999px;
-  transition: .18s;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, .12);
-}
-
-input[type="checkbox"]:checked+.slider {
-  background: var(--str-accent);
-}
-
-input[type="checkbox"]:checked+.slider:before {
-  transform: translate(20px, -50%);
-}
-
-/* Checklist */
-.checklist {
-  display: grid;
-  gap: 8px;
-}
-
-.check {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px;
-  border: 1px solid rgba(0, 0, 0, .10);
-  border-radius: 12px;
-  background: #fff;
-  cursor: pointer;
-  user-select: none;
-}
-
-.check input {
-  width: 16px;
-  height: 16px;
-}
-
-/* Label de campo */
-.field-label {
-  display: block;
-  font-weight: 800;
-  margin: 0 0 6px;
-  color: #111827;
-}
-
-/* Painel de pontos */
-.calc-points {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-
-.calc-points-label {
-  font-size: 18px;
-  font-weight: 700;
-  font-weight: 800;
-  color: #111827;
-}
-
-.pontos-input {
-  width: 120px;
-  padding: 10px;
-  border-radius: 10px;
-  border: 2px solid var(--border);
-  background: #f4fbff;
-  font-size: 18px;
-  font-weight: 700;
-
-}
-
-.table-wrap {
-  overflow-x: auto;
-  border-radius: 12px;
-}
-
-/* Tabela de atributos */
-#attribute-table {
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-#attribute-table th,
-#attribute-table td {
-  text-align: center;
-}
-
-/* Header TOTAL em destaque dourado */
-#attribute-table th.total-col {
-  color: #f5c842;
-  font-size: 1.05rem;
-  letter-spacing: 1px;
-}
-
-/* Inputs raciais — visual limpo */
-.attr-racial {
-  text-align: center;
-  border-radius: 8px;
-  border: 2px solid rgba(47, 63, 79, .18);
-  background: #eef2f7;
-  font-weight: 700;
-  color: var(--str-slate);
-  padding: 6px 8px;
-}
-
-.total-col {
-  font-weight: 900;
-  font-size: 20px;
-  color: var(--str-slate);
-  letter-spacing: -0.5px;
-}
-
-.outros-col {
-  display: none;
-}
-
-.outros-col.show {
-  display: table-cell;
-}
-
-.destaque-mensagem {
-  background: #0f172a;
-  color: #fff;
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-weight: 800;
-  margin: 10px 0 0;
-}
-
-/* Prompt */
-.prompt-card .muted {
-  margin: 6px 0 10px;
-  color: #475569;
-}
-
-.prompt-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-
-.prompt-box {
-  min-height: 70px;
-  border: 2px dashed rgba(0, 0, 0, .18);
-  border-radius: 12px;
-  padding: 12px;
-  background: #fff;
-  color: #0f172a;
-  line-height: 1.5;
-}
-
-.link {
-  color: var(--str-accent);
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.link:hover {
-  text-decoration: underline;
-}
-
-/* Mobile: afasta a engrenagem do header */
-@media (max-width:720px) {
-  .selector-button {
-    top: 12px;
-    right: 12px;
-    width: 42px;
-    height: 42px;
-  }
-}
-
-/* ==============================
-   MELHORIAS VISUAIS – ATRIBUTOS
-============================== */
-
-/* Coluna onde fica FOR/DES/CON/INT/SAB/CAR */
-#attribute-table tbody td:nth-child(2) {
-  position: relative;
-  font-weight: 700;
-  font-size: 22px;
-  letter-spacing: 1px;
-}
-
-/* Tarja escura atrás do texto */
-#attribute-table tbody td:nth-child(2)::before {
-  content: "";
-  position: absolute;
-  left: -10px;
-  right: -10px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 28px;
-
-  background: rgba(70, 65, 65, 0.55);
-  border-radius: 6px;
-  z-index: 0;
-}
-
-/* Garante que o texto fique acima da tarja */
-#attribute-table tbody td:nth-child(2) span,
-#attribute-table tbody td:nth-child(2) {
-  position: relative;
-  z-index: 1;
-  color: #f5e6a3;
-  text-shadow: 0 2px 4px #000;
-}
-
-/* ==============================
-   RAÇAS – visual mais forte
-============================== */
-
-.column-left label {
-  font-family: 'Cinzel', serif;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-/* Labels das checkboxes */
-.race-filter+label {
-  font-family: 'Cinzel', serif;
-  font-size: 17px;
-  font-weight: 700;
-  color: #2c3e50;
-  text-shadow: 0 1px 0 #fff;
-
-}
-
-/* ==============================
-   NÚMEROS – VALORES E TOTAIS
-============================== */
-
-/* Inputs de valor */
-.attr-base,
-.attr-racial,
-.attr-outros {
-  font-size: 18px;
-  font-weight: 700;
-  text-align: center;
-}
-
-/* Total final (coluna da direita) */
-.total-col {
-  font-size: 26px;
-  font-weight: 800;
-  color: #ff0000;
-  letter-spacing: 1px;
-  background-color: rgba(255, 255, 255, 0.55);
-  border-radius: 6px;
-  z-index: 0;
-}
-
-.calc-points span {
-  font-size: 18px;
-  font-weight: 900;
-  background: #2f3f4f;
-  color: white;
-  padding: 4px 12px;
-  border-radius: 999px;
-}
-
-/* Transição suave quando mostrar/ocultar pontos editáveis */
-.pontos-input,
-#salvarPontos {
-  transition: opacity .18s ease, transform .18s ease;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* quando estiver visível, dá uma “subidinha” */
-.pontos-input:not(.hidden),
-#salvarPontos:not(.hidden) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.check span {
-  font-family: "Cinzel", serif;
-  font-size: 17px;
-  font-weight: 700;
-}
-
-/* ===== FOLD (recolhível) para filtros de raça ===== */
-.fold {
-  margin-top: 12px;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: #fff;
-}
-
-.fold-summary {
-  list-style: none;
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 12px 14px;
-  background: #f6f7fb;
-  border-bottom: 2px solid var(--border);
-
-  font-family: "Tormenta";
-  font-weight: 800;
-}
-
-.fold-summary::-webkit-details-marker {
-  display: none;
-}
-
-.fold-hint {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  opacity: .7;
-  padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, .18);
-  background: #fff;
-}
-
-.fold-body {
-  padding: 10px;
-}
-
-/* troca o hint quando abrir */
-.fold[open] .fold-hint {
-  content: "";
-  opacity: .85;
-}
-
-/* BOTÃO NIMB – estilo caótico */
-.btn-nimb {
-  font-family: "Cinzel", serif;
-  font-weight: 800;
-  font-size: 14px;
-
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: 2px solid #6a00ff;
-
-  background: linear-gradient(135deg, #6a00ff, #c400ff, #ff008c);
-  color: white;
-
-  cursor: pointer;
-  transition: all 0.18s ease;
-  box-shadow: 0 0 10px rgba(160, 0, 255, 0.4);
-}
-
-.btn-nimb:hover {
-  transform: translateY(-1px) scale(1.03);
-  box-shadow: 0 0 18px rgba(255, 0, 200, 0.6);
-}
-
-.btn-nimb:active {
-  transform: scale(0.97);
-}
-
-.btn-nimb:disabled {
-  opacity: 0.6;
-  filter: grayscale(40%);
-  cursor: not-allowed;
-}
-
-.btn-nimb {
-  animation: nimbPulse 3s infinite alternate;
-}
-
-@keyframes nimbPulse {
-  from {
-    box-shadow: 0 0 6px #6a00ff;
-  }
-
-  to {
-    box-shadow: 0 0 18px #ff00aa;
-  }
-}
-
-.points-meta-label {
-  font-family: "Cinzel", serif;
-  font-weight: 800;
-  font-size: 13px;
-  opacity: .85;
-  margin-left: 10px;
+/* Estilo do símbolo + */
+.bar-plus {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 900;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+    font-size: 1.1rem;
+    pointer-events: none;
+    font-family: 'Tormenta', serif;
+    /* Mantendo a identidade visual */
 }
 
-.points-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 34px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: 900;
-  font-size: 16px;
-  margin-left: 6px;
+/* Efeito opcional: Sutil animação de pulsação no brilho */
+.bar-exceeded {
+    animation: barPulse 2s infinite ease-in-out;
 }
 
-.points-badge.muted {
-  background: #eef2f7;
-  border: 1px solid rgba(0, 0, 0, .15);
-  color: #1a2a44;
-}
-
-/* Feedback de erro: piscar borda vermelha + leve shake */
-.flash-invalid {
-  outline: 2px solid #e11d48;
-  box-shadow: 0 0 0 4px rgba(225, 29, 72, .20);
-  animation: invalidShake .22s ease-in-out 0s 2;
-  border-radius: 6px;
-}
-
-@keyframes invalidShake {
-  0% {
-    transform: translateX(0);
-  }
-
-  25% {
-    transform: translateX(-2px);
-  }
-
-  50% {
-    transform: translateX(2px);
-  }
-
-  75% {
-    transform: translateX(-2px);
-  }
-
-  100% {
-    transform: translateX(0);
-  }
-}
-
-/* (Opcional) quando pontos < 0, o badge dá uma pulsada */
-.points-pulse {
-  animation: pulseBad .5s ease-in-out 0s 1;
-}
-
-@keyframes pulseBad {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.12);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
+@keyframes barPulse {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    }
 
-/* Stepper +/- dos atributos */
-.attr-stepper {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.attr-stepper .attr-base {
-  width: 70px;
-  text-align: center;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 2px solid rgba(47, 63, 79, .22);
-  background: #f8fafc;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--str-slate);
-}
-
-.step-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 2px solid rgba(0, 0, 0, .18);
-  background: #f0f4f8;
-  font-weight: 900;
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-  transition: transform .08s ease, filter .12s ease, background .12s ease;
-  color: var(--str-slate);
-}
+    50% {
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    }
 
-.step-btn:hover {
-  background: var(--str-slate);
-  color: #ffffff;
-  border-color: var(--str-slate);
-  transform: translateY(-1px);
+    100% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    }
 }
 
-.step-btn:active {
-  transform: scale(0.96);
+/* Indicador de excedente dourado */
+.bar-plus {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 900;
+    color: #ffd700;
+    /* Dourado */
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 1px 1px 2px black;
+    font-size: 1.4rem;
+    pointer-events: none;
+    font-family: 'Tormenta', serif;
+    animation: goldGlow 1.5s infinite alternate;
+}
+
+@keyframes goldGlow {
+    from {
+        filter: brightness(1);
+    }
+
+    to {
+        filter: brightness(1.5) drop-shadow(0 0 2px gold);
+    }
 }
 
-/* ===== Overlay para legibilidade do fundo da tabela ===== */
-#attribute-table {
-  position: relative;
-  /* necessário pro ::before */
-  overflow: hidden;
-  /* garante que o overlay siga o raio da borda */
-}
-
-#attribute-table::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  /* Overlay suave para legibilidade sobre a imagem de raça */
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, .45) 0%,
-      rgba(255, 255, 255, .30) 50%,
-      rgba(255, 255, 255, .45) 100%);
-
-  z-index: 0;
-}
-
-/* Garante que todo o conteúdo da tabela fique acima do overlay */
-#attribute-table thead,
-#attribute-table tbody,
-#attribute-table tr,
-#attribute-table th,
-#attribute-table td {
-  position: relative;
-  z-index: 1;
-}
+/* Rótulos pequenos dentro das caixas de status */
+.t20-mini-label {
+    position: absolute;
+    top: -18px;
+    left: 5px;
+    font-size: 0.6rem;
+    font-weight: bold;
+    color: var(--t20-red);
+    text-transform: uppercase;
+    background: white;
+    padding: 0 3px;
+    z-index: 10;
+}
+
+/* Separador vertical entre Atual/Máx */
+.vr {
+    width: 2px;
+    background-color: rgba(0, 0, 0, 0.2);
+    align-self: stretch;
+    margin: 5px 0;
+}
+
 
-/* ===== AJUSTES MOBILE: não estourar largura ===== */
-@media (max-width: 1023px) {
-
-  /* o container não pode “vazar” para os lados */
-  .container {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  /* cards ocupam a largura certinha */
-  .filters-section,
-  .inventory-container,
-  .inventory-container.calc-panel,
-  .inventory-container.prompt-card {
+.ability-row .inp-name:focus {
+    box-shadow: none;
+    border-bottom: 1px solid #dc3545 !important;
+}
+
+.ability-row .collapse-icon {
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+/* Deixa a linha mais fina quando fechada */
+.ability-row {
+    transition: all 0.3s ease;
+}
+
+
+/* Estilo suave para os botões de atalho */
+.btn-outline-secondary,
+.btn-outline-danger,
+.btn-outline-dark {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    text-decoration: none;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-danger:hover,
+.btn-outline-dark:hover {
+    opacity: 1;
+}
+
+
+/* --- DRAG HANDLE MOBILE --- */
+.ability-drag-handle {
+    cursor: grab;
+    touch-action: none;
+    /* essencial para SortableJS no mobile */
+    -webkit-user-select: none;
+    user-select: none;
+    padding: 4px 6px;
+    color: #aaa;
+}
+
+.ability-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Garante que inputs/botões dentro de sortable capturem toque */
+.ability-row input,
+.ability-row textarea,
+.ability-row button,
+.atk-row input,
+.atk-row textarea,
+.atk-row select,
+.atk-row button,
+.def-row input,
+.def-row button,
+.inv-row input,
+.inv-row button,
+.spell-row input,
+.spell-row textarea,
+.spell-row select,
+.spell-row button {
+    touch-action: auto;
+    -webkit-user-select: text;
+    user-select: text;
+    position: relative;
+    z-index: 1;
+}
+
+/* ================================================================
+   FICHA DE AMEAÇA
+   ================================================================ */
+
+.ameaca-sheet {
+    font-family: Georgia, 'Times New Roman', serif;
+    max-width: 680px;
+    margin: 0 auto;
+    color: #1a1a1a;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+/* Cabeçalho: nome + ND badge */
+.ameaca-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #8b0000;
+    margin-bottom: 4px;
+}
+
+.ameaca-titulo-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+.ameaca-nome-input {
+    display: block;
     width: 100%;
-    max-width: 100%;
-  }
+    border: none;
+    border-bottom: 2px dashed #ccc;
+    background: transparent;
+    font-family: 'Tormenta', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #8b0000;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0 0 2px 0;
+    outline: none;
+}
 
-  /* evita qualquer filho empurrar o layout */
-  .filters-section *,
-  .inventory-container * {
-    max-width: 100%;
-  }
+.ameaca-nome-input:focus {
+    border-bottom-color: #8b0000;
+}
 
-  /* TABELA: vira scrollável (em vez de quebrar o layout) */
-  .table-wrap {
+.ameaca-tipo-input {
+    display: block;
     width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+    border: none;
+    border-bottom: 1px dashed #ddd;
+    background: transparent;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #444;
+    padding: 2px 0;
+    outline: none;
+}
 
-  /* garante que a tabela não “esmague” nem estoure */
-  #attribute-table {
-    width: 100%;
-    min-width: 480px;
-    /* ajuste: 480/520/560 conforme seu gosto */
-  }
+/* ND Badge */
+.ameaca-nd-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #8b0000;
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 14px;
+    min-width: 72px;
+    flex-shrink: 0;
+}
 
-  /* badges/linha de pontos: permite quebrar em 2 linhas se precisar */
-  .calc-points {
+.ameaca-nd-label {
+    font-family: 'Tormenta', Georgia, serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    opacity: 0.85;
+    line-height: 1;
+}
+
+.ameaca-nd-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    font-family: 'Tormenta', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-align: center;
+    width: 52px;
+    outline: none;
+    padding: 0;
+    margin-top: 2px;
+}
+
+.ameaca-nd-input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* Blocos internos */
+.ameaca-bloco {
+    padding-bottom: 6px;
+}
+
+/* Linha de dados */
+.ameaca-linha {
+    display: flex;
     flex-wrap: wrap;
-    gap: 8px 10px;
-  }
+    align-items: baseline;
+    gap: 3px;
+    margin-bottom: 2px;
+    line-height: 1.6;
 }
 
-
-
-
-/* =========================
-   ASSINATURA / CRÉDITOS (STR-style)
-   ========================= */
-
-.sig-wrap {
-  max-width: 1100px;
-  margin: 28px auto 40px;
-  padding: 0 16px;
+.ameaca-chave {
+    font-weight: 700;
+    font-variant: small-caps;
+    color: #8b0000;
+    white-space: nowrap;
+    font-size: 0.88rem;
 }
 
-.sig-card {
-  border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, .12);
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
-  overflow: hidden;
+.ameaca-chave-titulo {
+    font-family: 'Tormenta', Georgia, serif;
+    font-weight: 700;
+    font-variant: small-caps;
+    color: #8b0000;
+    font-size: 0.9rem;
 }
 
-.sig-summary {
-  list-style: none;
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 18px;
-  background: #2f3f4f;
-  /* header STR */
-  color: #ffffff;
-  position: relative;
+.ameaca-val {
+    color: #1a1a1a;
 }
 
-.sig-summary::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 4px;
-  background: #e0483f;
-  /* faixa vermelha */
+.ameaca-sep {
+    color: #666;
 }
 
-.sig-summary::-webkit-details-marker {
-  display: none;
+/* Input inline (resistências, perícias, tesouro) */
+.ameaca-inline-input {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    color: #1a1a1a;
+    outline: none;
+    padding: 0 2px;
+    min-width: 80px;
 }
 
-.sig-summary-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
+.ameaca-inline-input:focus {
+    border-bottom-color: #8b0000;
 }
 
-.sig-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .14);
-  border: 1px solid rgba(255, 255, 255, .22);
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: .4px;
-  text-transform: uppercase;
+/* Atributos em linha (FOR +2, DES +3 ...) */
+.ameaca-atributos-linha {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: #f7f0f0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-bottom: 6px;
 }
 
-.sig-title {
-  font-size: 16px;
-  font-weight: 800;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.ameaca-attr-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
 }
 
-.sig-summary-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  opacity: .95;
+.ameaca-attr-nome {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #8b0000;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
-.sig-hint {
-  font-size: 12px;
-  opacity: .85;
-  white-space: nowrap;
+.ameaca-attr-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a1a;
 }
 
-.sig-chevron {
-  font-size: 16px;
-  transition: transform .18s ease;
+/* Habilidades especiais */
+.ameaca-habilidade {
+    margin-bottom: 3px;
 }
 
-.sig-card[open] .sig-chevron {
-  transform: rotate(180deg);
+.ameaca-hab-nome {
+    font-weight: 700;
+    font-variant: small-caps;
+    color: #1a1a1a;
+    margin-right: 3px;
 }
 
-.sig-body {
-  padding: 18px;
-  background: #f6f7fb;
-  /* leve cinza como card do STR */
+.ameaca-hab-desc {
+    color: #333;
 }
 
-.sig-hero {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, .10);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
-  margin-bottom: 14px;
+/* Responsivo mobile */
+@media (max-width: 600px) {
+    .ameaca-nome-input {
+        font-size: 1.2rem;
+    }
+
+    .ameaca-atributos-linha {
+        gap: 12px;
+    }
+
+    .ameaca-header {
+        flex-direction: column;
+    }
+
+    .ameaca-nd-badge {
+        align-self: flex-end;
+        flex-direction: row;
+        gap: 8px;
+        min-width: 0;
+        padding: 5px 12px;
+    }
+
+    .ameaca-nd-label {
+        font-size: 0.75rem;
+    }
+
+    .ameaca-nd-input {
+        font-size: 1.1rem;
+        width: 36px;
+    }
 }
 
-.sig-h3 {
-  margin: 0 0 8px;
-  font-size: 20px;
-  font-weight: 900;
-  color: #0f172a;
+/* ================================================================
+   ABAS DA FICHA
+   ================================================================ */
+.sheet-tabs .nav-link {
+    font-family: 'Tormenta', 'Georgia', serif;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    color: #555;
+    border-bottom: 2px solid transparent;
+    padding: 8px 20px;
 }
 
-.sig-p {
-  margin: 0 0 10px;
-  color: rgba(15, 23, 42, .86);
-  line-height: 1.45;
+.sheet-tabs .nav-link.active {
+    color: #c0392b;
+    border-color: #c0392b;
+    font-weight: bold;
 }
 
-.sig-grid {
-  display: grid;
-  grid-template-columns: 1.2fr .8fr;
-  gap: 14px;
+.sheet-tabs .nav-link:hover:not(.active) {
+    color: #c0392b;
+    border-color: #e0b0ae;
 }
 
-@media (max-width: 900px) {
-  .sig-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .sig-hint {
-    display: none;
-  }
+/* ================================================================
+   FICHA DE AMEAÇA — layout geral
+   ================================================================ */
+.ameaca-sheet {
+    max-width: 680px;
+    margin: 0 auto;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #1a1a1a;
 }
 
-.sig-col {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, .10);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, .06);
+/* CABEÇALHO: nome + ND */
+.ameaca-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 3px solid #8b0000;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
 }
 
-.sig-h4 {
-  margin: 0 0 12px;
-  font-size: 14px;
-  font-weight: 900;
-  color: #0f172a;
-  text-transform: uppercase;
-  letter-spacing: .7px;
+.ameaca-header-left {
+    flex: 1;
+    min-width: 0;
 }
 
-.sig-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, .10);
-  text-decoration: none;
-  background: #ffffff;
-  transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease;
-  margin-bottom: 10px;
+.ameaca-nome-input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: 'Tormenta', Georgia, serif;
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: #8b0000;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: transparent;
+    padding: 0;
+    outline: none;
 }
 
-.sig-link:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, .08);
-  border-color: rgba(0, 0, 0, .16);
+.ameaca-nome-input:focus {
+    border-bottom-color: #8b0000;
 }
 
-.sig-link:active {
-  transform: translateY(0px);
+.ameaca-tipo-linha {
+    margin-top: 2px;
 }
 
-.sig-link-main {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+.ameaca-tipo-input {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    font-style: italic;
+    color: #444;
+    font-size: 0.88rem;
+    background: transparent;
+    width: 100%;
+    outline: none;
+    padding: 0;
 }
 
-.sig-link-name {
-  font-weight: 900;
-  color: #0f172a;
-  font-size: 14px;
-  line-height: 1.15;
+.ameaca-tipo-input:focus {
+    border-bottom-color: #8b0000;
 }
 
-.sig-link-url {
-  color: rgba(15, 23, 42, .62);
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Badge ND */
+.ameaca-nd-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #8b0000;
+    color: #fff;
+    border-radius: 6px;
+    min-width: 64px;
+    padding: 6px 10px;
+    flex-shrink: 0;
 }
 
-.sig-ext {
-  color: rgba(15, 23, 42, .55);
-  font-size: 16px;
-  flex: 0 0 auto;
+.ameaca-nd-label {
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    opacity: 0.85;
 }
 
-.sig-link-primary {
-  border-color: rgba(224, 72, 63, .35);
-  box-shadow: 0 10px 20px rgba(224, 72, 63, .10);
+.ameaca-nd-val {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-align: center;
+    width: 50px;
+    padding: 0;
+    outline: none;
 }
 
-.sig-link-primary:hover {
-  border-color: rgba(224, 72, 63, .55);
-  box-shadow: 0 14px 24px rgba(224, 72, 63, .14);
+.ameaca-nd-val::placeholder {
+    color: rgba(255, 255, 255, 0.4);
 }
 
-.sig-note {
-  margin-top: 12px;
-  border-radius: 12px;
-  border: 1px dashed rgba(0, 0, 0, .16);
-  background: rgba(47, 63, 79, .04);
-  padding: 12px;
+/* BLOCOS */
+.ameaca-bloco {
+    margin-bottom: 6px;
+    padding: 4px 0;
 }
 
-.sig-note-title {
-  font-weight: 900;
-  font-size: 12px;
-  letter-spacing: .6px;
-  text-transform: uppercase;
-  color: rgba(15, 23, 42, .72);
-  margin-bottom: 6px;
+.ameaca-bloco-atributos {
+    background: #f9f4f4;
+    border: 1px solid #e8d0d0;
+    border-radius: 6px;
+    padding: 8px 12px;
 }
 
-.sig-note-text {
-  color: rgba(15, 23, 42, .78);
-  font-size: 13px;
-  line-height: 1.35;
+.ameaca-hr {
+    border: none;
+    border-top: 1px solid #e0c8c8;
+    margin: 8px 0;
 }
 
-.sig-footer {
-  margin-top: 14px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, .10);
-  background: #ffffff;
-  display: flex;
-  justify-content: center;
+/* Linha inline */
+.ameaca-linha {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 3px;
 }
 
-.sig-footer-text {
-  color: rgba(15, 23, 42, .68);
-  font-size: 12px;
+.ameaca-key {
+    font-weight: bold;
+    font-style: italic;
+    color: #8b0000;
+    white-space: nowrap;
+    font-size: 0.9rem;
 }
 
-
-/* Estado desabilitado para seletores de bônus raciais */
-.attr-racial.disabled {
-  background-color: #e2e8f0 !important;
-  /* Cinza claro */
-  color: #94a3b8 !important;
-  /* Texto esmaecido */
-  border-color: #cbd5e1 !important;
-  /* Borda suave */
-  cursor: not-allowed;
-  opacity: 0.7;
-  filter: grayscale(1);
+.ameaca-key-titulo {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
-/* Opcional: remover as setas do input number quando desabilitado */
-.attr-racial.disabled::-webkit-inner-spin-button,
-.attr-racial.disabled::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.ameaca-sep {
+    color: #666;
+}
+
+.ameaca-hint {
+    font-size: 0.72rem;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Inputs dentro da ficha de ameaça */
+.ameaca-val-input {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    color: #1a1a1a;
+    padding: 0 2px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.ameaca-val-input:focus {
+    border-bottom-color: #8b0000;
+}
+
+.ameaca-val-xs {
+    width: 40px;
+    text-align: center;
+}
+
+.ameaca-val-sm {
+    width: 55px;
+    text-align: center;
+}
+
+.ameaca-val-md {
+    width: 80px;
+    text-align: center;
+}
+
+.ameaca-obs {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Atributos linha */
+.ameaca-atributos-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.ameaca-attr-item {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+}
+
+.ameaca-attr-label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #8b0000;
+    font-style: italic;
+}
+
+.ameaca-attr-input {
+    width: 40px;
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    text-align: center;
+    font-size: 0.9rem;
+    outline: none;
+    padding: 0;
+}
+
+.ameaca-attr-input:focus {
+    border-bottom-color: #8b0000;
+}
+
+.ameaca-attr-sep {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* ====== ROWS de Ataque, Habilidade, Perícia ====== */
+.am-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 6px 4px;
+    border-bottom: 1px solid #f0e4e4;
+    margin-bottom: 4px;
+}
+
+.am-row:last-child {
+    border-bottom: none;
+}
+
+.am-row-grip {
+    color: #ccc;
+    cursor: grab;
+    padding-top: 4px;
+    flex-shrink: 0;
+}
+
+.am-row-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.am-row-line {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.am-row-del {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px 4px;
+    flex-shrink: 0;
+    transition: color 0.15s;
+    line-height: 1;
+}
+
+.am-row-del:hover {
+    color: #c0392b;
+}
+
+.am-input {
+    border: 1px solid #e0c8c8;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    background: #fafafa;
+    outline: none;
+    flex: 1;
+    min-width: 80px;
+}
+
+.am-input.am-val-sm {
+    flex: 0 0 80px;
+    min-width: 0;
+}
+
+.am-input.am-val-md {
+    flex: 0 0 120px;
+    min-width: 0;
+}
+
+.am-input.fw-bold {
+    font-weight: bold;
+    color: #1a1a1a;
+}
+
+.am-input:focus {
+    border-color: #8b0000;
+    background: #fff;
+}
+
+.am-select {
+    border: 1px solid #e0c8c8;
+    border-radius: 4px;
+    padding: 3px 4px;
+    font-size: 0.82rem;
+    background: #fafafa;
+    color: #444;
+    flex: 0 0 auto;
+}
+
+.am-select:focus {
+    border-color: #8b0000;
+    outline: none;
+}
+
+.am-textarea {
+    width: 100%;
+    border: 1px solid #e8d8d8;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 52px;
+    background: #fafafa;
+    outline: none;
+    color: #333;
+}
+
+.am-textarea:focus {
+    border-color: #8b0000;
+    background: #fff;
+}
+
+.am-paren {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Perícia row — mais compacta */
+.am-per-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 0;
+}
+
+.am-per-row .am-input {
+    flex: 1;
+}
+
+.am-per-row .am-per-valor {
+    flex: 0 0 60px;
+    text-align: center;
+}
+
+/* ====== RESPONSIVO MOBILE ====== */
+@media (max-width: 576px) {
+    .ameaca-nome-input {
+        font-size: 1.3rem;
+    }
+
+    .ameaca-nd-badge {
+        min-width: 52px;
+    }
+
+    .ameaca-nd-val {
+        font-size: 1.3rem;
+    }
+
+    .am-row-line {
+        gap: 4px;
+    }
+
+    .am-input.am-val-sm {
+        flex: 0 0 65px;
+    }
+
+    .am-input.am-val-md {
+        flex: 0 0 95px;
+    }
+}
+
+/* Container vira flex-wrap inline */
+#am-pericias-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 2px;
+    align-items: center;
+}
+
+/* Separador vírgula entre perícias */
+.am-per-row:not(:last-child)::after {
+    content: ',';
+    color: #666;
+    margin-left: 1px;
+}
+
+.am-per-row .am-per-nome {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: auto;
+    min-width: 60px;
+    max-width: 160px;
+    padding: 0 2px;
+    outline: none;
+}
+
+.am-per-row .am-per-nome:focus {
+    border-bottom-color: #8b0000;
+}
+
+.am-per-row .am-per-valor {
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    background: transparent;
+    font-size: 0.9rem;
+    width: 38px;
+    text-align: center;
+    padding: 0 2px;
+    outline: none;
+    color: #8b0000;
+    font-weight: bold;
+}
+
+.am-per-row .am-per-valor:focus {
+    border-bottom-color: #8b0000;
+}
+
+.am-per-row .am-row-del {
+    font-size: 0.65rem;
+    padding: 0 2px;
+    color: #ddd;
+    line-height: 1;
+}
+
+.am-per-row .am-row-del:hover {
+    color: #c0392b;
+}
+/* ================================================================
+   MODIFICADORES TEMPORÁRIOS
+   ================================================================ */
+
+.mods-sheet {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 8px 0;
+}
+
+.mods-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+
+.mods-card-title {
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #8b0000;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Grid dos bônus globais — 3 colunas para comportar as listas expans\u00edveis */
+.mods-globais-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 600px) {
+    .mods-globais-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.mods-campo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.mods-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #444;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.mods-input {
+    width: 76px;
+    height: 44px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #8b0000;
+    transition: border-color .15s;
+    padding: 0;
+}
+
+.mods-input:focus {
+    border-color: #8b0000;
+    outline: none;
+    background: #fff;
+}
+
+.mods-input:not(:placeholder-shown),
+.mods-input.has-value {
+    border-color: #e0483f;
+    background: #fff5f5;
+}
+
+/* Parceiros header */
+.mods-parceiros-header {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 80px 32px;
+    gap: 8px;
+    padding: 0 4px 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.mod-parceiro-row {
+    display: grid !important;
+    grid-template-columns: 2fr 1.5fr 80px 32px;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Área reservada */
+.mods-area-reservada {
+    min-height: 60px;
+}
+
+/* ── HUD abaixo da foto ─────────────────────────────────────── */
+.mod-hud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px 6px;
+    background: rgba(139,0,0,.06);
+    border: 1px solid rgba(139,0,0,.18);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    line-height: 1.3;
+}
+
+.mod-hud-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: #fff;
+    border: 1px solid #e0c0c0;
+    border-radius: 4px;
+    padding: 1px 5px;
+    white-space: nowrap;
+}
+
+.mod-hud-val {
+    font-weight: 700;
+    color: #8b0000;
+}
+
+.mod-hud-parceiro {
+    display: inline-flex;
+    align-items: center;
+    background: #f0f8f0;
+    border: 1px solid #b0d0b0;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #1a4a1a;
+    font-weight: 600;
+    white-space: nowrap;
 }
