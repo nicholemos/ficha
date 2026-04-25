@@ -76,6 +76,11 @@ window.onload = () => {
 
     setTimeout(updateCalculations, 100);
     setTimeout(checkImportedPowers, 400);
+    // Auto-importa itens pendentes da loja (caso loja foi usada antes de abrir a ficha)
+    setTimeout(() => {
+        const n = importFromShop(true);
+        if (n > 0) showSheetToast(`📥 ${n} item(s) da loja adicionado(s) automaticamente!`);
+    }, 600);
 };
 
 function renderStructure() {
@@ -357,12 +362,12 @@ function addInventoryItem(data = null) {
     const container = document.getElementById('inventoryList'); if (!container) return;
     const div = document.createElement('div'); div.className = 'mb-2 inv-row border-bottom pb-1';
     const hasNote = data && data.note && data.note.trim();
-    const hasCombat = !!(data && data.combatData);
-    const hasDefense = !!(data && data.defenseData);
-    const hasImport = hasCombat || hasDefense;
-    // Store combat/defense data as data attributes
-    if (hasCombat) div.dataset.combat = JSON.stringify(data.combatData);
-    if (hasDefense) div.dataset.defense = JSON.stringify(data.defenseData);
+    const isImported = !!(data && (data.combatData || data.defenseData));
+    if (data?.combatData)  div.dataset.combat  = JSON.stringify(data.combatData);
+    if (data?.defenseData) div.dataset.defense = JSON.stringify(data.defenseData);
+    const noteBtnClass = isImported ? 'text-primary' : (hasNote ? 'text-warning' : 'btn-outline-secondary');
+    const noteBtnIcon  = isImported ? 'bi-box-arrow-in-down' : 'bi-pencil-square';
+    const noteBtnTitle = isImported ? 'Item importado da loja' : 'Anotação';
     div.innerHTML = `
         <div class="row g-1 align-items-center">
             <div class="col-1 text-center"><i class="bi bi-grip-vertical drag-handle"></i></div>
@@ -370,20 +375,12 @@ function addInventoryItem(data = null) {
             <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-qtd" placeholder="1" value="${data ? data.qtd : '1'}" oninput="updateCalculations()"></div>
             <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-slots" placeholder="0" value="${data ? data.slots : '0'}" step="0.5" oninput="updateCalculations()"></div>
             <div class="col-3 text-center d-flex gap-1 justify-content-center">
-                ${hasImport ? `<button class="btn btn-sm border-0 text-primary item-note-btn" onclick="toggleItemNote(this)" title="Dados de combate/defesa importados"><i class="bi bi-box-arrow-in-down"></i></button>` : `<button class="btn btn-sm border-0 item-note-btn ${hasNote ? 'text-warning' : 'btn-outline-secondary'}" onclick="toggleItemNote(this)" title="Anotação"><i class="bi bi-pencil-square"></i></button>`}
+                <button class="btn btn-sm border-0 item-note-btn ${noteBtnClass}" onclick="toggleItemNote(this)" title="${noteBtnTitle}"><i class="bi ${noteBtnIcon}"></i></button>
                 <button class="btn btn-sm btn-outline-danger border-0" onclick="removeInventoryItem(this)"><i class="bi bi-trash"></i></button>
             </div>
         </div>
-        <div class="item-note-area ${hasNote || hasImport ? '' : 'd-none'} mt-1 px-1">
-            ${hasCombat ? `<div class="d-flex align-items-center gap-2 mb-1 p-1 rounded" style="background:#eef4ff;border-left:3px solid #0d6efd;font-size:0.78rem;">
-                <span class="text-muted"><i class="bi bi-sword me-1"></i><strong>${data.combatData.dano}</strong> · crít ${data.combatData.critico} · ${data.combatData.tipo_dano||'—'}</span>
-                <button class="btn btn-sm btn-primary py-0 ms-auto" style="font-size:0.75rem;" onclick="pullToAttack(this)"><i class="bi bi-arrow-right-circle"></i> Ataques</button>
-            </div>` : ''}
-            ${hasDefense ? `<div class="d-flex align-items-center gap-2 mb-1 p-1 rounded" style="background:#efffef;border-left:3px solid #198754;font-size:0.78rem;">
-                <span class="text-muted"><i class="bi bi-shield-check me-1"></i>Defesa <strong>${data.defenseData.bonus}</strong> · Pen. ${data.defenseData.penalidade||'0'}</span>
-                <button class="btn btn-sm btn-success py-0 ms-auto" style="font-size:0.75rem;" onclick="pullToDefense(this)"><i class="bi bi-arrow-right-circle"></i> Defesa</button>
-            </div>` : ''}
-            <textarea class="form-control form-control-sm inp-note" rows="2" placeholder="Anotação sobre este item..." oninput="saveData()">${data && data.note ? data.note : ''}</textarea>
+        <div class="item-note-area ${hasNote || isImported ? '' : 'd-none'} mt-1 px-1">
+            <textarea class="form-control form-control-sm inp-note" rows="2" placeholder="Anotação sobre este item..." oninput="saveData()">${data?.note || ''}</textarea>
         </div>`;
     container.appendChild(div); if (!data) saveData();
 }
@@ -402,79 +399,67 @@ function toggleItemNote(btn) {
     if (!isNowHidden) row.querySelector('.inp-note')?.focus();
 }
 
-// Converte o campo "critico" do banco de dados (ex: "19", "x3", "19/x3") em {critRange, crit}
-function parseCritico(critico) {
-    if (!critico || critico === '—') return { critRange: '20', crit: 'x2' };
-    const parts = String(critico).trim().split('/');
-    let critRange = '20', crit = 'x2';
-    for (const part of parts) {
-        const t = part.trim();
-        if (/^\d+$/.test(t)) critRange = t;
-        else if (/^x\d+$/i.test(t)) crit = t.toLowerCase();
+
+// Processa um item da fila: adiciona ao inventário, ataques e defesa automaticamente
+function processShopItem(item) {
+    addInventoryItem(item);
+    if (item.combatData) {
+        const cd = item.combatData;
+        const { critRange, crit } = parseCritico(cd.critico);
+        addAttack({ name: cd.nome, bonus: '', dmg: cd.dano || '', critRange, crit, type: cd.tipo_dano || '', range: cd.alcance || '', desc: '' });
     }
-    return { critRange, crit };
+    if (item.defenseData) {
+        const dd = item.defenseData;
+        const bonusNum = parseInt(String(dd.bonus).replace(/[^-\d]/g, '')) || 0;
+        addDefenseItem({ name: dd.nome, bonus: bonusNum, note: dd.penalidade ? `Penalidade de armadura: ${dd.penalidade}` : '' });
+    }
 }
 
-// Puxar dados de combate do inventário para a seção de Ataques
-function pullToAttack(btn) {
-    const row = btn.closest('.inv-row');
-    if (!row || !row.dataset.combat) return;
-    const cd = JSON.parse(row.dataset.combat);
-    const { critRange, crit } = parseCritico(cd.critico);
-    addAttack({
-        name: cd.nome,
-        bonus: '',
-        dmg: cd.dano || '',
-        critRange: critRange,
-        crit: crit,
-        type: cd.tipo_dano || '',
-        range: cd.alcance || '',
-        desc: ''
-    });
-    // Feedback visual
-    btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Adicionado!';
-    btn.disabled = true;
-    btn.classList.replace('btn-primary', 'btn-secondary');
-    setTimeout(() => {
-        btn.innerHTML = '<i class="bi bi-arrow-right-circle"></i> Ataques';
-        btn.disabled = false;
-        btn.classList.replace('btn-secondary', 'btn-primary');
-    }, 3000);
-    // Scroll para ataques
-    document.getElementById('attacksList')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-// Puxar dados de defesa do inventário para a seção de Defesa
-function pullToDefense(btn) {
-    const row = btn.closest('.inv-row');
-    if (!row || !row.dataset.defense) return;
-    const dd = JSON.parse(row.dataset.defense);
-    const bonusNum = parseInt(String(dd.bonus).replace(/[^-\d]/g, '')) || 0;
-    addDefenseItem({ name: dd.nome, bonus: bonusNum, note: dd.penalidade ? `Penalidade de armadura: ${dd.penalidade}` : '' });
-    // Feedback visual
-    btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Adicionado!';
-    btn.disabled = true;
-    btn.classList.replace('btn-success', 'btn-secondary');
-    setTimeout(() => {
-        btn.innerHTML = '<i class="bi bi-arrow-right-circle"></i> Defesa';
-        btn.disabled = false;
-        btn.classList.replace('btn-secondary', 'btn-success');
-    }, 3000);
-    document.getElementById('defenseList')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-// Importar itens exportados pela loja (via localStorage)
-function importFromShop() {
+// Importa tudo da fila ao carregar a ficha
+function importFromShop(silent = false) {
     const queue = JSON.parse(localStorage.getItem('t20_sheet_queue') || '[]');
     if (queue.length === 0) {
-        alert('Nenhum item pendente para importar.\n\nVá até a loja de itens, monte seu equipamento e clique em "📤 Enviar para Ficha".');
-        return;
+        if (!silent) alert('Nenhum item pendente para importar.\n\nAdicione itens no carrinho da loja — eles chegam aqui automaticamente!');
+        return 0;
     }
-    queue.forEach(item => addInventoryItem(item));
+    queue.forEach(item => processShopItem(item));
     localStorage.removeItem('t20_sheet_queue');
     saveData();
-    alert(`✅ ${queue.length} item(s) importado(s) para o equipamento!`);
+    return queue.length;
 }
+
+// Escuta itens chegando em tempo real da loja (mesma origem, abas diferentes)
+try {
+    const sheetChannel = new BroadcastChannel('t20_sheet_channel');
+    sheetChannel.addEventListener('message', (e) => {
+        if (e.data?.type === 'new_item') {
+            processShopItem(e.data.item);
+            localStorage.removeItem('t20_sheet_queue');
+            saveData();
+            showSheetToast(`📥 <strong>${e.data.item.name}</strong> adicionado automaticamente!`);
+        }
+    });
+} catch(e) { /* BroadcastChannel não disponível */ }
+
+function showSheetToast(html) {
+    let container = document.getElementById('sheet-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'sheet-toast-container';
+        container.style.cssText = 'position:fixed;bottom:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:0.4rem;';
+        document.body.appendChild(container);
+    }
+    const t = document.createElement('div');
+    t.style.cssText = 'background:#1a1a2e;color:#fff;padding:0.5rem 1rem;border-radius:8px;font-size:0.85rem;display:flex;align-items:center;gap:0.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.3);animation:toastIn 0.25s ease;';
+    t.innerHTML = html;
+    container.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+
+// CSS do toast
+const _toastStyle = document.createElement('style');
+_toastStyle.textContent = `@keyframes toastIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }`;
+document.head.appendChild(_toastStyle);
 
 function addAbility(targetId = 'abilitiesClassList', name = '', desc = '') {
     const list = document.getElementById(targetId);
