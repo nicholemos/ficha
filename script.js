@@ -76,10 +76,12 @@ window.onload = () => {
 
     setTimeout(updateCalculations, 100);
     setTimeout(checkImportedPowers, 400);
-    // Auto-importa itens pendentes da loja (caso loja foi usada antes de abrir a ficha)
+    // Verifica fila da loja via storage event (mesmo mecanismo usado entre abas)
     setTimeout(() => {
-        const n = importFromShop(true);
-        if (n > 0) showSheetToast(`📥 ${n} item(s) da loja adicionado(s) automaticamente!`);
+        const queue = localStorage.getItem('t20_sheet_queue');
+        if (queue && JSON.parse(queue).length > 0) {
+            window.dispatchEvent(new StorageEvent('storage', { key: 't20_sheet_queue', newValue: queue }));
+        }
     }, 600);
 };
 
@@ -449,6 +451,19 @@ window.addEventListener('storage', (e) => {
 });
 
 // ── Botão "→ Ataques" ──────────────────────────────────────────────────
+// Converte o campo "critico" do banco (ex: "19", "x3", "19/x3") em {critRange, crit}
+function parseCritico(critico) {
+    if (!critico || critico === '—') return { critRange: '20', crit: 'x2' };
+    const parts = String(critico).trim().split('/');
+    let critRange = '20', crit = 'x2';
+    for (const part of parts) {
+        const t = part.trim();
+        if (/^\d+$/.test(t)) critRange = t;
+        else if (/^x\d+$/i.test(t)) crit = t.toLowerCase();
+    }
+    return { critRange, crit };
+}
+
 function pullToAttack(btn) {
     const row = btn.closest('.inv-row');
     if (!row?.dataset.combat) return;
