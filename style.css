@@ -1977,3 +1977,33 @@ h3,
     font-weight: 600;
     white-space: nowrap;
 }
+
+/* --- ANOTAÇÕES DE ITEM (botão lápis + textarea) --- */
+.item-note-area {
+    animation: slideDown 0.18s ease;
+}
+
+.item-note-area .inp-note {
+    font-size: 0.8rem;
+    background: #fffef5;
+    border: 1px solid #ffc10730 !important;
+    border-left: 3px solid #ffc107 !important;
+    border-radius: 4px;
+    resize: vertical;
+    color: #555;
+}
+
+.item-note-area .inp-note:focus {
+    background: #fffff8;
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 0 0.15rem rgba(255, 193, 7, 0.2);
+}
+
+.item-note-btn.text-warning {
+    color: #e6a800 !important;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
