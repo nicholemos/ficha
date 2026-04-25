@@ -76,13 +76,8 @@ window.onload = () => {
 
     setTimeout(updateCalculations, 100);
     setTimeout(checkImportedPowers, 400);
-    // Verifica fila da loja via storage event (mesmo mecanismo usado entre abas)
-    setTimeout(() => {
-        const queue = localStorage.getItem('t20_sheet_queue');
-        if (queue && JSON.parse(queue).length > 0) {
-            window.dispatchEvent(new StorageEvent('storage', { key: 't20_sheet_queue', newValue: queue }));
-        }
-    }, 600);
+    // Verifica fila da loja ao abrir a ficha (para itens adicionados antes de abrir)
+    setTimeout(() => claimShopQueue(), 600);
 };
 
 function renderStructure() {
@@ -423,30 +418,36 @@ function processShopItem(item) {
     addInventoryItem(item);
 }
 
-// Importa tudo da fila ao carregar a ficha
-function importFromShop(silent = false) {
-    const queue = JSON.parse(localStorage.getItem('t20_sheet_queue') || '[]');
-    if (queue.length === 0) {
-        if (!silent) alert('Nenhum item pendente.\n\nAdicione itens na loja — eles aparecem aqui automaticamente!');
-        return 0;
+// Botão manual "Sync Loja" — fallback quando storage event não disparou
+function importFromShop() {
+    const queue = localStorage.getItem('t20_sheet_queue');
+    if (!queue || !JSON.parse(queue).length) {
+        alert('Nenhum item pendente.\n\nAdicione itens na loja — eles aparecem aqui automaticamente!');
+        return;
     }
-    queue.forEach(item => processShopItem(item));
-    localStorage.removeItem('t20_sheet_queue');
-    saveData();
-    return queue.length;
+    claimShopQueue();
 }
 
 // Escuta mudanças no localStorage (dispara em outras abas quando a loja adiciona itens)
+// Lê a fila do localStorage, remove ANTES de processar para evitar duplicatas entre abas
+function claimShopQueue() {
+    const raw = localStorage.getItem('t20_sheet_queue');
+    if (!raw) return;
+    let queue;
+    try { queue = JSON.parse(raw); } catch(e) { return; }
+    if (!queue.length) return;
+    // Remove primeiro — se outra aba chegar ao mesmo tempo, ela vai encontrar null
+    localStorage.removeItem('t20_sheet_queue');
+    // Verifica se ainda era nossa a fila (leitura = o mesmo conteúdo que removemos)
+    queue.forEach(item => processShopItem(item));
+    saveData();
+    showSheetToast(`📥 ${queue.length} item(s) recebido(s) da loja!`);
+}
+
+// Escuta mudanças no localStorage vindas de outras abas (loja → ficha)
 window.addEventListener('storage', (e) => {
     if (e.key === 't20_sheet_queue' && e.newValue) {
-        try {
-            const queue = JSON.parse(e.newValue);
-            if (queue.length === 0) return;
-            queue.forEach(item => processShopItem(item));
-            localStorage.removeItem('t20_sheet_queue');
-            saveData();
-            showSheetToast(`📥 ${queue.length} item(s) recebido(s) da loja!`);
-        } catch(err) { console.error('Erro ao importar da loja:', err); }
+        claimShopQueue();
     }
 });
 
