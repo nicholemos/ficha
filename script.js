@@ -361,13 +361,20 @@ function checkHeavyArmor() { if (getVal('armorType') === 'heavy') { const chk = 
 function addInventoryItem(data = null) {
     const container = document.getElementById('inventoryList'); if (!container) return;
     const div = document.createElement('div'); div.className = 'mb-2 inv-row border-bottom pb-1';
-    const hasNote = data && data.note && data.note.trim();
-    const isImported = !!(data && (data.combatData || data.defenseData));
+    const hasNote = data?.note?.trim();
+    const hasCombat  = !!(data?.combatData);
+    const hasDefense = !!(data?.defenseData);
+    const isImported = hasCombat || hasDefense;
     if (data?.combatData)  div.dataset.combat  = JSON.stringify(data.combatData);
     if (data?.defenseData) div.dataset.defense = JSON.stringify(data.defenseData);
-    const noteBtnClass = isImported ? 'text-primary' : (hasNote ? 'text-warning' : 'btn-outline-secondary');
+
     const noteBtnIcon  = isImported ? 'bi-box-arrow-in-down' : 'bi-pencil-square';
+    const noteBtnClass = isImported ? 'text-primary' : (hasNote ? 'text-warning' : 'btn-outline-secondary');
     const noteBtnTitle = isImported ? 'Item importado da loja' : 'Anotação';
+
+    // Decide label do botão de defesa baseado no tipo
+    const defLabel = data?.defenseData?.tipo?.toLowerCase().includes('escudo') ? 'Escudo' : 'Armadura';
+
     div.innerHTML = `
         <div class="row g-1 align-items-center">
             <div class="col-1 text-center"><i class="bi bi-grip-vertical drag-handle"></i></div>
@@ -380,6 +387,14 @@ function addInventoryItem(data = null) {
             </div>
         </div>
         <div class="item-note-area ${hasNote || isImported ? '' : 'd-none'} mt-1 px-1">
+            ${hasCombat ? `<div class="d-flex align-items-center gap-2 mb-1 p-1 rounded" style="background:#eef4ff;border-left:3px solid #0d6efd;font-size:0.78rem;">
+                <span class="text-muted"><i class="bi bi-sword me-1"></i><strong>${data.combatData.dano}</strong> · crít ${data.combatData.critico} · ${data.combatData.tipo_dano||'—'}</span>
+                <button class="btn btn-sm btn-primary py-0 ms-auto" style="font-size:0.75rem;" onclick="pullToAttack(this)"><i class="bi bi-arrow-right-circle"></i> Ataques</button>
+            </div>` : ''}
+            ${hasDefense ? `<div class="d-flex align-items-center gap-2 mb-1 p-1 rounded" style="background:#efffef;border-left:3px solid #198754;font-size:0.78rem;">
+                <span class="text-muted"><i class="bi bi-shield-check me-1"></i>Defesa <strong>${data.defenseData.bonus}</strong> · Pen. ${data.defenseData.penalidade||'0'}</span>
+                <button class="btn btn-sm btn-success py-0 ms-auto" style="font-size:0.75rem;" onclick="pullToDefense(this)"><i class="bi bi-arrow-right-circle"></i> ${defLabel}</button>
+            </div>` : ''}
             <textarea class="form-control form-control-sm inp-note" rows="2" placeholder="Anotação sobre este item..." oninput="saveData()">${data?.note || ''}</textarea>
         </div>`;
     container.appendChild(div); if (!data) saveData();
@@ -400,26 +415,17 @@ function toggleItemNote(btn) {
 }
 
 
-// Processa um item da fila: adiciona ao inventário, ataques e defesa automaticamente
+// Processa um item da fila: adiciona SOMENTE ao inventário
+// (push para Ataques/Defesa fica a cargo dos botões manuais)
 function processShopItem(item) {
     addInventoryItem(item);
-    if (item.combatData) {
-        const cd = item.combatData;
-        const { critRange, crit } = parseCritico(cd.critico);
-        addAttack({ name: cd.nome, bonus: '', dmg: cd.dano || '', critRange, crit, type: cd.tipo_dano || '', range: cd.alcance || '', desc: '' });
-    }
-    if (item.defenseData) {
-        const dd = item.defenseData;
-        const bonusNum = parseInt(String(dd.bonus).replace(/[^-\d]/g, '')) || 0;
-        addDefenseItem({ name: dd.nome, bonus: bonusNum, note: dd.penalidade ? `Penalidade de armadura: ${dd.penalidade}` : '' });
-    }
 }
 
 // Importa tudo da fila ao carregar a ficha
 function importFromShop(silent = false) {
     const queue = JSON.parse(localStorage.getItem('t20_sheet_queue') || '[]');
     if (queue.length === 0) {
-        if (!silent) alert('Nenhum item pendente para importar.\n\nAdicione itens no carrinho da loja — eles chegam aqui automaticamente!');
+        if (!silent) alert('Nenhum item pendente.\n\nAdicione itens na loja — eles aparecem aqui automaticamente!');
         return 0;
     }
     queue.forEach(item => processShopItem(item));
@@ -428,18 +434,70 @@ function importFromShop(silent = false) {
     return queue.length;
 }
 
-// Escuta itens chegando em tempo real da loja (mesma origem, abas diferentes)
-try {
-    const sheetChannel = new BroadcastChannel('t20_sheet_channel');
-    sheetChannel.addEventListener('message', (e) => {
-        if (e.data?.type === 'new_item') {
-            processShopItem(e.data.item);
+// Escuta mudanças no localStorage (dispara em outras abas quando a loja adiciona itens)
+window.addEventListener('storage', (e) => {
+    if (e.key === 't20_sheet_queue' && e.newValue) {
+        try {
+            const queue = JSON.parse(e.newValue);
+            if (queue.length === 0) return;
+            queue.forEach(item => processShopItem(item));
             localStorage.removeItem('t20_sheet_queue');
             saveData();
-            showSheetToast(`📥 <strong>${e.data.item.name}</strong> adicionado automaticamente!`);
-        }
-    });
-} catch(e) { /* BroadcastChannel não disponível */ }
+            showSheetToast(`📥 ${queue.length} item(s) recebido(s) da loja!`);
+        } catch(err) { console.error('Erro ao importar da loja:', err); }
+    }
+});
+
+// ── Botão "→ Ataques" ──────────────────────────────────────────────────
+function pullToAttack(btn) {
+    const row = btn.closest('.inv-row');
+    if (!row?.dataset.combat) return;
+    const cd = JSON.parse(row.dataset.combat);
+    const { critRange, crit } = parseCritico(cd.critico);
+    addAttack({ name: cd.nome, bonus: '', dmg: cd.dano || '', critRange, crit, type: cd.tipo_dano || '', range: cd.alcance || '', desc: '' });
+    saveData();
+    btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Adicionado!';
+    btn.disabled = true;
+    setTimeout(() => { btn.innerHTML = '<i class="bi bi-arrow-right-circle"></i> Ataques'; btn.disabled = false; }, 3000);
+    document.getElementById('attacksList')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ── Botão "→ Defesa" — preenche Armadura ou Escudo ────────────────────
+function pullToDefense(btn) {
+    const row = btn.closest('.inv-row');
+    if (!row?.dataset.defense) return;
+    const dd = JSON.parse(row.dataset.defense);
+
+    // Penalidade: tira sinais/traços e usa número positivo
+    const penAbs = Math.abs(parseInt(String(dd.penalidade).replace(/[^0-9]/g, '')) || 0);
+    // Bônus: extrai número (pode vir como "+10" ou "10")
+    const bonusNum = parseInt(String(dd.bonus).replace(/[^0-9]/g, '')) || 0;
+
+    const isShield = String(dd.tipo).toLowerCase().includes('escudo');
+
+    if (isShield) {
+        const nameEl   = document.getElementById('shieldName');
+        const bonusEl  = document.getElementById('shieldBonus');
+        const penEl    = document.getElementById('shieldPenalty');
+        if (nameEl)  nameEl.value  = dd.nome;
+        if (bonusEl) bonusEl.value = bonusNum;
+        if (penEl)   penEl.value   = penAbs;
+    } else {
+        const nameEl   = document.getElementById('armorName');
+        const bonusEl  = document.getElementById('armorBonus');
+        const penEl    = document.getElementById('armorPenalty');
+        if (nameEl)  nameEl.value  = dd.nome;
+        if (bonusEl) bonusEl.value = bonusNum;
+        if (penEl)   penEl.value   = penAbs;
+    }
+
+    updateCalculations();
+    saveData();
+    btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Aplicado!';
+    btn.disabled = true;
+    setTimeout(() => { btn.innerHTML = '<i class="bi bi-arrow-right-circle"></i> ' + (isShield ? 'Escudo' : 'Armadura'); btn.disabled = false; }, 3000);
+    document.getElementById('armorName')?.closest('section, .card, [class*="card"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
 function showSheetToast(html) {
     let container = document.getElementById('sheet-toast-container');
