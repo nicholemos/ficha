@@ -93,7 +93,7 @@
                 <div class="col-md-3 col-img">
                     <div class="char-img-container border border-2 border-dark rounded bg-light d-flex align-items-center justify-content-center position-relative"
                         style="height: 180px; cursor: pointer; overflow: hidden;"
-                        onclick="document.getElementById('charImgInput').click()" title="Clique para alterar a foto">
+                        title="Clique para alterar · Arraste para reposicionar">
                         <img id="charImgPreview"
                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 16 16'%3E%3Cpath fill='%23ccc' d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'/%3E%3Cpath fill='%23ccc' fill-rule='evenodd' d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z'/%3E%3C/svg%3E"
                             style="width: 100%; height: 100%; object-fit: cover;">
@@ -577,9 +577,39 @@
             <div class="col-lg-5">
 
                 <div id="skillsSection" class="border border-2 border-dark bg-light d-flex flex-column mb-4">
-                    <div class="bg-danger text-white text-center fw-bold py-1" onclick="toggleSection('skillsSection')"
+                    <div class="bg-danger text-white fw-bold py-1 px-2 d-flex align-items-center justify-content-between"
                         style="cursor: pointer;">
-                        <i class="bi bi-chevron-down me-2 text-white section-toggle"></i>PERÍCIAS
+                        <div class="d-flex align-items-center gap-2" onclick="event.stopPropagation()">
+                            <i class="bi bi-chevron-down me-1 text-white section-toggle" onclick="toggleSection('skillsSection')" style="cursor:pointer;"></i>
+                            <span onclick="toggleSection('skillsSection')" style="cursor:pointer;">PERÍCIAS</span>
+                            <select id="classSkillSelect" class="border-0 rounded px-1 fw-bold"
+                                style="font-size:0.7rem;background:rgba(255,255,255,0.2);color:#fff;cursor:pointer;outline:none;max-width:110px;"
+                                onchange="setClassFilter(this.value)" title="Filtrar perícias por classe">
+                                <option value="" style="color:#333;background:#fff;">— Classe —</option>
+                                <option value="Arcanista" style="color:#333;background:#fff;">Arcanista</option>
+                                <option value="Bárbaro" style="color:#333;background:#fff;">Bárbaro</option>
+                                <option value="Bardo" style="color:#333;background:#fff;">Bardo</option>
+                                <option value="Bucaneiro" style="color:#333;background:#fff;">Bucaneiro</option>
+                                <option value="Caçador" style="color:#333;background:#fff;">Caçador</option>
+                                <option value="Cavaleiro" style="color:#333;background:#fff;">Cavaleiro</option>
+                                <option value="Clérigo" style="color:#333;background:#fff;">Clérigo</option>
+                                <option value="Druida" style="color:#333;background:#fff;">Druida</option>
+                                <option value="Frade" style="color:#333;background:#fff;">Frade</option>
+                                <option value="Guerreiro" style="color:#333;background:#fff;">Guerreiro</option>
+                                <option value="Inventor" style="color:#333;background:#fff;">Inventor</option>
+                                <option value="Ladino" style="color:#333;background:#fff;">Ladino</option>
+                                <option value="Lutador" style="color:#333;background:#fff;">Lutador</option>
+                                <option value="Nobre" style="color:#333;background:#fff;">Nobre</option>
+                                <option value="Paladino" style="color:#333;background:#fff;">Paladino</option>
+                                <option value="Treinador" style="color:#333;background:#fff;">Treinador</option>
+                            </select>
+                            <span id="classSkillBadge" class="d-none rounded px-1" style="font-size:0.65rem;background:rgba(255,255,255,0.25);white-space:nowrap;"></span>
+                        </div>
+                        <button id="btnGroupSkills" onclick="toggleSkillGrouping()" title="Agrupar por atributo"
+                            class="btn btn-sm border-0 rounded px-2 py-0"
+                            style="font-size:0.7rem;background:rgba(255,255,255,0.15);color:#fff;white-space:nowrap;transition:background 0.2s;">
+                            <i class="bi bi-collection"></i> Agrupar
+                        </button>
                     </div>
                     <div class="skills-content d-flex flex-column flex-grow-1">
                         <div class="row g-0 text-center small fw-bold border-bottom border-dark mx-1">

@@ -2007,3 +2007,36 @@ h3,
     from { opacity: 0; transform: translateY(-4px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Destaque de perícias por classe ──────────────────────────────── */
+.skill-row[style*="background"] {
+    border-left: 3px solid #dc3545 !important;
+}
+
+/* ── Drag da imagem ───────────────────────────────────────────────── */
+.char-img-container img {
+    user-select: none;
+    -webkit-user-drag: none;
+}
+.char-img-container:has(img[src*="data:image/jpeg"]),
+.char-img-container:has(img[src*="data:image/png"]),
+.char-img-container:has(img[src*="data:image/webp"]) {
+    cursor: grab;
+}
+.char-img-container:has(img[src*="data:image/jpeg"]):active,
+.char-img-container:has(img[src*="data:image/png"]):active,
+.char-img-container:has(img[src*="data:image/webp"]):active {
+    cursor: grabbing;
+}
+
+/* ── Agrupamento de perícias por atributo ─────────────────────────── */
+.skill-group-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+#btnGroupSkills.active {
+    background: rgba(255,255,255,0.35) !important;
+    font-weight: 700;
+}

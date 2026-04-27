@@ -4,6 +4,11 @@ const attrs = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
 // Perícias que só funcionam se treinadas (retornam 0 se não treinado)
 const TRAINED_ONLY_SKILLS = ['Adestramento', 'Conhecimento', 'Guerra', 'Jogatina', 'Ladinagem', 'Misticismo', 'Nobreza', 'Pilotagem', 'Religião'];
 
+// Perícias com penalidade de armadura (✠ = total, ✠* = parcial)
+const ARMOR_PENALTY_SKILLS = { 'Acrobacia': 'total', 'Furtividade': 'total', 'Ladinagem': 'total', 'Atletismo': 'parcial' };
+
+let groupSkillsByAttr = false;
+
 // Tabela de XP por nível (T20)
 const XP_TABLE = [0, 1000, 3000, 6000, 10000, 15000, 21000, 28000, 36000, 45000, 55000, 66000, 78000, 91000, 105000, 120000, 136000, 153000, 171000, 190000];
 
@@ -142,68 +147,153 @@ function updateAttr(attr, delta) {
 }
 
 // --- RENDERIZAÇÃO DE PERÍCIAS (COM BOTÕES FLUTUANTES) ---
+// ── Perícias por Classe (T20) ───────────────────────────────────────────
+const CLASS_SKILLS = {
+    'Arcanista':  { total: 4,  skills: ['Misticismo', 'Vontade', 'Conhecimento', 'Diplomacia', 'Enganação', 'Guerra', 'Iniciativa', 'Intimidação', 'Intuição', 'Investigação', 'Nobreza', 'Ofício', 'Percepção'] },
+    'Bárbaro':    { total: 6,  skills: ['Adestramento', 'Atletismo', 'Cavalgar', 'Fortitude', 'Furtividade', 'Iniciativa', 'Intimidação', 'Luta', 'Ofício', 'Percepção', 'Pontaria', 'Sobrevivência', 'Vontade'] },
+    'Bardo':      { total: 8,  skills: ['Atuação', 'Reflexos', 'Acrobacia', 'Cavalgar', 'Conhecimento', 'Diplomacia', 'Enganação', 'Furtividade', 'Iniciativa', 'Intuição', 'Investigação', 'Jogatina', 'Ladinagem', 'Luta', 'Misticismo', 'Nobreza', 'Percepção', 'Pontaria', 'Vontade'] },
+    'Bucaneiro':  { total: 6,  skills: ['Luta', 'Reflexos', 'Pontaria', 'Acrobacia', 'Atletismo', 'Atuação', 'Enganação', 'Fortitude', 'Furtividade', 'Iniciativa', 'Intimidação', 'Jogatina', 'Ofício', 'Percepção', 'Pilotagem'] },
+    'Caçador':    { total: 8,  skills: ['Luta', 'Pontaria', 'Sobrevivência', 'Adestramento', 'Atletismo', 'Cavalgar', 'Cura', 'Fortitude', 'Furtividade', 'Iniciativa', 'Investigação', 'Ofício', 'Percepção', 'Reflexos'] },
+    'Cavaleiro':  { total: 4,  skills: ['Fortitude', 'Luta', 'Adestramento', 'Atletismo', 'Cavalgar', 'Diplomacia', 'Guerra', 'Iniciativa', 'Intimidação', 'Nobreza', 'Percepção', 'Vontade'] },
+    'Clérigo':    { total: 4,  skills: ['Religião', 'Vontade', 'Conhecimento', 'Cura', 'Diplomacia', 'Fortitude', 'Iniciativa', 'Intuição', 'Luta', 'Misticismo', 'Nobreza', 'Ofício', 'Percepção'] },
+    'Druida':     { total: 6,  skills: ['Sobrevivência', 'Vontade', 'Adestramento', 'Atletismo', 'Cavalgar', 'Conhecimento', 'Cura', 'Fortitude', 'Iniciativa', 'Intuição', 'Luta', 'Misticismo', 'Ofício', 'Percepção', 'Religião'] },
+    'Frade':      { total: 6,  skills: ['Religião', 'Vontade', 'Adestramento', 'Atuação', 'Conhecimento', 'Cura', 'Diplomacia', 'Fortitude', 'Guerra', 'Iniciativa', 'Intimidação', 'Intuição', 'Investigação', 'Misticismo', 'Nobreza', 'Ofício', 'Percepção'] },
+    'Guerreiro':  { total: 4,  skills: ['Luta', 'Pontaria', 'Fortitude', 'Adestramento', 'Atletismo', 'Cavalgar', 'Guerra', 'Iniciativa', 'Intimidação', 'Ofício', 'Percepção', 'Reflexos'] },
+    'Inventor':   { total: 6,  skills: ['Ofício', 'Vontade', 'Conhecimento', 'Cura', 'Diplomacia', 'Fortitude', 'Iniciativa', 'Investigação', 'Luta', 'Misticismo', 'Percepção', 'Pilotagem', 'Pontaria'] },
+    'Ladino':     { total: 10, skills: ['Ladinagem', 'Reflexos', 'Acrobacia', 'Atletismo', 'Atuação', 'Cavalgar', 'Conhecimento', 'Diplomacia', 'Enganação', 'Furtividade', 'Iniciativa', 'Intimidação', 'Intuição', 'Investigação', 'Jogatina', 'Luta', 'Ofício', 'Percepção', 'Pilotagem', 'Pontaria'] },
+    'Lutador':    { total: 6,  skills: ['Fortitude', 'Luta', 'Acrobacia', 'Adestramento', 'Atletismo', 'Enganação', 'Furtividade', 'Iniciativa', 'Intimidação', 'Ofício', 'Percepção', 'Pontaria', 'Reflexos'] },
+    'Nobre':      { total: 6,  skills: ['Diplomacia', 'Intimidação', 'Vontade', 'Adestramento', 'Atuação', 'Cavalgar', 'Conhecimento', 'Enganação', 'Fortitude', 'Guerra', 'Iniciativa', 'Intuição', 'Investigação', 'Jogatina', 'Luta', 'Nobreza', 'Ofício', 'Percepção', 'Pontaria'] },
+    'Paladino':   { total: 4,  skills: ['Luta', 'Vontade', 'Adestramento', 'Atletismo', 'Cavalgar', 'Cura', 'Diplomacia', 'Fortitude', 'Guerra', 'Iniciativa', 'Intuição', 'Nobreza', 'Percepção', 'Religião'] },
+    'Treinador':  { total: 6,  skills: ['Adestramento', 'Vontade', 'Atletismo', 'Cavalgar', 'Diplomacia', 'Guerra', 'Iniciativa', 'Intimidação', 'Intuição', 'Luta', 'Ofício', 'Percepção', 'Pontaria', 'Reflexos', 'Religião', 'Sobrevivência'] },
+};
+
+let activeClassFilter = '';
+
+function setClassFilter(cls) {
+    activeClassFilter = (activeClassFilter === cls) ? '' : cls;
+    renderSkills();
+    // Atualiza badge no header
+    const badge = document.getElementById('classSkillBadge');
+    if (badge) {
+        if (activeClassFilter) {
+            const info = CLASS_SKILLS[activeClassFilter];
+            badge.textContent = `${activeClassFilter} · ${info.total} perícias`;
+            badge.classList.remove('d-none');
+        } else {
+            badge.classList.add('d-none');
+        }
+    }
+}
+
 function renderSkills() {
     const skillsContainer = document.getElementById('skillsList');
     if (!skillsContainer) return;
 
-    skillsContainer.innerHTML = currentSkills.map((s, i) => {
-        const attrOptions = attrs.map(a => `<option value="${a}" ${s.a === a ? 'selected' : ''}>${a}</option>`).join('');
-        const isDefault = defaultSkills.some(ds => ds.n === s.n && !s.isCustom);
+    const classInfo    = activeClassFilter ? CLASS_SKILLS[activeClassFilter] : null;
+    const classSkillSet = classInfo ? new Set(classInfo.skills) : null;
 
+    // Ordem dos atributos para agrupamento
+    const ATTR_ORDER = ['FOR', 'DES', 'CON', 'INT', 'SAB', 'CAR'];
+    const ATTR_NAMES = { FOR: 'Força', DES: 'Destreza', CON: 'Constituição', INT: 'Inteligência', SAB: 'Sabedoria', CAR: 'Carisma' };
+
+    function buildSkillRow(s, i) {
+        const attrOptions  = attrs.map(a => `<option value="${a}" ${s.a === a ? 'selected' : ''}>${a}</option>`).join('');
+        const isDefault    = defaultSkills.some(ds => ds.n === s.n && !s.isCustom);
         const isTrainedOnly = TRAINED_ONLY_SKILLS.includes(s.n);
-        const skillLabel = isDefault
-            ? `${s.n}${isTrainedOnly ? '<span class="text-danger" title="Somente treinada">*</span>' : ''}`
-            : s.n;
+        const armorPenalty = ARMOR_PENALTY_SKILLS[s.n];
+        const isClassSkill = classSkillSet && classSkillSet.has(s.n);
+
+        const rowBg   = isClassSkill ? 'style="background:rgba(220,53,69,0.08);"' : '';
+        const classTag = isClassSkill
+            ? `<span style="font-size:0.55rem;background:#dc3545;color:#fff;border-radius:3px;padding:0 3px;margin-left:2px;vertical-align:middle;">●</span>`
+            : '';
+
+        // Badges de sufixo: * treinada, ✠/✠? penalidade de armadura
+        const trainedBadge = isTrainedOnly
+            ? `<span class="text-danger" title="Somente treinada" style="font-size:0.8em;">*</span>`
+            : '';
+        const armorBadge = armorPenalty
+            ? `<span class="${armorPenalty === 'total' ? 'text-primary' : 'text-secondary'}"
+                    title="${armorPenalty === 'total' ? 'Penalidade de armadura' : 'Penalidade de armadura (somente natação)'}"
+                    style="font-size:0.75em;margin-left:1px;">✠${armorPenalty === 'parcial' ? '?' : ''}</span>`
+            : '';
 
         const isOficio = isDefault && s.n === 'Ofício';
         const nameDisplay = isOficio
             ? `<div class="d-flex align-items-center gap-1" style="overflow:hidden;">
-                 <span class="fw-bold" style="font-size:0.9em; white-space:nowrap;">Ofício</span>
+                 <span class="fw-bold" style="font-size:0.9em;white-space:nowrap;">Ofício</span>
                  <input type="text" class="form-control form-control-sm p-0 border-0 bg-transparent oficio-specialty"
                         data-skill-idx="${i}"
-                        style="font-size:0.8em; min-width:0; width:100%; color:#555;"
-                        value="${s.specialty || ''}"
-                        placeholder="(tipo)"
+                        style="font-size:0.8em;min-width:0;width:100%;color:#555;"
+                        value="${s.specialty || ''}" placeholder="(tipo)"
                         oninput="updateSkillSpecialty(${i}, this.value)"
                         title="Ex: Metalurgia, Culinária...">
                </div>`
             : isDefault
-                ? `<span class="fw-bold text-truncate d-block" title="${s.n}${isTrainedOnly ? ' (somente treinada)' : ''}" style="font-size:0.9em; padding-top:2px;">${skillLabel}</span>`
+                ? `<span class="fw-bold text-truncate d-block"
+                         title="${s.n}${isTrainedOnly ? ' (somente treinada)' : ''}${armorPenalty ? ' (penalidade de armadura)' : ''}"
+                         style="font-size:0.9em;padding-top:2px;">${s.n}${trainedBadge}${armorBadge}${classTag}</span>`
                 : `<input type="text" class="form-control form-control-sm p-0 fw-bold border-0 bg-transparent" value="${s.n}" onchange="updateSkillName(${i}, this.value)" placeholder="Nome">`;
 
         const deleteBtn = !isDefault
-            ? `<i class="bi bi-x text-danger" style="cursor:pointer; margin-left:2px;" onclick="deleteSkill(${i})" title="Remover"></i>`
-            : ``;
+            ? `<i class="bi bi-x text-danger" style="cursor:pointer;margin-left:2px;" onclick="deleteSkill(${i})" title="Remover"></i>`
+            : '';
 
         return `
-        <div class="row g-0 align-items-center skill-row py-1 border-bottom">
+        <div class="row g-0 align-items-center skill-row py-1 border-bottom" ${rowBg}>
             <div class="col-1 text-center"><input class="form-check-input border-dark" type="checkbox" id="skTrain${i}" ${s.trained ? 'checked' : ''}></div>
-            
             <div class="col-1 text-center"><i class="bi bi-dice-20-fill dice-roller text-secondary" onclick="rollSkill(${i})" title="Rolar"></i></div>
-
             <div class="col-4 ps-1 d-flex align-items-center">
-                <div style="flex: 1; overflow: hidden;">${nameDisplay}</div>
-                <select class="border-0 bg-transparent text-muted fw-bold ms-1 p-0" style="font-size: 0.65em; width: 35px; cursor:pointer;" onchange="updateSkillAttr(${i}, this.value)">${attrOptions}</select>
+                <div style="flex:1;overflow:hidden;">${nameDisplay}</div>
+                <select class="border-0 bg-transparent text-muted fw-bold ms-1 p-0" style="font-size:0.65em;width:35px;cursor:pointer;" onchange="updateSkillAttr(${i}, this.value)">${attrOptions}</select>
                 ${deleteBtn}
             </div>
-            
             <div class="col-2 text-center fw-bold text-danger fs-6" id="skTotal${i}">0</div>
-            
             <div class="col-1 text-center text-muted small" id="skHalfLevel${i}">0</div>
             <div class="col-1 text-center text-muted small" id="skAttrVal${i}">0</div>
             <div class="col-1 text-center text-muted small" id="skTrainVal${i}">0</div>
-            
             <div class="col-1 px-1 position-relative skill-wrapper" id="wrap-skill-${i}">
                 <button class="attr-btn-float attr-btn-up skill-btn-mini" onclick="updateSkillOther(${i}, 1)">+</button>
-                
                 <input type="number" inputmode="numeric" class="form-control form-control-sm p-0 text-center" id="skOther${i}" placeholder="0" value="${s.other || ''}" onclick="toggleSkillButtons(${i})">
-                
                 <button class="attr-btn-float attr-btn-down skill-btn-mini" onclick="updateSkillOther(${i}, -1)">-</button>
             </div>
         </div>`;
-    }).join('');
+    }
+
+    if (groupSkillsByAttr) {
+        // Agrupa as perícias por atributo, mantendo o índice original para callbacks
+        const groups = {};
+        ATTR_ORDER.forEach(a => groups[a] = []);
+        currentSkills.forEach((s, i) => {
+            const key = attrs.includes(s.a) ? s.a : 'FOR';
+            groups[key].push({ s, i });
+        });
+
+        skillsContainer.innerHTML = ATTR_ORDER.map(attr => {
+            const items = groups[attr];
+            if (!items.length) return '';
+            return `
+            <div class="skill-group-header d-flex align-items-center px-2 py-1"
+                 style="background:#f0f0f0;border-bottom:2px solid #dee2e6;font-size:0.7rem;font-weight:700;color:#555;letter-spacing:0.05em;">
+                <span>${attr} — ${ATTR_NAMES[attr]}</span>
+            </div>
+            ${items.map(({ s, i }) => buildSkillRow(s, i)).join('')}`;
+        }).join('');
+    } else {
+        skillsContainer.innerHTML = currentSkills.map((s, i) => buildSkillRow(s, i)).join('');
+    }
 
     attachGlobalListeners();
+}
+
+function toggleSkillGrouping() {
+    groupSkillsByAttr = !groupSkillsByAttr;
+    const btn = document.getElementById('btnGroupSkills');
+    if (btn) {
+        btn.classList.toggle('active', groupSkillsByAttr);
+        btn.title = groupSkillsByAttr ? 'Agrupar por atributo (ativo)' : 'Agrupar por atributo';
+    }
+    renderSkills();
 }
 
 // --- NOVAS FUNÇÕES PARA BOTÕES DE PERÍCIA ---
@@ -1597,18 +1687,118 @@ function uploadImage(input) {
         reader.onload = function (e) {
             const img = document.getElementById('charImgPreview');
             img.src = e.target.result;
+            img.style.objectPosition = '50% 50%';
             localStorage.setItem('charImage', e.target.result);
+            localStorage.setItem('charImagePos', '50% 50%');
         };
         reader.readAsDataURL(file);
     }
 }
 
-// Carregar imagem salva
+// ── Arrastar imagem para reposicionar ──────────────────────────────────
+(function initImageDrag() {
+    const DRAG_THRESHOLD = 5; // px mínimos para considerar como drag
+    let pointerDown = false, hasMoved = false;
+    let startX, startY, startPosX, startPosY;
+
+    function getPos(img) {
+        const pos = img.style.objectPosition || '50% 50%';
+        const parts = pos.split(' ');
+        return { x: parseFloat(parts[0]) || 50, y: parseFloat(parts[1]) || 50 };
+    }
+
+    function hasRealImage(img) {
+        return img && img.src && !img.src.includes('data:image/svg');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.querySelector('.char-img-container');
+        const img = document.getElementById('charImgPreview');
+        const fileInput = document.getElementById('charImgInput');
+        if (!container || !img || !fileInput) return;
+
+        // Hint visual
+        const hint = document.createElement('div');
+        hint.className = 'position-absolute top-0 start-0 m-1 px-1 rounded text-white';
+        hint.style.cssText = 'font-size:0.6rem;background:rgba(0,0,0,0.45);pointer-events:none;opacity:0;transition:opacity 0.2s;z-index:11;';
+        hint.textContent = '✥ Arraste para mover';
+        container.appendChild(hint);
+
+        container.addEventListener('mouseenter', () => {
+            if (hasRealImage(img)) hint.style.opacity = '1';
+        });
+        container.addEventListener('mouseleave', () => { hint.style.opacity = '0'; });
+
+        // ── Ponteiro down ──────────────────────────────────────────────
+        function onDown(e) {
+            if (e.target.closest('button') || e.target.tagName === 'INPUT') return;
+            pointerDown = true;
+            hasMoved = false;
+            startX = e.touches ? e.touches[0].clientX : e.clientX;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            if (hasRealImage(img)) {
+                const pos = getPos(img);
+                startPosX = pos.x;
+                startPosY = pos.y;
+            }
+            // Não chama preventDefault aqui para não bloquear clique
+        }
+
+        // ── Movimento ──────────────────────────────────────────────────
+        function onMove(e) {
+            if (!pointerDown || !hasRealImage(img)) return;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+
+            if (!hasMoved && Math.sqrt(dx * dx + dy * dy) < DRAG_THRESHOLD) return;
+            hasMoved = true;
+            container.style.cursor = 'grabbing';
+
+            const pctX = dx / container.offsetWidth * 100;
+            const pctY = dy / container.offsetHeight * 100;
+            const nx = Math.max(0, Math.min(100, startPosX - pctX));
+            const ny = Math.max(0, Math.min(100, startPosY - pctY));
+            img.style.objectPosition = `${nx.toFixed(1)}% ${ny.toFixed(1)}%`;
+            e.preventDefault();
+        }
+
+        // ── Ponteiro up ────────────────────────────────────────────────
+        function onUp(e) {
+            if (!pointerDown) return;
+            pointerDown = false;
+            container.style.cursor = hasRealImage(img) ? 'grab' : 'pointer';
+
+            if (hasMoved) {
+                // Foi drag: salva posição, não abre file picker
+                localStorage.setItem('charImagePos', img.style.objectPosition);
+            } else {
+                // Foi clique puro: abre file picker
+                if (!e.target.closest('button')) fileInput.click();
+            }
+            hasMoved = false;
+        }
+
+        container.addEventListener('mousedown', onDown);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        container.addEventListener('touchstart', onDown, { passive: true });
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+    });
+})();
+
+// Carregar imagem e posição salvas
 document.addEventListener('DOMContentLoaded', () => {
     const savedImage = localStorage.getItem('charImage');
+    const savedPos   = localStorage.getItem('charImagePos');
     if (savedImage) {
         const img = document.getElementById('charImgPreview');
-        if (img) img.src = savedImage;
+        if (img) {
+            img.src = savedImage;
+            if (savedPos) img.style.objectPosition = savedPos;
+        }
     }
 });
 
