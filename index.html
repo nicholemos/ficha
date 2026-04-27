@@ -93,7 +93,7 @@
                 <div class="col-md-3 col-img">
                     <div class="char-img-container border border-2 border-dark rounded bg-light d-flex align-items-center justify-content-center position-relative"
                         style="height: 180px; cursor: pointer; overflow: hidden;"
-                        title="Clique para alterar · Arraste para reposicionar">
+                        onclick="document.getElementById('charImgInput').click()" title="Clique para alterar a foto">
                         <img id="charImgPreview"
                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 16 16'%3E%3Cpath fill='%23ccc' d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'/%3E%3Cpath fill='%23ccc' fill-rule='evenodd' d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z'/%3E%3C/svg%3E"
                             style="width: 100%; height: 100%; object-fit: cover;">
@@ -212,8 +212,7 @@
                         <div class="col-4 text-start">ATAQUE</div>
                         <div class="col-2">BÔNUS</div>
                         <div class="col-2">DANO</div>
-                        <div class="col-1 p-0">MARGEM</div>
-                        <div class="col-1 p-0">CRÍT.</div>
+                        <div class="col-2 p-0">MARGEM / CRÍT.</div>
                         <div class="col-1"></div>
                     </div>
                     <div id="attacksList" class="mb-3"></div>
@@ -242,8 +241,9 @@
                                         checked onchange="updateCalculations(); saveData()">
                                     <span id="defAttrVal" class="fs-5 text-danger">0</span>
                                 </div>
-                                <select class="form-select text-center p-0 ps-2" style="width: 70px;" id="defAttrSelect"
-                                    onchange="updateCalculations(); saveData()">
+                                <select class="form-select text-center p-0 ps-2"
+                                    style="width:70px;appearance:none;-webkit-appearance:none;background-image:none;"
+                                    id="defAttrSelect" onchange="updateCalculations(); saveData()">
                                     <option value="DES">DES</option>
                                     <option value="CON">CON</option>
                                     <option value="SAB">SAB</option>
@@ -405,14 +405,14 @@
                             <a href="https://nicholemos.github.io/poderes/" target="_blank"
                                 class="btn btn-sm btn-outline-danger py-0"
                                 style="font-size: 0.7rem; border-radius: 20px;">
-                                <i class="bi bi-book"></i> Poderes
+                                <i class="bi bi-book"></i> Habilidades, Poderes e Origens
                             </a>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <h5 class="text-danger border-bottom pb-2" style="font-family: 'Tormenta', sans-serif;">
-                                    Raça e Origem</h5>
+                                    Raça, Origem e Outros</h5>
                                 <div id="abilitiesRaceList" class="list-group mb-3"
                                     style="min-height: 100px; border: 1px dashed #ccc; border-radius: 5px; padding: 5px;">
                                 </div>
@@ -453,18 +453,24 @@
                                         class="text-muted" style="font-size:0.65em">1/2 NV</small></div>
                                 <span class="fs-5 text-muted">+</span>
                                 <div class="text-center position-relative">
-                                    <div class="d-flex align-items-center justify-content-center mb-1"><span
-                                            id="spellCDAttrVal" class="fs-5" style="color: #6f42c1;">0</span></div>
-                                    <select class="form-select text-center p-0 ps-2 fw-bold"
-                                        style="width: 60px; height: 30px; color: #6f42c1; border-color: #6f42c1; font-size: 0.8rem;"
-                                        id="spellCDAttrSelect" onchange="updateCalculations(); saveData()">
-                                        <option value="INT">INT</option>
-                                        <option value="SAB">SAB</option>
-                                        <option value="CAR">CAR</option>
-                                        <option value="CON">CON</option>
-                                        <option value="DES">DES</option>
-                                        <option value="FOR">FOR</option>
-                                    </select>
+                                    <!-- Adicionado justify-content-center abaixo -->
+                                    <div class="d-flex align-items-center justify-content-center mb-1">
+                                        <span id="spellCDAttrVal" class="fs-5" style="color: #6f42c1;">0</span>
+                                    </div>
+
+                                    <!-- Adicionado d-flex justify-content-center abaixo para o select -->
+                                    <div class="d-flex justify-content-center">
+                                        <select class="form-select text-center p-0 ps-2 fw-bold"
+                                            style="color:blue; width: 50px; appearance:none;-webkit-appearance:none;background-image:none;"
+                                            id="spellCDAttrSelect" onchange="updateCalculations(); saveData()">
+                                            <option value="INT">INT</option>
+                                            <option value="SAB">SAB</option>
+                                            <option value="CAR">CAR</option>
+                                            <option value="CON">CON</option>
+                                            <option value="DES">DES</option>
+                                            <option value="FOR">FOR</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <span class="fs-5 text-muted">+</span>
                                 <div class="text-center"><input type="number" inputmode="numeric"
@@ -580,7 +586,8 @@
                     <div class="bg-danger text-white fw-bold py-1 px-2 d-flex align-items-center justify-content-between"
                         style="cursor: pointer;">
                         <div class="d-flex align-items-center gap-2" onclick="event.stopPropagation()">
-                            <i class="bi bi-chevron-down me-1 text-white section-toggle" onclick="toggleSection('skillsSection')" style="cursor:pointer;"></i>
+                            <i class="bi bi-chevron-down me-1 text-white section-toggle"
+                                onclick="toggleSection('skillsSection')" style="cursor:pointer;"></i>
                             <span onclick="toggleSection('skillsSection')" style="cursor:pointer;">PERÍCIAS</span>
                             <select id="classSkillSelect" class="border-0 rounded px-1 fw-bold"
                                 style="font-size:0.7rem;background:rgba(255,255,255,0.2);color:#fff;cursor:pointer;outline:none;max-width:110px;"
@@ -603,7 +610,8 @@
                                 <option value="Paladino" style="color:#333;background:#fff;">Paladino</option>
                                 <option value="Treinador" style="color:#333;background:#fff;">Treinador</option>
                             </select>
-                            <span id="classSkillBadge" class="d-none rounded px-1" style="font-size:0.65rem;background:rgba(255,255,255,0.25);white-space:nowrap;"></span>
+                            <span id="classSkillBadge" class="d-none rounded px-1"
+                                style="font-size:0.65rem;background:rgba(255,255,255,0.25);white-space:nowrap;"></span>
                         </div>
                         <button id="btnGroupSkills" onclick="toggleSkillGrouping()" title="Agrupar por atributo"
                             class="btn btn-sm border-0 rounded px-2 py-0"
@@ -639,13 +647,16 @@
                         </span>
 
                         <div class="d-flex gap-2 align-items-center">
-                        <a href="https://nicholemos.github.io/itens/" target="_blank"
-                            class="btn btn-sm btn-outline-dark py-0" style="font-size: 0.75rem; border-radius: 20px;">
-                            <i class="bi bi-search"></i> Buscar Itens
-                        </a>
-                        <button onclick="importFromShop()" class="btn btn-sm btn-outline-secondary py-0" style="font-size: 0.75rem; border-radius: 20px;" title="Importar manualmente itens pendentes da loja">
-                            <i class="bi bi-box-arrow-in-down"></i> Sync Loja
-                        </button>
+                            <a href="https://nicholemos.github.io/itens/" target="_blank"
+                                class="btn btn-sm btn-outline-dark py-0"
+                                style="font-size: 0.75rem; border-radius: 20px;">
+                                <i class="bi bi-search"></i> Buscar Itens
+                            </a>
+                            <button onclick="importFromShop()" class="btn btn-sm btn-outline-secondary py-0"
+                                style="font-size: 0.75rem; border-radius: 20px;"
+                                title="Importar manualmente itens pendentes da loja">
+                                <i class="bi bi-box-arrow-in-down"></i> Sync Loja
+                            </button>
                         </div>
                     </div>
 
@@ -674,8 +685,8 @@
                             <div class="col-md-8 d-flex justify-content-end align-items-center gap-2 small flex-wrap">
                                 <span class="fw-bold">CARGA:</span>
                                 <select class="form-select form-select-sm fw-bold p-0 ps-1"
-                                    style="width: 60px; height: 30px;" id="loadAttrSelect"
-                                    onchange="updateCalculations(); saveData()">
+                                    style="width: 42px;appearance:none;-webkit-appearance:none;background-image:none;"
+                                    id="loadAttrSelect" onchange="updateCalculations(); saveData()">
                                     <option value="FOR">FOR</option>
                                     <option value="DES">DES</option>
                                     <option value="CON">CON</option>

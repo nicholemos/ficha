@@ -18,9 +18,9 @@ const defaultSkills = [
     { n: 'Cura', a: 'SAB' }, { n: 'Diplomacia', a: 'CAR' }, { n: 'Enganação', a: 'CAR' },
     { n: 'Fortitude', a: 'CON' }, { n: 'Furtividade', a: 'DES' }, { n: 'Guerra', a: 'INT' },
     { n: 'Iniciativa', a: 'DES' }, { n: 'Intimidação', a: 'CAR' }, { n: 'Intuição', a: 'SAB' },
-    { n: 'Investigação', a: 'INT' }, { n: 'Jogatina', a: 'CAR' }, { n: 'Ladinagem', a: 'DES' },{ n: 'Luta', a: 'FOR' },
+    { n: 'Investigação', a: 'INT' }, { n: 'Jogatina', a: 'CAR' }, { n: 'Ladinagem', a: 'DES' }, { n: 'Luta', a: 'FOR' },
     { n: 'Misticismo', a: 'INT' }, { n: 'Nobreza', a: 'INT' },
-    { n: 'Ofício', a: 'INT' }, { n: 'Ofício', a: 'INT' }, { n: 'Percepção', a: 'SAB' }, { n: 'Pilotagem', a: 'DES' },{ n: 'Pontaria', a: 'DES' },
+    { n: 'Ofício', a: 'INT' }, { n: 'Ofício', a: 'INT' }, { n: 'Percepção', a: 'SAB' }, { n: 'Pilotagem', a: 'DES' }, { n: 'Pontaria', a: 'DES' },
     { n: 'Reflexos', a: 'DES' }, { n: 'Religião', a: 'SAB' },
     { n: 'Sobrevivência', a: 'SAB' }, { n: 'Vontade', a: 'SAB' }
 ];
@@ -149,22 +149,22 @@ function updateAttr(attr, delta) {
 // --- RENDERIZAÇÃO DE PERÍCIAS (COM BOTÕES FLUTUANTES) ---
 // ── Perícias por Classe (T20) ───────────────────────────────────────────
 const CLASS_SKILLS = {
-    'Arcanista':  { total: 4,  skills: ['Misticismo', 'Vontade', 'Conhecimento', 'Diplomacia', 'Enganação', 'Guerra', 'Iniciativa', 'Intimidação', 'Intuição', 'Investigação', 'Nobreza', 'Ofício', 'Percepção'] },
-    'Bárbaro':    { total: 6,  skills: ['Adestramento', 'Atletismo', 'Cavalgar', 'Fortitude', 'Furtividade', 'Iniciativa', 'Intimidação', 'Luta', 'Ofício', 'Percepção', 'Pontaria', 'Sobrevivência', 'Vontade'] },
-    'Bardo':      { total: 8,  skills: ['Atuação', 'Reflexos', 'Acrobacia', 'Cavalgar', 'Conhecimento', 'Diplomacia', 'Enganação', 'Furtividade', 'Iniciativa', 'Intuição', 'Investigação', 'Jogatina', 'Ladinagem', 'Luta', 'Misticismo', 'Nobreza', 'Percepção', 'Pontaria', 'Vontade'] },
-    'Bucaneiro':  { total: 6,  skills: ['Luta', 'Reflexos', 'Pontaria', 'Acrobacia', 'Atletismo', 'Atuação', 'Enganação', 'Fortitude', 'Furtividade', 'Iniciativa', 'Intimidação', 'Jogatina', 'Ofício', 'Percepção', 'Pilotagem'] },
-    'Caçador':    { total: 8,  skills: ['Luta', 'Pontaria', 'Sobrevivência', 'Adestramento', 'Atletismo', 'Cavalgar', 'Cura', 'Fortitude', 'Furtividade', 'Iniciativa', 'Investigação', 'Ofício', 'Percepção', 'Reflexos'] },
-    'Cavaleiro':  { total: 4,  skills: ['Fortitude', 'Luta', 'Adestramento', 'Atletismo', 'Cavalgar', 'Diplomacia', 'Guerra', 'Iniciativa', 'Intimidação', 'Nobreza', 'Percepção', 'Vontade'] },
-    'Clérigo':    { total: 4,  skills: ['Religião', 'Vontade', 'Conhecimento', 'Cura', 'Diplomacia', 'Fortitude', 'Iniciativa', 'Intuição', 'Luta', 'Misticismo', 'Nobreza', 'Ofício', 'Percepção'] },
-    'Druida':     { total: 6,  skills: ['Sobrevivência', 'Vontade', 'Adestramento', 'Atletismo', 'Cavalgar', 'Conhecimento', 'Cura', 'Fortitude', 'Iniciativa', 'Intuição', 'Luta', 'Misticismo', 'Ofício', 'Percepção', 'Religião'] },
-    'Frade':      { total: 6,  skills: ['Religião', 'Vontade', 'Adestramento', 'Atuação', 'Conhecimento', 'Cura', 'Diplomacia', 'Fortitude', 'Guerra', 'Iniciativa', 'Intimidação', 'Intuição', 'Investigação', 'Misticismo', 'Nobreza', 'Ofício', 'Percepção'] },
-    'Guerreiro':  { total: 4,  skills: ['Luta', 'Pontaria', 'Fortitude', 'Adestramento', 'Atletismo', 'Cavalgar', 'Guerra', 'Iniciativa', 'Intimidação', 'Ofício', 'Percepção', 'Reflexos'] },
-    'Inventor':   { total: 6,  skills: ['Ofício', 'Vontade', 'Conhecimento', 'Cura', 'Diplomacia', 'Fortitude', 'Iniciativa', 'Investigação', 'Luta', 'Misticismo', 'Percepção', 'Pilotagem', 'Pontaria'] },
-    'Ladino':     { total: 10, skills: ['Ladinagem', 'Reflexos', 'Acrobacia', 'Atletismo', 'Atuação', 'Cavalgar', 'Conhecimento', 'Diplomacia', 'Enganação', 'Furtividade', 'Iniciativa', 'Intimidação', 'Intuição', 'Investigação', 'Jogatina', 'Luta', 'Ofício', 'Percepção', 'Pilotagem', 'Pontaria'] },
-    'Lutador':    { total: 6,  skills: ['Fortitude', 'Luta', 'Acrobacia', 'Adestramento', 'Atletismo', 'Enganação', 'Furtividade', 'Iniciativa', 'Intimidação', 'Ofício', 'Percepção', 'Pontaria', 'Reflexos'] },
-    'Nobre':      { total: 6,  skills: ['Diplomacia', 'Intimidação', 'Vontade', 'Adestramento', 'Atuação', 'Cavalgar', 'Conhecimento', 'Enganação', 'Fortitude', 'Guerra', 'Iniciativa', 'Intuição', 'Investigação', 'Jogatina', 'Luta', 'Nobreza', 'Ofício', 'Percepção', 'Pontaria'] },
-    'Paladino':   { total: 4,  skills: ['Luta', 'Vontade', 'Adestramento', 'Atletismo', 'Cavalgar', 'Cura', 'Diplomacia', 'Fortitude', 'Guerra', 'Iniciativa', 'Intuição', 'Nobreza', 'Percepção', 'Religião'] },
-    'Treinador':  { total: 6,  skills: ['Adestramento', 'Vontade', 'Atletismo', 'Cavalgar', 'Diplomacia', 'Guerra', 'Iniciativa', 'Intimidação', 'Intuição', 'Luta', 'Ofício', 'Percepção', 'Pontaria', 'Reflexos', 'Religião', 'Sobrevivência'] },
+    'Arcanista': { total: 4, skills: ['Misticismo', 'Vontade', 'Conhecimento', 'Diplomacia', 'Enganação', 'Guerra', 'Iniciativa', 'Intimidação', 'Intuição', 'Investigação', 'Nobreza', 'Ofício', 'Percepção'] },
+    'Bárbaro': { total: 6, skills: ['Adestramento', 'Atletismo', 'Cavalgar', 'Fortitude', 'Furtividade', 'Iniciativa', 'Intimidação', 'Luta', 'Ofício', 'Percepção', 'Pontaria', 'Sobrevivência', 'Vontade'] },
+    'Bardo': { total: 8, skills: ['Atuação', 'Reflexos', 'Acrobacia', 'Cavalgar', 'Conhecimento', 'Diplomacia', 'Enganação', 'Furtividade', 'Iniciativa', 'Intuição', 'Investigação', 'Jogatina', 'Ladinagem', 'Luta', 'Misticismo', 'Nobreza', 'Percepção', 'Pontaria', 'Vontade'] },
+    'Bucaneiro': { total: 6, skills: ['Luta', 'Reflexos', 'Pontaria', 'Acrobacia', 'Atletismo', 'Atuação', 'Enganação', 'Fortitude', 'Furtividade', 'Iniciativa', 'Intimidação', 'Jogatina', 'Ofício', 'Percepção', 'Pilotagem'] },
+    'Caçador': { total: 8, skills: ['Luta', 'Pontaria', 'Sobrevivência', 'Adestramento', 'Atletismo', 'Cavalgar', 'Cura', 'Fortitude', 'Furtividade', 'Iniciativa', 'Investigação', 'Ofício', 'Percepção', 'Reflexos'] },
+    'Cavaleiro': { total: 4, skills: ['Fortitude', 'Luta', 'Adestramento', 'Atletismo', 'Cavalgar', 'Diplomacia', 'Guerra', 'Iniciativa', 'Intimidação', 'Nobreza', 'Percepção', 'Vontade'] },
+    'Clérigo': { total: 4, skills: ['Religião', 'Vontade', 'Conhecimento', 'Cura', 'Diplomacia', 'Fortitude', 'Iniciativa', 'Intuição', 'Luta', 'Misticismo', 'Nobreza', 'Ofício', 'Percepção'] },
+    'Druida': { total: 6, skills: ['Sobrevivência', 'Vontade', 'Adestramento', 'Atletismo', 'Cavalgar', 'Conhecimento', 'Cura', 'Fortitude', 'Iniciativa', 'Intuição', 'Luta', 'Misticismo', 'Ofício', 'Percepção', 'Religião'] },
+    'Frade': { total: 6, skills: ['Religião', 'Vontade', 'Adestramento', 'Atuação', 'Conhecimento', 'Cura', 'Diplomacia', 'Fortitude', 'Guerra', 'Iniciativa', 'Intimidação', 'Intuição', 'Investigação', 'Misticismo', 'Nobreza', 'Ofício', 'Percepção'] },
+    'Guerreiro': { total: 4, skills: ['Luta', 'Pontaria', 'Fortitude', 'Adestramento', 'Atletismo', 'Cavalgar', 'Guerra', 'Iniciativa', 'Intimidação', 'Ofício', 'Percepção', 'Reflexos'] },
+    'Inventor': { total: 6, skills: ['Ofício', 'Vontade', 'Conhecimento', 'Cura', 'Diplomacia', 'Fortitude', 'Iniciativa', 'Investigação', 'Luta', 'Misticismo', 'Percepção', 'Pilotagem', 'Pontaria'] },
+    'Ladino': { total: 10, skills: ['Ladinagem', 'Reflexos', 'Acrobacia', 'Atletismo', 'Atuação', 'Cavalgar', 'Conhecimento', 'Diplomacia', 'Enganação', 'Furtividade', 'Iniciativa', 'Intimidação', 'Intuição', 'Investigação', 'Jogatina', 'Luta', 'Ofício', 'Percepção', 'Pilotagem', 'Pontaria'] },
+    'Lutador': { total: 6, skills: ['Fortitude', 'Luta', 'Acrobacia', 'Adestramento', 'Atletismo', 'Enganação', 'Furtividade', 'Iniciativa', 'Intimidação', 'Ofício', 'Percepção', 'Pontaria', 'Reflexos'] },
+    'Nobre': { total: 6, skills: ['Diplomacia', 'Intimidação', 'Vontade', 'Adestramento', 'Atuação', 'Cavalgar', 'Conhecimento', 'Enganação', 'Fortitude', 'Guerra', 'Iniciativa', 'Intuição', 'Investigação', 'Jogatina', 'Luta', 'Nobreza', 'Ofício', 'Percepção', 'Pontaria'] },
+    'Paladino': { total: 4, skills: ['Luta', 'Vontade', 'Adestramento', 'Atletismo', 'Cavalgar', 'Cura', 'Diplomacia', 'Fortitude', 'Guerra', 'Iniciativa', 'Intuição', 'Nobreza', 'Percepção', 'Religião'] },
+    'Treinador': { total: 6, skills: ['Adestramento', 'Vontade', 'Atletismo', 'Cavalgar', 'Diplomacia', 'Guerra', 'Iniciativa', 'Intimidação', 'Intuição', 'Luta', 'Ofício', 'Percepção', 'Pontaria', 'Reflexos', 'Religião', 'Sobrevivência'] },
 };
 
 let activeClassFilter = '';
@@ -189,7 +189,7 @@ function renderSkills() {
     const skillsContainer = document.getElementById('skillsList');
     if (!skillsContainer) return;
 
-    const classInfo    = activeClassFilter ? CLASS_SKILLS[activeClassFilter] : null;
+    const classInfo = activeClassFilter ? CLASS_SKILLS[activeClassFilter] : null;
     const classSkillSet = classInfo ? new Set(classInfo.skills) : null;
 
     // Ordem dos atributos para agrupamento
@@ -197,13 +197,13 @@ function renderSkills() {
     const ATTR_NAMES = { FOR: 'Força', DES: 'Destreza', CON: 'Constituição', INT: 'Inteligência', SAB: 'Sabedoria', CAR: 'Carisma' };
 
     function buildSkillRow(s, i) {
-        const attrOptions  = attrs.map(a => `<option value="${a}" ${s.a === a ? 'selected' : ''}>${a}</option>`).join('');
-        const isDefault    = defaultSkills.some(ds => ds.n === s.n && !s.isCustom);
+        const attrOptions = attrs.map(a => `<option value="${a}" ${s.a === a ? 'selected' : ''}>${a}</option>`).join('');
+        const isDefault = defaultSkills.some(ds => ds.n === s.n && !s.isCustom);
         const isTrainedOnly = TRAINED_ONLY_SKILLS.includes(s.n);
         const armorPenalty = ARMOR_PENALTY_SKILLS[s.n];
         const isClassSkill = classSkillSet && classSkillSet.has(s.n);
 
-        const rowBg   = isClassSkill ? 'style="background:rgba(220,53,69,0.08);"' : '';
+        const rowBg = isClassSkill ? 'style="background:rgba(220,53,69,0.08);"' : '';
         const classTag = isClassSkill
             ? `<span style="font-size:0.55rem;background:#dc3545;color:#fff;border-radius:3px;padding:0 3px;margin-left:2px;vertical-align:middle;">●</span>`
             : '';
@@ -397,21 +397,21 @@ function addAttack(data = null) {
             </div>
             <div class="col-4"><input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Ataque" value="${data ? data.name : ''}"></div>
             <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm inp-bonus fw-bold" placeholder="+0" value="${data ? data.bonus : ''}"></div>
-            <div class="col-2"><input type="text" class="form-control form-control-sm inp-dmg" placeholder="1d6" value="${data ? data.dmg : ''}"></div>
+            <div class="col-1"><input type="text" class="form-control form-control-sm inp-dmg" placeholder="1d6" value="${data ? data.dmg : ''}"></div>
             <div class="col-1"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-crit-range p-0" placeholder="20" value="${data ? (data.critRange || '20') : '20'}"></div>
             <div class="col-1"><input type="text" class="form-control form-control-sm text-center inp-crit p-0" placeholder="x2" value="${data ? data.crit : 'x2'}"></div>
+            <div class="col-1 d-flex align-items-end"><button class="btn btn-sm btn-danger w-100 py-0" onclick="removeAttack(this)"><i class="bi bi-trash"></i></button></div>
             <div class="col-1"><button class="btn btn-sm btn-outline-dark border-0 w-100 p-0" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button></div>
         </div>
         <div class="atk-details p-2 rounded d-none">
             <div class="row g-2 mb-2">
                 <div class="col-4"><label class="form-label-sm">PERÍCIA</label><select class="form-select form-select-sm border-0 border-bottom p-0 inp-atk-skill" onchange="updateCalculations()">${skillOptions}</select></div>
-                <div class="col-3"><label class="form-label-sm">BÔNUS ITEM</label><input type="number" inputmode="numeric" class="form-control form-control-sm border-0 border-bottom p-0 text-center inp-atk-mod" placeholder="+0" value="${data ? data.mod : ''}" oninput="updateCalculations()"></div>
+                <div class="col-3"><label class="form-label-sm">BÔNUSn EXTRAS</label><input type="number" inputmode="numeric" class="form-control form-control-sm border-0 border-bottom p-0 text-center inp-atk-mod" placeholder="+0" value="${data ? data.mod : ''}" oninput="updateCalculations()"></div>
                 <div class="col-3"><label class="form-label-sm">TIPO</label><input type="text" class="form-control form-control-sm text-center border-0 border-bottom inp-type" placeholder="Corte" value="${data ? data.type : ''}"></div>
                 <div class="col-2"><label class="form-label-sm">ALCANCE</label><input type="text" class="form-control form-control-sm text-center border-0 border-bottom inp-range" placeholder="Curto" value="${data ? data.range : ''}"></div>
             </div>
             <div class="row g-2">
-                <div class="col-10"><label class="form-label-sm">NOTAS</label><textarea class="form-control form-control-sm border-0 border-bottom inp-desc" rows="2" placeholder="Detalhes, efeitos, habilidades especiais...">${data ? (data.desc || '') : ''}</textarea></div>
-                <div class="col-2 d-flex align-items-end"><button class="btn btn-sm btn-danger w-100 py-0" onclick="removeAttack(this)"><i class="bi bi-trash"></i></button></div>
+                <div class="col-12"><label class="form-label-sm">NOTAS</label><textarea class="form-control form-control-sm border-0 border-bottom inp-desc" rows="2" placeholder="Detalhes, efeitos, habilidades especiais...">${data ? (data.desc || '') : ''}</textarea></div>
             </div>
         </div>`;
     container.appendChild(div); if (!data) saveData();
@@ -449,13 +449,13 @@ function addInventoryItem(data = null) {
     const container = document.getElementById('inventoryList'); if (!container) return;
     const div = document.createElement('div'); div.className = 'mb-2 inv-row border-bottom pb-1';
     const hasNote = data?.note?.trim();
-    const hasCombat  = !!(data?.combatData);
+    const hasCombat = !!(data?.combatData);
     const hasDefense = !!(data?.defenseData);
     const isImported = hasCombat || hasDefense;
-    if (data?.combatData)  div.dataset.combat  = JSON.stringify(data.combatData);
+    if (data?.combatData) div.dataset.combat = JSON.stringify(data.combatData);
     if (data?.defenseData) div.dataset.defense = JSON.stringify(data.defenseData);
 
-    const noteBtnIcon  = isImported ? 'bi-box-arrow-in-down' : 'bi-pencil-square';
+    const noteBtnIcon = isImported ? 'bi-box-arrow-in-down' : 'bi-pencil-square';
     const noteBtnClass = isImported ? 'text-primary' : (hasNote ? 'text-warning' : 'btn-outline-secondary');
     const noteBtnTitle = isImported ? 'Item importado da loja' : 'Anotação';
 
@@ -475,11 +475,11 @@ function addInventoryItem(data = null) {
         </div>
         <div class="item-note-area ${hasNote || isImported ? '' : 'd-none'} mt-1 px-1">
             ${hasCombat ? `<div class="d-flex align-items-center gap-2 mb-1 p-1 rounded" style="background:#eef4ff;border-left:3px solid #0d6efd;font-size:0.78rem;">
-                <span class="text-muted"><i class="bi bi-sword me-1"></i><strong>${data.combatData.dano}</strong> · crít ${data.combatData.critico} · ${data.combatData.tipo_dano||'—'}</span>
+                <span class="text-muted"><i class="bi bi-sword me-1"></i><strong>${data.combatData.dano}</strong> · crít ${data.combatData.critico} · ${data.combatData.tipo_dano || '—'}</span>
                 <button class="btn btn-sm btn-primary py-0 ms-auto" style="font-size:0.75rem;" onclick="pullToAttack(this)"><i class="bi bi-arrow-right-circle"></i> Ataques</button>
             </div>` : ''}
             ${hasDefense ? `<div class="d-flex align-items-center gap-2 mb-1 p-1 rounded" style="background:#efffef;border-left:3px solid #198754;font-size:0.78rem;">
-                <span class="text-muted"><i class="bi bi-shield-check me-1"></i>Defesa <strong>${data.defenseData.bonus}</strong> · Pen. ${data.defenseData.penalidade||'0'}</span>
+                <span class="text-muted"><i class="bi bi-shield-check me-1"></i>Defesa <strong>${data.defenseData.bonus}</strong> · Pen. ${data.defenseData.penalidade || '0'}</span>
                 <button class="btn btn-sm btn-success py-0 ms-auto" style="font-size:0.75rem;" onclick="pullToDefense(this)"><i class="bi bi-arrow-right-circle"></i> ${defLabel}</button>
             </div>` : ''}
             <textarea class="form-control form-control-sm inp-note" rows="2" placeholder="Anotação sobre este item..." oninput="saveData()">${data?.note || ''}</textarea>
@@ -524,7 +524,7 @@ function claimShopQueue() {
     const raw = localStorage.getItem('t20_sheet_queue');
     if (!raw) return;
     let queue;
-    try { queue = JSON.parse(raw); } catch(e) { return; }
+    try { queue = JSON.parse(raw); } catch (e) { return; }
     if (!queue.length) return;
     // Remove primeiro — se outra aba chegar ao mesmo tempo, ela vai encontrar null
     localStorage.removeItem('t20_sheet_queue');
@@ -582,19 +582,19 @@ function pullToDefense(btn) {
     const isShield = String(dd.tipo).toLowerCase().includes('escudo');
 
     if (isShield) {
-        const nameEl   = document.getElementById('shieldName');
-        const bonusEl  = document.getElementById('shieldBonus');
-        const penEl    = document.getElementById('shieldPenalty');
-        if (nameEl)  nameEl.value  = dd.nome;
+        const nameEl = document.getElementById('shieldName');
+        const bonusEl = document.getElementById('shieldBonus');
+        const penEl = document.getElementById('shieldPenalty');
+        if (nameEl) nameEl.value = dd.nome;
         if (bonusEl) bonusEl.value = bonusNum;
-        if (penEl)   penEl.value   = penAbs;
+        if (penEl) penEl.value = penAbs;
     } else {
-        const nameEl   = document.getElementById('armorName');
-        const bonusEl  = document.getElementById('armorBonus');
-        const penEl    = document.getElementById('armorPenalty');
-        if (nameEl)  nameEl.value  = dd.nome;
+        const nameEl = document.getElementById('armorName');
+        const bonusEl = document.getElementById('armorBonus');
+        const penEl = document.getElementById('armorPenalty');
+        if (nameEl) nameEl.value = dd.nome;
         if (bonusEl) bonusEl.value = bonusNum;
-        if (penEl)   penEl.value   = penAbs;
+        if (penEl) penEl.value = penAbs;
     }
 
     updateCalculations();
@@ -1792,7 +1792,7 @@ function uploadImage(input) {
 // Carregar imagem e posição salvas
 document.addEventListener('DOMContentLoaded', () => {
     const savedImage = localStorage.getItem('charImage');
-    const savedPos   = localStorage.getItem('charImagePos');
+    const savedPos = localStorage.getItem('charImagePos');
     if (savedImage) {
         const img = document.getElementById('charImgPreview');
         if (img) {
