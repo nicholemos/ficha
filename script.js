@@ -81,8 +81,6 @@ window.onload = () => {
 
     setTimeout(updateCalculations, 100);
     setTimeout(checkImportedPowers, 400);
-    // Verifica fila da loja ao abrir a ficha (para itens adicionados antes de abrir)
-    setTimeout(() => claimShopQueue(), 600);
 };
 
 function renderStructure() {
@@ -535,12 +533,6 @@ function claimShopQueue() {
 }
 
 // Escuta mudanças no localStorage vindas de outras abas (loja → ficha)
-window.addEventListener('storage', (e) => {
-    if (e.key === 't20_sheet_queue' && e.newValue) {
-        claimShopQueue();
-    }
-});
-
 // ── Botão "→ Ataques" ──────────────────────────────────────────────────
 // Converte o campo "critico" do banco (ex: "19", "x3", "19/x3") em {critRange, crit}
 function parseCritico(critico) {
