@@ -45,6 +45,18 @@
                     <input type="file" id="fileInput" style="display:none;" accept=".json" onchange="importSheet(this)">
                     <button class="btn btn-outline-danger btn-sm fw-bold" onclick="clearSheet()" title="Apagar tudo"><i
                             class="bi bi-trash-fill"></i></button>
+                    <div class="vr mx-1"></div>
+                    <button class="btn btn-outline-warning btn-sm fw-bold" onclick="exportRoll20()"
+                        title="Exportar ficha no formato Roll20 (JdA)">
+                        <i class="bi bi-dice-5-fill"></i> Roll20 ↓
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm"
+                        onclick="document.getElementById('fileInputRoll20').click()"
+                        title="Importar ficha exportada do Roll20 (JdA)">
+                        <i class="bi bi-dice-5-fill"></i> Roll20 ↑
+                    </button>
+                    <input type="file" id="fileInputRoll20" style="display:none;" accept=".json"
+                        onchange="importRoll20(this)">
                 </div>
 
                 <!-- Botões da AMEAÇA (ocultos por padrão) -->
@@ -85,7 +97,7 @@
                     <i class="bi bi-skull"></i> Ficha de Ameaça
                 </button>
                 <button class="btn btn-sm btn-outline-warning" id="btnViewMods" onclick="toggleFichaView('mods')">
-                    <i class="bi bi-lightning-charge-fill"></i> Modificadores
+                    <i class="bi bi-lightning-charge-fill"></i> Modificadores e Parceiros
                 </button>
             </div>
 
@@ -114,22 +126,25 @@
 
                 <div class="col-md-9 col-data">
                     <div class="row g-2 mb-2 align-items-end">
-                        <div class="col-md-8"><label class="t20-label">Personagem</label><input type="text"
+                        <div class="col-md-5"><label class="t20-label">Personagem</label><input type="text"
                                 class="form-control t20-input text-center" id="charName" oninput="saveData()"></div>
                         <div class="col-md-4"><label class="t20-label">Jogador(a)</label><input type="text"
                                 class="form-control t20-input text-center" id="playerName" oninput="saveData()"></div>
+                        <div class="col-md-3"><label class="t20-label">Raça</label><input type="text"
+                                class="form-control t20-input text-center" id="charRace" oninput="saveData()"></div>
                     </div>
 
                     <div class="header-extra">
                         <div class="row g-2">
-                            <div class="col-md-2"><label class="t20-label">Raça</label><input type="text"
-                                    class="form-control t20-input text-center" id="charRace" oninput="saveData()"></div>
                             <div class="col-md-2"><label class="t20-label">Origem</label><input type="text"
                                     class="form-control t20-input text-center" id="charOrigin" oninput="saveData()">
                             </div>
-                            <div class="col-md-4"><label class="t20-label">Classe(s)</label><input type="text"
+                            <div class="col-md-3"><label class="t20-label">Classe(s)</label><input type="text"
                                     class="form-control t20-input text-center" id="charClass"
                                     placeholder="Ex: Guerreiro 3" oninput="saveData()"></div>
+                            <div class="col-md-3"><label class="t20-label">Distinção</label><input type="text"
+                                    class="form-control t20-input text-center" id="charDistinction"
+                                    oninput="saveData()"></div>
                             <div class="col-md-1"><label class="t20-label">Nível</label><input type="number"
                                     inputmode="numeric"
                                     class="form-control t20-input text-center fw-bold text-danger p-1"
@@ -207,13 +222,16 @@
                     <span class="t20-section-title" onclick="toggleSection('attacksSection')">
                         <i class="bi bi-chevron-down section-toggle"></i>ATAQUES
                     </span>
-                    <div class="row fw-bold small text-center border-bottom border-dark pb-2 mb-2 mx-1 atk-header-row">
-                        <div class="col-1"><i class="bi bi-sword fs-5"></i></div>
-                        <div class="col-4 text-start">ATAQUE</div>
-                        <div class="col-2">BÔNUS</div>
-                        <div class="col-2">DANO</div>
-                        <div class="col-2 p-0">MARGEM / CRÍT.</div>
-                        <div class="col-1"></div>
+                    <div class="row fw-bold small text-center border-bottom border-dark pb-1 mb-2 mx-0"
+                        style="font-size: 0.65rem;">
+                        <div class="col-1 p-0"></div>
+                        <div class="col-3 p-0 text-start">ATAQUE</div>
+                        <div class="col-1 p-0">BÔNUS</div>
+                        <div class="col-2 p-0">DANO</div>
+                        <div class="col-1 p-0" title="Dano Extra">DANO EX.</div>
+                        <div class="col-1 p-0" title="Dados Extras">DADOS EX.</div>
+                        <div class="col-2 p-0">CRÍTICO</div>
+                        <div class="col-1 p-0"></div>
                     </div>
                     <div id="attacksList" class="mb-3"></div>
                     <button class="btn btn-dark w-100 fw-bold btn-add" onclick="addAttack()"><i
@@ -661,11 +679,13 @@
                     </div>
 
                     <div class="inv-content">
-                        <div class="row fw-bold small text-center border-bottom border-dark pb-2 mb-2 mx-1">
-                            <div class="col-6 text-start">ITEM</div>
-                            <div class="col-2">QTD</div>
-                            <div class="col-2">ESPAÇOS</div>
-                            <div class="col-2"></div>
+                        <div class="row fw-bold small text-center border-bottom border-dark pb-1 mb-2 mx-0"
+                            style="font-size: 0.7rem;">
+                            <div class="col-2 p-0" title="Item vestido/equipado?">Vestido</div>
+                            <div class="col-4 text-start p-0">EQUIPAMENTOS</div>
+                            <div class="col-2 p-0">QTD.</div>
+                            <div class="col-2 p-0">ESPAÇOS</div>
+                            <div class="col-2 p-0"></div>
                         </div>
 
                         <div id="inventoryList" class="mb-3"></div>
@@ -675,44 +695,74 @@
                         </button>
 
                         <div class="row align-items-center bg-light rounded p-2 border mx-0">
-                            <div class="col-md-4 d-flex align-items-center gap-2">
-                                <span class="fw-bold text-warning text-shadow"
-                                    style="text-shadow: 1px 1px 0 #000;">T$</span>
-                                <input type="number" inputmode="numeric" class="form-control form-control-sm fw-bold"
-                                    id="charCash" placeholder="0" oninput="saveData()">
-                            </div>
-
-                            <div class="col-md-8 d-flex justify-content-end align-items-center gap-2 small flex-wrap">
-                                <span class="fw-bold">CARGA:</span>
-                                <select class="form-select form-select-sm fw-bold p-0 ps-1"
-                                    style="width: 42px;appearance:none;-webkit-appearance:none;background-image:none;"
-                                    id="loadAttrSelect" onchange="updateCalculations(); saveData()">
-                                    <option value="FOR">FOR</option>
-                                    <option value="DES">DES</option>
-                                    <option value="CON">CON</option>
-                                    <option value="INT">INT</option>
-                                    <option value="SAB">SAB</option>
-                                    <option value="CAR">CAR</option>
-                                </select>
-
-                                <div class="input-group input-group-sm" style="width: 150px;">
-                                    <span class="input-group-text bg-white fw-bold" id="loadCurrent">0</span>
-                                    <span class="input-group-text">/</span>
-                                    <span class="input-group-text bg-white text-muted" id="loadLimit">10</span>
+                            <div class="d-flex flex-column gap-2 w-100 p-0">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 w-100">
+                                    <div class="d-flex align-items-center gap-1 small">
+                                        <span class="fw-bold">CARGA:</span>
+                                        <select class="form-select form-select-sm fw-bold p-0 ps-1 text-center"
+                                            style="width: 45px;appearance:none;-webkit-appearance:none;background-image:none;"
+                                            id="loadAttrSelect" onchange="updateCalculations(); saveData()">
+                                            <option value="FOR">FOR</option>
+                                            <option value="DES">DES</option>
+                                            <option value="CON">CON</option>
+                                            <option value="INT">INT</option>
+                                            <option value="SAB">SAB</option>
+                                            <option value="CAR">CAR</option>
+                                        </select>
+                                        <div class="input-group input-group-sm flex-nowrap"
+                                            style="width: auto; min-width: 90px;">
+                                            <span
+                                                class="input-group-text bg-white fw-bold px-2 justify-content-center flex-grow-1"
+                                                id="loadCurrent">0</span>
+                                            <span class="input-group-text px-1">/</span>
+                                            <span
+                                                class="input-group-text bg-white text-muted px-2 justify-content-center flex-grow-1"
+                                                id="loadLimit">10</span>
+                                        </div>
+                                    </div>
+                                    <div class="input-group input-group-sm flex-nowrap"
+                                        style="width: auto; min-width: 140px;" title="Bônus de slots">
+                                        <span class="input-group-text bg-secondary text-white px-2"
+                                            style="font-size:0.7rem;">Alt. Slots</span>
+                                        <button class="btn btn-outline-secondary btn-sm px-2" type="button"
+                                            onclick="changeArmorLoadBonus(-1)">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                        <span
+                                            class="input-group-text bg-white fw-bold px-2 justify-content-center flex-grow-1"
+                                            id="armorLoadBonusDisplay">0</span>
+                                        <button class="btn btn-outline-secondary btn-sm px-2" type="button"
+                                            onclick="changeArmorLoadBonus(1)">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="input-group input-group-sm" style="width: 180px;" title="Bônus de slots">
-                                    <span class="input-group-text bg-secondary text-white p-0 px-1"
-                                        style="font-size:0.65rem;">Alteração em Slots</span>
-                                    <button class="btn btn-outline-secondary btn-sm p-0 px-1" type="button"
-                                        onclick="changeArmorLoadBonus(-1)">
-                                        <i class="bi bi-dash"></i>
-                                    </button>
-                                    <span class="input-group-text bg-white fw-bold p-0 px-1" id="armorLoadBonusDisplay"
-                                        style="width: 36px; align-items: center;">0</span>
-                                    <button class="btn btn-outline-secondary btn-sm p-0 px-1" type="button"
-                                        onclick="changeArmorLoadBonus(1)">
-                                        <i class="bi bi-plus"></i>
-                                    </button>
+
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 w-100">
+                                    <div class="input-group input-group-sm flex-nowrap"
+                                        style="width: auto; min-width: 100px;" title="Total de itens vestidos">
+                                        <span class="input-group-text bg-secondary text-white px-2"
+                                            style="font-size:0.7rem;">Vestidos</span>
+                                        <span
+                                            class="input-group-text bg-white fw-bold px-3 justify-content-center flex-grow-1"
+                                            id="equippedCountDisplay">0</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="d-flex align-items-center gap-1">
+                                            <span class="fw-bold text-warning text-shadow"
+                                                style="text-shadow: 1px 1px 0 #000;">T$</span>
+                                            <input type="number" inputmode="numeric"
+                                                class="form-control form-control-sm fw-bold rounded" id="charCash"
+                                                placeholder="0" oninput="saveData()" style="width: 80px;">
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <span class="fw-bold text-warning text-shadow"
+                                                style="text-shadow: 1px 1px 0 #000;">TO</span>
+                                            <input type="number" inputmode="numeric"
+                                                class="form-control form-control-sm fw-bold rounded" id="charCashTO"
+                                                placeholder="0" oninput="saveData()" style="width: 80px;">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

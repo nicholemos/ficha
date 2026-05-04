@@ -389,17 +389,23 @@ function addAttack(data = null) {
 
     div.innerHTML = `
         <div class="row g-1 align-items-center text-center atk-summary mb-2">
-            <div class="col-1 d-flex align-items-center justify-content-center">
+            <div class="col-1 d-flex align-items-center justify-content-center p-0">
                 <i class="bi bi-grip-vertical drag-handle me-1"></i>
                 <i class="bi bi-sword fs-5 dice-roller text-danger" onclick="rollAttack(this)" title="Rolar"></i>
             </div>
-            <div class="col-4"><input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Ataque" value="${data ? data.name : ''}"></div>
-            <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm inp-bonus fw-bold" placeholder="+0" value="${data ? data.bonus : ''}"></div>
-            <div class="col-1"><input type="text" class="form-control form-control-sm inp-dmg" placeholder="1d6" value="${data ? data.dmg : ''}"></div>
-            <div class="col-1"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-crit-range p-0" placeholder="20" value="${data ? (data.critRange || '20') : '20'}"></div>
-            <div class="col-1"><input type="text" class="form-control form-control-sm text-center inp-crit p-0" placeholder="x2" value="${data ? data.crit : 'x2'}"></div>
-            <div class="col-1 d-flex align-items-end"><button class="btn btn-sm btn-danger w-100 py-0" onclick="removeAttack(this)"><i class="bi bi-trash"></i></button></div>
-            <div class="col-1"><button class="btn btn-sm btn-outline-dark border-0 w-100 p-0" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button></div>
+            <div class="col-3 p-0 pe-1"><input type="text" class="form-control form-control-sm inp-name text-start" placeholder="Ataque" value="${data ? data.name : ''}"></div>
+            <div class="col-1 p-0 pe-1"><input type="number" inputmode="numeric" class="form-control form-control-sm inp-bonus fw-bold text-center px-1" placeholder="+0" value="${data ? data.bonus : ''}"></div>
+            <div class="col-2 p-0 pe-1"><input type="text" class="form-control form-control-sm inp-dmg text-center px-1" placeholder="1d6" value="${data ? data.dmg : ''}"></div>
+            <div class="col-1 p-0 pe-1"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center px-1 inp-dmg-extra" placeholder="+0" value="${data ? (data.dmgExtra || '') : ''}" title="Dano Extra Fixo"></div>
+            <div class="col-1 p-0 pe-1"><input type="text" class="form-control form-control-sm text-center px-1 inp-dice-extra" placeholder="+1d8" value="${data ? (data.diceExtra || '') : ''}" title="Dados Extras"></div>
+            <div class="col-2 d-flex p-0 pe-1 gap-1">
+                <input type="number" inputmode="numeric" class="form-control form-control-sm text-center px-1 w-50 inp-crit-range" placeholder="20" value="${data ? (data.critRange || '20') : '20'}">
+                <input type="text" class="form-control form-control-sm text-center px-1 w-50 inp-crit" placeholder="x2" value="${data ? data.crit : 'x2'}">
+            </div>
+            <div class="col-1 d-flex p-0 gap-1">
+                <button class="btn btn-sm btn-danger p-0 w-50" onclick="removeAttack(this)"><i class="bi bi-trash"></i></button>
+                <button class="btn btn-sm btn-outline-dark border-0 p-0 w-50" onclick="toggleDetail(this)"><i class="bi bi-chevron-down"></i></button>
+            </div>
         </div>
         <div class="atk-details p-2 rounded d-none">
             <div class="row g-2 mb-2">
@@ -462,11 +468,14 @@ function addInventoryItem(data = null) {
 
     div.innerHTML = `
         <div class="row g-1 align-items-center">
-            <div class="col-1 text-center"><i class="bi bi-grip-vertical drag-handle"></i></div>
-            <div class="col-4"><input type="text" class="form-control form-control-sm fw-bold inp-name" placeholder="Item" value="${data ? data.name : ''}"></div>
-            <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-qtd" placeholder="1" value="${data ? data.qtd : '1'}" oninput="updateCalculations()"></div>
-            <div class="col-2"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-slots" placeholder="0" value="${data ? data.slots : '0'}" step="0.5" oninput="updateCalculations()"></div>
-            <div class="col-3 text-center d-flex gap-1 justify-content-center">
+            <div class="col-2 d-flex align-items-center justify-content-center gap-1 p-0">
+                <i class="bi bi-grip-vertical drag-handle"></i>
+                <input class="form-check-input mt-0 inp-equipped border-secondary" type="checkbox" onchange="calcLoad(); saveData()" ${data && data.equipped ? 'checked' : ''} title="Equipado/Vestido">
+            </div>
+            <div class="col-4 p-0"><input type="text" class="form-control form-control-sm fw-bold inp-name" placeholder="Item" value="${data ? data.name : ''}"></div>
+            <div class="col-2 p-0 pe-1"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-qtd" placeholder="1" value="${data ? data.qtd : '1'}" oninput="updateCalculations()"></div>
+            <div class="col-2 p-0 pe-1"><input type="number" inputmode="numeric" class="form-control form-control-sm text-center inp-slots" placeholder="0" value="${data ? data.slots : '0'}" step="0.5" oninput="updateCalculations()"></div>
+            <div class="col-2 text-center d-flex gap-1 justify-content-center p-0">
                 <button class="btn btn-sm border-0 item-note-btn ${noteBtnClass}" onclick="toggleItemNote(this)" title="${noteBtnTitle}"><i class="bi ${noteBtnIcon}"></i></button>
                 <button class="btn btn-sm btn-outline-danger border-0" onclick="removeInventoryItem(this)"><i class="bi bi-trash"></i></button>
             </div>
@@ -749,9 +758,11 @@ function calcLoad() {
     const totalSlots = baseLimit + currentLoadBonus + currentArmorLoadBonus;
 
     const currentSlots = Array.from(document.querySelectorAll('#inventoryList .inv-row .inp-slots')).reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
+    const equippedCount = Array.from(document.querySelectorAll('#inventoryList .inv-row .inp-equipped')).reduce((sum, chk) => sum + (chk.checked ? 1 : 0), 0);
 
     setText('loadCurrent', currentSlots.toFixed(1));
     setText('loadLimit', totalSlots);
+    if(document.getElementById('equippedCountDisplay')) document.getElementById('equippedCountDisplay').innerText = equippedCount;
 }
 // --- FIM NOVAS FUNÇÕES DE CARGA ---
 
@@ -974,6 +985,7 @@ function saveData() {
         charRace: getVal('charRace'),
         charOrigin: getVal('charOrigin'),
         charClass: getVal('charClass'),
+        charDistinction: getVal('charDistinction'),
         charLevel: getVal('charLevel'),
         charDeity: getVal('charDeity'),
 
@@ -982,7 +994,8 @@ function saveData() {
             size: getVal('charSize'),
             speed: getVal('charSpeed'),
             xp: getVal('charXP'),
-            cash: getVal('charCash')
+            cash: getVal('charCash'),
+            cashTO: getVal('charCashTO')
         },
 
         attrs: {}, // Preenchido logo abaixo
@@ -1067,6 +1080,8 @@ function saveData() {
             name: row.querySelector('.inp-name').value,
             bonus: row.querySelector('.inp-bonus').value,
             dmg: row.querySelector('.inp-dmg').value,
+            dmgExtra: row.querySelector('.inp-dmg-extra')?.value || '',
+            diceExtra: row.querySelector('.inp-dice-extra')?.value || '',
             critRange: row.querySelector('.inp-crit-range').value,
             crit: row.querySelector('.inp-crit').value,
             skill: row.querySelector('.inp-atk-skill').value,
@@ -1080,6 +1095,7 @@ function saveData() {
     // Inventário
     document.querySelectorAll('#inventoryList .inv-row').forEach(row => {
         data.inventory.push({
+            equipped: row.querySelector('.inp-equipped')?.checked || false,
             name: row.querySelector('.inp-name').value,
             qtd: row.querySelector('.inp-qtd').value,
             slots: row.querySelector('.inp-slots').value,
@@ -1193,6 +1209,10 @@ function loadData() {
         if (data.charRace) document.getElementById('charRace').value = data.charRace;
         if (data.charOrigin) document.getElementById('charOrigin').value = data.charOrigin;
         if (data.charClass) document.getElementById('charClass').value = data.charClass;
+        if (data.charDistinction) {
+            const distEl = document.getElementById('charDistinction');
+            if (distEl) distEl.value = data.charDistinction;
+        }
         if (data.charLevel) document.getElementById('charLevel').value = data.charLevel;
         if (data.charDeity) document.getElementById('charDeity').value = data.charDeity;
 
@@ -1203,6 +1223,7 @@ function loadData() {
             if (data.extras.speed) document.getElementById('charSpeed').value = data.extras.speed;
             if (data.extras.xp) { document.getElementById('charXP').value = data.extras.xp; autoLevelFromXP(); }
             if (data.extras.cash) document.getElementById('charCash').value = data.extras.cash;
+            if (data.extras.cashTO) document.getElementById('charCashTO').value = data.extras.cashTO;
         }
 
         // --- ATRIBUTOS ---
@@ -1829,7 +1850,9 @@ function copyToClipboard() {
     };
 
     let resumo = `**Nome:** ${nome}\n`;
-    resumo += `**Raça:** ${raca} | **Classe:** ${classe} ND ${nivel}\n`;
+    const distincao = document.getElementById('charDistinction')?.value || '';
+    const classeTexto = distincao ? `${classe} / ${distincao}` : classe;
+    resumo += `**Raça:** ${raca} | **Classe:** ${classeTexto} ND ${nivel}\n`;
     resumo += `**Devoto:** ${divindade}\n`;
     resumo += `------------------------------------------------\n`;
 
@@ -1865,7 +1888,11 @@ function copyToClipboard() {
             const n = row.querySelector('.inp-name').value || 'Ataque';
             const bValue = parseInt(row.querySelector('.inp-bonus').value) || 0;
             const bFormatado = bValue >= 0 ? `+${bValue}` : bValue;
-            const d = row.querySelector('.inp-dmg').value || '-';
+            let d = row.querySelector('.inp-dmg').value || '-';
+            const dex = row.querySelector('.inp-dice-extra')?.value || '';
+            const dx = row.querySelector('.inp-dmg-extra')?.value || '';
+            if (dex && dex !== '0') d += (d !== '-' ? ' + ' : '') + dex;
+            if (dx && dx !== '0') d += (d !== '-' ? ' + ' : '') + dx;
             const cr = row.querySelector('.inp-crit-range').value || '20';
             const c = row.querySelector('.inp-crit').value || '-';
             resumo += `▫️ ${n} ${bFormatado} (${d}, ${cr}/${c})\n`;
@@ -1891,6 +1918,21 @@ function copyToClipboard() {
         resumo += `▫️ ${poderes.join(' ▫️ ')}\n\n`;
     }
 
+    // Parceiros
+    let listaParceiros = [];
+    document.querySelectorAll('#mod-parceiros-list .mod-parceiro-row').forEach(row => {
+        const nomeParceiro = row.querySelector('.mod-par-nome')?.value;
+        const tipoParceiro = row.querySelector('.mod-par-tipo')?.value;
+        if (nomeParceiro) {
+            listaParceiros.push(`${nomeParceiro}${tipoParceiro ? ` (${tipoParceiro})` : ''}`);
+        }
+    });
+
+    if (listaParceiros.length > 0) {
+        resumo += `🤝 **PARCEIROS E ALIADOS:**\n`;
+        resumo += `▫️ ${listaParceiros.join(' ▫️ ')}\n\n`;
+    }
+
     // Magias
     const temMagias = document.querySelectorAll('.spell-row .inp-name').length > 0;
     if (temMagias) {
@@ -1908,17 +1950,35 @@ function copyToClipboard() {
         resumo += `\n`;
     }
 
-    // Equipamentos (Versão "Inline" para economizar espaço)
+    // Equipamentos (Versão separada para Vestidos)
     const itens = document.querySelectorAll('#inventoryList .inv-row');
     if (itens.length > 0) {
-        resumo += `🎒 **EQUIPAMENTO:**\n`;
-        let listaItens = [];
+        let listaVestidos = [];
+        let listaEquipamentos = [];
+        
         itens.forEach(row => {
             const nomeItem = row.querySelector('.inp-name').value;
             const qtd = row.querySelector('.inp-qtd').value || '1';
-            if (nomeItem) listaItens.push(`${nomeItem} (x${qtd})`);
+            const isEquipped = row.querySelector('.inp-equipped')?.checked;
+            
+            if (nomeItem) {
+                if (isEquipped) {
+                    listaVestidos.push(`▫️ ${nomeItem} (x${qtd})`);
+                } else {
+                    listaEquipamentos.push(`${nomeItem} (x${qtd})`);
+                }
+            }
         });
-        resumo += `▫️ ${listaItens.join(' ▫️ ')}\n`;
+
+        if (listaVestidos.length > 0) {
+            resumo += `👕 **VESTINDO:**\n`;
+            resumo += `${listaVestidos.join('\n')}\n`;
+        }
+        
+        if (listaEquipamentos.length > 0) {
+            resumo += `🎒 **EQUIPAMENTO:**\n`;
+            resumo += `▫️ ${listaEquipamentos.join(' ▫️ ')}\n`;
+        }
     }
 
     resumo += `------------------------------------------------\n`;
@@ -2017,7 +2077,12 @@ async function exportarParaPDF() {
                 const n = i + 1;
                 form.getTextField(`Ataque ${n}`).setText(atk.name || '');
                 form.getTextField(`Bonus do ataque ${n}`).setText(atk.bonus || '');
-                form.getTextField(`Dano causado pelo ataque ${n}`).setText(atk.dmg || '');
+                
+                let fullDmg = atk.dmg || '';
+                if (atk.diceExtra && atk.diceExtra !== '0') fullDmg += (fullDmg ? ' + ' : '') + atk.diceExtra;
+                if (atk.dmgExtra && atk.dmgExtra !== '0') fullDmg += (fullDmg ? ' + ' : '') + atk.dmgExtra;
+                
+                form.getTextField(`Dano causado pelo ataque ${n}`).setText(fullDmg);
                 form.getTextField(`Margem de cr#C3#ADtico e multiplicador ${n}`).setText(`${atk.critRange}/${atk.crit}`);
                 form.getTextField(`Tipo de dano do ataque ${n}`).setText(atk.type || '');
                 form.getTextField(`Alcance do ataque ${n}`).setText(atk.range || '');
@@ -3179,4 +3244,477 @@ function atualizarHudMods() {
         hud.classList.remove('d-none');
         hud.innerHTML = partes.join('');
     }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ROLL20 IMPORT / EXPORT — Compatível com a sheet JdA do Roll20
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Mapeamento: chave Roll20 → nome interno de perícia
+const R20_SKILL_MAP = {
+    acrobacia: 'Acrobacia', adestramento: 'Adestramento', atletismo: 'Atletismo',
+    atuacao: 'Atuação', cavalgar: 'Cavalgar', conhecimento: 'Conhecimento',
+    cura: 'Cura', diplomacia: 'Diplomacia', enganacao: 'Enganação',
+    fortitude: 'Fortitude', furtividade: 'Furtividade', guerra: 'Guerra',
+    iniciativa: 'Iniciativa', intimidacao: 'Intimidação', intuicao: 'Intuição',
+    investigacao: 'Investigação', jogatina: 'Jogatina', ladinagem: 'Ladinagem',
+    luta: 'Luta', misticismo: 'Misticismo', nobreza: 'Nobreza',
+    percepcao: 'Percepção', pilotagem: 'Pilotagem', pontaria: 'Pontaria',
+    reflexos: 'Reflexos', religiao: 'Religião', sobrevivencia: 'Sobrevivência',
+    vontade: 'Vontade'
+};
+const SKILL_TO_R20 = {};
+Object.entries(R20_SKILL_MAP).forEach(([k, v]) => SKILL_TO_R20[v] = k);
+
+// Condições: diferenças de nomenclatura entre Roll20 e interno
+const R20_COND_MAP = {
+    abalado: 'abalado', agarrado: 'agarrado', alquebrado: 'alquebrado',
+    apavorado: 'apavorado', atordoado: 'atordoado', caido: 'caido',
+    cego: 'cego', confuso: 'confuso', debilitado: 'debilitado',
+    desprevenido: 'desprevenido', doente: 'doente',
+    emchama: 'em_chamas',           // Roll20 usa "emchama", interno usa "em_chamas"
+    enfeiticado: 'enfeiticado',
+    enjoado: 'enjoado',
+    enreado: 'enredado',            // Roll20 usa "enreado", interno usa "enredado"
+    envenenado: 'envenenado', esmorecido: 'esmorecido', exausto: 'exausto',
+    fascinado: 'fascinado', fatigado: 'fatigado', fraco: 'fraco',
+    frustrado: 'frustrado', imovel: 'imovel', inconsciente: 'inconsciente',
+    indefeso: 'indefeso', lento: 'lento', ofuscado: 'ofuscado',
+    paralizado: 'paralisado',       // Roll20 usa "paralizado", interno usa "paralisado"
+    pasmo: 'pasmo', petrificacao: 'petrificacao', sangrando: 'sangrando',
+    surdo: 'surdo', surpreendido: 'surpreendido', vulneravel: 'vulneravel'
+};
+const COND_TO_R20 = {};
+Object.entries(R20_COND_MAP).forEach(([r20, int]) => COND_TO_R20[int] = r20);
+
+// Helpers
+function r20AttrToKey(str) {
+    if (!str) return '';
+    const m = String(str).match(/(\w+)_mod/);
+    return m ? m[1].toUpperCase() : '';
+}
+
+function r20SkillFormToName(formula) {
+    if (!formula) return '';
+    const m = String(formula).match(/@\{(\w+)total\}/);
+    if (!m) return '';
+    return R20_SKILL_MAP[m[1]] || '';
+}
+
+function r20MultToCrit(mult) { return `x${parseInt(mult) || 2}`; }
+function critToR20Mult(crit) {
+    const m = String(crit || '2').match(/(\d+)/);
+    return m ? m[1] : '2';
+}
+
+// ── IMPORTAR DO ROLL20 ────────────────────────────────────────────────────
+function importRoll20(input) {
+    const file = input.files[0];
+    if (!file) return;
+    input.value = '';
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const r = JSON.parse(e.target.result);
+
+            // Verifica se é uma ficha Roll20 JdA
+            if (!r.isJDA && !('trace' in r) && !('for' in r)) {
+                alert('⚠️ Este arquivo não parece ser uma ficha exportada do Roll20 (JdA).\n\nPara importar um backup da sua ficha digital, use o botão "Carregar" normal.');
+                return;
+            }
+
+            // Monta skills a partir dos dados Roll20
+            const skills = JSON.parse(JSON.stringify(defaultSkills));
+            let oficioCount = 0;
+            skills.forEach(s => {
+                if (s.n === 'Ofício') {
+                    const key = oficioCount === 0 ? 'oficio' : 'oficio2';
+                    oficioCount++;
+                    s.trained = r[`${key}_treinada`] === '1' || r[`${key}_treinada`] === 1;
+                    s.other   = parseInt(r[`${key}outros`]) || 0;
+                    s.specialty = r[`${key}nome`] || '';
+                    return;
+                }
+                const r20key = SKILL_TO_R20[s.n];
+                if (!r20key) return;
+                s.trained = r[`${r20key}_treinada`] === '1' || r[`${r20key}_treinada`] === 1;
+                s.other   = parseInt(r[`${r20key}outros`]) || 0;
+            });
+
+            // Dinheiro: Roll20 usa "to" (Tibares de Ouro) e "ts" (de Prata)
+            const cash = [
+                r.to  ? `${r.to} TO`  : '',
+                r.ts  ? `${r.ts} TP`  : ''
+            ].filter(Boolean).join(' / ');
+
+            const defOutros = parseInt(r.defesaoutros) || 0;
+
+            const data = {
+                version: 15.4,
+                playerName: r.playername || '',
+                charName:   r.character_name || r.name || '',
+                charRace:   r.trace      || '',
+                charOrigin: r.torigin  || '',
+                charClass:  r.tlevel   || '',
+                charLevel:  String(r.charnivel || '1'),
+                charDeity:  r.divindade || '',
+
+                extras: {
+                    profs: r.proficiencias || '',
+                    size:  r.tamanho !== undefined ? String(r.tamanho) : '0',
+                    speed: r.deslocamento || '',
+                    xp:    '',
+                    cash:  cash
+                },
+
+                attrs: {
+                    FOR: String(r.for || '0'), DES: String(r.des || '0'),
+                    CON: String(r.con || '0'), INT: String(r.int || '0'),
+                    SAB: String(r.sab || '0'), CAR: String(r.car || '0')
+                },
+
+                status: {
+                    pvM: String(r.vida || '0'), pvC: String(r.vidatotal || '0'),
+                    pmM: String(r.mana || '0'), pmC: String(r.manatotal || '0')
+                },
+
+                defense: {
+                    config: { attr: r20AttrToKey(r.modatributodefesa) || 'DES', apply: true },
+                    armor:  { name: '', bonus: '', penalty: '', type: '', desc: '' },
+                    shield: { name: '', bonus: '', penalty: '', type: '', desc: '' },
+                    other:  defOutros ? [{ name: 'Defesa (Roll20)', bonus: String(defOutros), note: '' }] : []
+                },
+
+                skills,
+                attacks: [],
+                inventory: [],
+                raceAbilities: [],
+                classAbilities: [],
+
+                notes:         r.charnotes || '',
+                notesCampanha: '',
+                notesOutros:   '',
+
+                spells: {
+                    config: {
+                        attr:   r20AttrToKey(r.cdatributo) || 'INT',
+                        powers: String(r.cdpoderes || '0'),
+                        items:  String(r.cdequips  || '0'),
+                        other:  String(r.cdoutros  || '0')
+                    },
+                    list: []
+                },
+
+                loadBonus: 0, armorLoadBonus: 0, loadConfig: { attr: 'FOR' },
+
+                tempMods: {
+                    globais: { attrFOR: '', attrDES: '', attrCON: '', attrINT: '', attrSAB: '', attrCAR: '' },
+                    globaisListas: { rolagens: [], pericias: [], ataque: [], dano: [], defesa: [] },
+                    bonusLivres: [], periciasEspecificas: [], parceiros: [], condicoes: []
+                }
+            };
+
+            // Ataques
+            (r.attacks || []).forEach(atk => {
+                data.attacks.push({
+                    name:      atk.nomeataque || '',
+                    bonus:     String(atk.bonusataque || '0'),
+                    dmg:       atk.danoataque || '',
+                    dmgExtra:  atk.danoextraataque || '',
+                    diceExtra: atk.dadoextraataque || '',
+                    critRange: String(atk.margemcriticoataque || '20'),
+                    crit:      r20MultToCrit(atk.multiplicadorcriticoataque),
+                    skill:     r20SkillFormToName(atk.ataquepericia),
+                    mod:       r20AttrToKey(atk.modatributodano),
+                    type:      atk.ataquetipodedano || '',
+                    range:     atk.ataquealcance   || '',
+                    desc:      (atk.ataquedescricao || '').trim()
+                });
+            });
+
+            // Habilidades (Coluna Esquerda no Roll20) -> Raça, Origem e Outros
+            (r.abilities || []).forEach(ab => {
+                data.raceAbilities.push({
+                    name: ab.nameability || '',
+                    desc: (ab.abilitydescription || '').replace(/\[ \]\([^)]*\)/g, '').trim()
+                });
+            });
+
+            // Poderes (Coluna Direita no Roll20) -> Classe e Poderes
+            (r.powers || []).forEach(pw => {
+                data.classAbilities.push({
+                    name: pw.namepower || '',
+                    desc: (pw.powerdescription || '').replace(/\[ \]\([^)]*\)/g, '').trim()
+                });
+            });
+
+            // Inventário e Defesas
+            (r.equipments || []).forEach(eq => {
+                let qty = eq.equipquantity;
+                if (!qty || qty === '0') qty = '1';
+
+                let itemName = (eq.equipname || '').trim();
+                let lowerName = itemName.toLowerCase();
+                
+                // Tenta pegar a anotação/descrição do item (o Roll20 JdA usa 'eqpdescription')
+                let note = (eq.eqpdescription || eq.equipdescription || eq.equipnotes || eq.equipdesc || eq.equipdescricao || '').trim();
+
+                // Tenta inferir se é armadura ou escudo
+                let isArmor = !data.defense.armor.name && (lowerName.includes('armadura') || lowerName.includes('couraça') || lowerName.includes('brunea') || lowerName.includes('cota') || lowerName.includes('gibão') || lowerName.includes('loriga') || lowerName.includes('completa') || lowerName.includes('couro') || lowerName.includes('acolchoada'));
+                let isShield = !isArmor && !data.defense.shield.name && (lowerName.includes('escudo') || lowerName.includes('broquel'));
+
+                if (isArmor) {
+                    let b = ''; let p = ''; let type = 'light';
+                    if (lowerName.includes('completa')) { b = 10; p = 5; type = 'heavy'; }
+                    else if (lowerName.includes('meia')) { b = 8; p = 4; type = 'heavy'; }
+                    else if (lowerName.includes('loriga')) { b = 7; p = 3; type = 'heavy'; }
+                    else if (lowerName.includes('cota')) { b = 6; p = 2; type = 'heavy'; }
+                    else if (lowerName.includes('brunea')) { b = 5; p = 2; type = 'heavy'; }
+                    else if (lowerName.includes('couraça')) { b = 5; p = 3; type = 'light'; }
+                    else if (lowerName.includes('gibão')) { b = 4; p = 3; type = 'light'; }
+                    else if (lowerName.includes('batido')) { b = 3; p = 2; type = 'light'; }
+                    else if (lowerName.includes('couro')) { b = 2; p = 1; type = 'light'; }
+                    else if (lowerName.includes('acolchoada')) { b = 1; p = 0; type = 'light'; }
+
+                    data.defense.armor = { name: itemName, bonus: String(b), penalty: String(p), type: type, desc: note };
+                } else if (isShield) {
+                    let b = ''; let p = ''; let type = 'light';
+                    if (lowerName.includes('pesado')) { b = 2; p = 2; type = 'heavy'; }
+                    else if (lowerName.includes('leve') || lowerName.includes('broquel')) { b = 1; p = 1; type = 'light'; }
+
+                    data.defense.shield = { name: itemName, bonus: String(b), penalty: String(p), type: type, desc: note };
+                }
+                
+                // Sempre adiciona ao inventário (armaduras e escudos também ocupam espaço)
+                data.inventory.push({
+                    equipped: eq.sobrevivencia_treinada === '1' || eq.equipequipped === '1',
+                    name:  itemName,
+                    qtd:   String(qty),
+                    slots: String(eq.equipslot ?? '1'),
+                    note:  note
+                });
+            });
+
+            // Magias (círculos 1–5)
+            [1, 2, 3, 4, 5].forEach(circle => {
+                (r[`spells${circle}`] || []).forEach(sp => {
+                    const schoolMatch = (sp.spelltipo || '').match(/\(([^)]+)\)/);
+                    data.spells.list.push({
+                        circle,
+                        name:   sp.namespell     || '',
+                        pm:     String(spellCosts[circle] || circle),
+                        school: schoolMatch ? schoolMatch[1] : (sp.spelltipo || ''),
+                        exec:   sp.spellexecucao  || '',
+                        range:  sp.spellalcance   || '',
+                        target: sp.spellalvoarea  || '',
+                        dur:    sp.spellduracao   || '',
+                        res:    sp.spellresistencia || '',
+                        desc:   sp.spelldescription || ''
+                    });
+                });
+            });
+
+            // Condições ativas
+            Object.entries(R20_COND_MAP).forEach(([r20key, intKey]) => {
+                if (r[r20key] === '1' || r[r20key] === 1) data.tempMods.condicoes.push(intKey);
+            });
+
+            localStorage.setItem('t20SheetData', JSON.stringify(data));
+            window.location.reload();
+
+        } catch (err) {
+            alert('Erro ao importar ficha Roll20.\n\n' + err.message);
+            console.error(err);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ── EXPORTAR PARA ROLL20 ──────────────────────────────────────────────────
+function exportRoll20() {
+    saveData();
+    const saved = localStorage.getItem('t20SheetData');
+    if (!saved) { alert('Nenhuma ficha para exportar!'); return; }
+    const d = JSON.parse(saved);
+
+    const attrForms = {
+        FOR: '@{for_mod}', DES: '@{des_mod}', CON: '@{con_mod}',
+        INT: '@{int_mod}', SAB: '@{sab_mod}', CAR: '@{car_mod}'
+    };
+    const physAttrs = new Set(['FOR', 'DES', 'CON']);
+    const skillCondFormula = attr => physAttrs.has(attr)
+        ? `@{${attr.toLowerCase()}_mod} + @{condicaoperfisico} + @{condicaocego}`
+        : `@{${attr.toLowerCase()}_mod} + @{condicaopermental}`;
+
+    const r20 = {
+        isJDA:       true,
+        playername:  d.playerName || '',
+        trace:       d.charName   || '',
+        torigin:     d.charOrigin || '',
+        tlevel:      d.charClass  || '',
+        charnivel:   String(d.charLevel || '1'),
+
+        for: String(d.attrs?.FOR || '0'), des: String(d.attrs?.DES || '0'),
+        con: String(d.attrs?.CON || '0'), int: String(d.attrs?.INT || '0'),
+        sab: String(d.attrs?.SAB || '0'), car: String(d.attrs?.CAR || '0'),
+
+        vidatotal: String(d.status?.pvC || '0'), vida:     String(d.status?.pvM || '0'), vidatemp: '0',
+        manatotal: String(d.status?.pmC || '0'), mana:     String(d.status?.pmM || '0'), manatemp: '0',
+
+        defesaatributo:  '0',
+        defesaoutros:    String((d.defense?.other || []).reduce((a, o) => a + (parseInt(o.bonus) || 0), 0)
+                               + (parseInt(d.defense?.armor?.bonus) || 0)
+                               + (parseInt(d.defense?.shield?.bonus) || 0)),
+        modatributodefesa: `${(d.defense?.config?.attr || 'DES').toLowerCase()}_mod`,
+
+        proficiencias: d.extras?.profs  || '',
+        charnotes:     d.notes          || '',
+        divindade:     d.charDeity       || '',
+        tamanho:       String(d.extras?.size ?? '0'),
+        deslocamento:  d.extras?.speed   || '',
+        ts: '0',
+        to: d.extras?.cash || '0',
+
+        cdatributo: `@{${(d.spells?.config?.attr || 'INT').toLowerCase()}_mod} + @{condicaopermental}`,
+        cdequips:   String(d.spells?.config?.items  || '0'),
+        cdpoderes:  String(d.spells?.config?.powers || '0'),
+        cdoutros:   String(d.spells?.config?.other  || '0'),
+
+        extraslot: '0', rolltemp: '0', ataquetemp: '0',
+        periciatemp: 0, resistemp: 0,  danotemp: 0,
+        fortemp: 0, destemp: 0, contemp: 0, inttemp: 0, sabtemp: 0, cartemp: 0
+    };
+
+    // Condições — inicia todas em '0', depois ativa as presentes
+    Object.keys(R20_COND_MAP).forEach(k => r20[k] = '0');
+    (d.tempMods?.condicoes || []).forEach(intKey => {
+        const r20key = COND_TO_R20[intKey];
+        if (r20key) r20[r20key] = '1';
+    });
+
+    // Perícias
+    let oficioCount = 0;
+    (d.skills || defaultSkills).forEach(s => {
+        const attr = s.a || 'INT';
+        if (s.n === 'Ofício') {
+            const key = oficioCount === 0 ? 'oficio' : 'oficio2';
+            oficioCount++;
+            r20[`${key}_treinada`]   = s.trained ? '1' : '0';
+            r20[`${key}atributo2`]   = skillCondFormula(attr);
+            r20[`${key}outros`]      = String(s.other || 0);
+            r20[`${key}nome`]        = s.specialty || '';
+            return;
+        }
+        const r20key = SKILL_TO_R20[s.n];
+        if (!r20key) return;
+        r20[`${r20key}_treinada`] = s.trained ? '1' : '0';
+        r20[`${r20key}atributo2`] = skillCondFormula(attr);
+        r20[`${r20key}outros`]    = String(s.other || 0);
+    });
+
+    // Ataques
+    r20.attacks = (d.attacks || []).map(atk => {
+        const mult    = critToR20Mult(atk.crit);
+        const dmgDice = atk.dmg || '0';
+        const critStr = Array(parseInt(mult)).fill(dmgDice).join(' + ') + ' + 0 + 0';
+        const sn = atk.skill || '';
+        let ataquepericia = '';
+        if (sn === 'Luta')     ataquepericia = '@{lutatotal}+@{condicaomodataquecc}+@{condicaomodataque}';
+        else if (sn === 'Pontaria') ataquepericia = '@{pontariatotal}+@{condicaomodataquecd}+@{condicaomodataque}';
+        else if (sn) {
+            const k = SKILL_TO_R20[sn] || sn.toLowerCase();
+            ataquepericia = `@{${k}total}+@{condicaomodataque}`;
+        }
+        return {
+            nomeataque:              atk.name || '',
+            modatributodano:         attrForms[atk.mod] || '@{for_mod}',
+            danoataque:              atk.dmg  || '',
+            danocriticoataque:       critStr,
+            multiplicadorcriticoataque: mult,
+            bonusataque:             String(atk.bonus || '0'),
+            danoextraataque:         atk.dmgExtra || '0',
+            ataquedescricao:         atk.desc  || '',
+            dadoextraataque:         atk.diceExtra || '0',
+            margemcriticoataque:     String(atk.critRange || '20'),
+            ataquepericia,
+            ataquetipodedano:        atk.type  || '',
+            ataquealcance:           atk.range || '',
+            tipocritico:             ''
+        };
+    });
+
+    // Habilidades (Coluna Esquerda)
+    r20.abilities = (d.raceAbilities || []).map(a => ({ 
+        nameability: a.name || '', 
+        abilitydescription: a.desc || '' 
+    }));
+
+    // Poderes (Coluna Direita)
+    r20.powers = (d.classAbilities || []).map(a => ({ 
+        namepower: a.name || '', 
+        powerdescription: a.desc || '' 
+    }));
+
+    // Inventário
+    r20.equipments = (d.inventory || []).map(item => ({
+        equipname:        item.name  || '',
+        equipslot:        item.slots || '1',
+        equipquantity:    item.qtd   || '0',
+        equipweight:      '1',
+        eqpdescription:   item.note  || '',
+        sobrevivencia_treinada: item.equipped ? '1' : '0'
+    }));
+
+    // Adiciona armadura e escudo da ficha local de volta ao inventário Roll20
+    if (d.defense?.armor?.name) {
+        r20.equipments.push({
+            equipname: d.defense.armor.name,
+            equipslot: d.defense.armor.type === 'heavy' ? '5' : '2',
+            equipquantity: '1',
+            equipweight: '1',
+            eqpdescription: d.defense.armor.desc || '',
+            sobrevivencia_treinada: '1' // Marca como "equipado" na ficha Roll20
+        });
+    }
+    if (d.defense?.shield?.name) {
+        r20.equipments.push({
+            equipname: d.defense.shield.name,
+            equipslot: d.defense.shield.type === 'heavy' ? '2' : '1',
+            equipquantity: '1',
+            equipweight: '1',
+            eqpdescription: d.defense.shield.desc || '',
+            sobrevivencia_treinada: '1'
+        });
+    }
+
+    // Magias agrupadas por círculo
+    [1, 2, 3, 4, 5].forEach(circle => {
+        r20[`spells${circle}`] = (d.spells?.list || [])
+            .filter(sp => sp.circle === circle)
+            .map(sp => ({
+                namespell:        sp.name   || '',
+                spelltipo:        sp.school ? `${circle}º círculo (${sp.school})` : `${circle}º círculo`,
+                spellexecucao:    sp.exec   || '',
+                spellalcance:     sp.range  || '',
+                spellduracao:     sp.dur    || '',
+                spellalvoarea:    sp.target || '',
+                spellresistencia: sp.res    || '',
+                spelldescription: sp.desc   || '',
+                spellcd:          '0'
+            }));
+    });
+
+    r20.extraSkills = [];
+
+    const charName = d.charName || 'personagem';
+    const blob = new Blob([JSON.stringify(r20, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `roll20_${charName.replace(/\s+/g, '_')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
