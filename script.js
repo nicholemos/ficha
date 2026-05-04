@@ -1915,7 +1915,7 @@ function copyToClipboard() {
 
     if (poderes.length > 0) {
         resumo += `✨ **HABILIDADES E PODERES:**\n`;
-        resumo += `▫️ ${poderes.join(' ▫️ ')}\n\n`;
+        resumo += poderes.map(p => `▫️ ${p}`).join('\n') + `\n\n`;
     }
 
     // Parceiros
@@ -1930,7 +1930,7 @@ function copyToClipboard() {
 
     if (listaParceiros.length > 0) {
         resumo += `🤝 **PARCEIROS E ALIADOS:**\n`;
-        resumo += `▫️ ${listaParceiros.join(' ▫️ ')}\n\n`;
+        resumo += listaParceiros.map(p => `▫️ ${p}`).join('\n') + `\n\n`;
     }
 
     // Magias
@@ -1950,6 +1950,11 @@ function copyToClipboard() {
         resumo += `\n`;
     }
 
+    // Atributos no rodapé (movidos para antes do equipamento)
+    resumo += `------------------------------------------------\n`;
+    resumo += `FOR ${attrVals.FOR} | DES ${attrVals.DES} | CON ${attrVals.CON} | INT ${attrVals.INT} | SAB ${attrVals.SAB} | CAR ${attrVals.CAR}\n`;
+    resumo += `------------------------------------------------\n`;
+
     // Equipamentos (Versão separada para Vestidos)
     const itens = document.querySelectorAll('#inventoryList .inv-row');
     if (itens.length > 0) {
@@ -1965,7 +1970,7 @@ function copyToClipboard() {
                 if (isEquipped) {
                     listaVestidos.push(`▫️ ${nomeItem} (x${qtd})`);
                 } else {
-                    listaEquipamentos.push(`${nomeItem} (x${qtd})`);
+                    listaEquipamentos.push(`▫️ ${nomeItem} (x${qtd})`);
                 }
             }
         });
@@ -1977,12 +1982,9 @@ function copyToClipboard() {
         
         if (listaEquipamentos.length > 0) {
             resumo += `🎒 **EQUIPAMENTO:**\n`;
-            resumo += `▫️ ${listaEquipamentos.join(' ▫️ ')}\n`;
+            resumo += `${listaEquipamentos.join('\n')}\n`;
         }
     }
-
-    resumo += `------------------------------------------------\n`;
-    resumo += `FOR ${attrVals.FOR} | DES ${attrVals.DES} | CON ${attrVals.CON} | INT ${attrVals.INT} | SAB ${attrVals.SAB} | CAR ${attrVals.CAR}\n`;
 
     // Copiar para o clipboard com feedback visual
     navigator.clipboard.writeText(resumo).then(() => {
