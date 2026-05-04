@@ -383,9 +383,19 @@ function addAttack(data = null) {
     const container = document.getElementById('attacksList'); if (!container) return;
     const div = document.createElement('div'); div.className = 'border-bottom pb-2 mb-2 atk-row';
     // ... (logica de skills options igual) ...
-    const mainSkills = ['Luta', 'Pontaria', 'Atuação', 'Misticismo'];
-    let skillOptions = `<option value="">(Manual)</option>`;
-    mainSkills.forEach(sn => skillOptions += `<option value="${sn}" ${data && data.skill === sn ? 'selected' : ''}>${sn}</option>`);
+    const allSkillNames = defaultSkills.map(s => s.n).sort();
+    // "Luta" é selecionada por padrão para novos ataques manuais (!data). Se data existir, usamos data.skill ou (Manual).
+    let isManualOrImported = data && !data.skill; // Se importado do Roll20 sem skill mapeada, não força 'Luta'
+    let skillOptions = `<option value="" ${isManualOrImported ? 'selected' : ''}>(Manual)</option>`;
+    skillOptions += `<option value="Luta" ${(!data || (data && data.skill === 'Luta')) ? 'selected' : ''}>Luta</option>`;
+    skillOptions += `<option value="Pontaria" ${(data && data.skill === 'Pontaria') ? 'selected' : ''}>Pontaria</option>`;
+    skillOptions += `<optgroup label="Outras">`;
+    allSkillNames.forEach(sn => {
+        if (sn !== 'Luta' && sn !== 'Pontaria') {
+            skillOptions += `<option value="${sn}" ${(data && data.skill === sn) ? 'selected' : ''}>${sn}</option>`;
+        }
+    });
+    skillOptions += `</optgroup>`;
 
     div.innerHTML = `
         <div class="row g-1 align-items-center text-center atk-summary mb-2">
@@ -418,7 +428,11 @@ function addAttack(data = null) {
                 <div class="col-12"><label class="form-label-sm">NOTAS</label><textarea class="form-control form-control-sm border-0 border-bottom inp-desc" rows="2" placeholder="Detalhes, efeitos, habilidades especiais...">${data ? (data.desc || '') : ''}</textarea></div>
             </div>
         </div>`;
-    container.appendChild(div); if (!data) saveData();
+    container.appendChild(div);
+    if (!data) {
+        updateCalculations();
+        saveData();
+    }
 }
 
 function removeAttack(btn) { if (confirm('Remover ataque?')) { btn.closest('.atk-row').remove(); saveData(); } }
