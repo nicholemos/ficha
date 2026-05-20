@@ -2296,12 +2296,12 @@ function syncAmeacaFromSheet() {
         if (el) el.value = val || '';
     };
 
-    // Iniciativa, Percepção, Fortitude, Reflexos, Vontade — sempre sincronizados
-    set('am-iniciativa', fmtBonus(getSkillTotalByName('Iniciativa')));
-    set('am-percepcao', fmtBonus(getSkillTotalByName('Percepção')));
-    set('am-fort', fmtBonus(getSkillTotalByName('Fortitude')));
-    set('am-ref', fmtBonus(getSkillTotalByName('Reflexos')));
-    set('am-von', fmtBonus(getSkillTotalByName('Vontade')));
+    // Iniciativa, Percepção, Fortitude, Reflexos, Vontade — só preenche se vazio
+    fill('am-iniciativa', fmtBonus(getSkillTotalByName('Iniciativa')));
+    fill('am-percepcao', fmtBonus(getSkillTotalByName('Percepção')));
+    fill('am-fort', fmtBonus(getSkillTotalByName('Fortitude')));
+    fill('am-ref', fmtBonus(getSkillTotalByName('Reflexos')));
+    fill('am-von', fmtBonus(getSkillTotalByName('Vontade')));
 
     // Defesa
     set('am-defesa', document.getElementById('defenseTotal')?.innerText || '');
@@ -2452,6 +2452,10 @@ function fecharModalPericias() {
     document.getElementById('modalImportarPericias').style.display = 'none';
 }
 
+function fecharModalGeral() {
+    document.getElementById('modalGeral').style.display = 'none';
+}
+
 function confirmarImportarPericias() {
     const modal = document.getElementById('modalImportarPericias');
     const pericias = modal._pericias || [];
@@ -2492,6 +2496,106 @@ function mostrarToastAmeaca(msg) {
 // ============================================================
 // FICHA DE AMEAÇA
 // ============================================================
+
+// Botão "Ameaça Oficial" - mostra menu de seleção das ameaças do banco de dados
+function carregarAmeacaOficial() {
+    if (typeof AMEACAS_DB === 'undefined') {
+        document.getElementById('fileInputAmeaca').click();
+        return;
+    }
+    
+    const ameacasOrdenadas = [...AMEACAS_DB].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    
+    const parseND = (nd) => {
+        if (!nd) return Infinity;
+        if (nd === '—') return Infinity;
+        if (nd.includes('/')) {
+            const [num, den] = nd.split('/');
+            return parseFloat(num) / parseFloat(den);
+        }
+        return parseFloat(nd);
+    };
+    const ndValues = [...new Set(ameacasOrdenadas.map(a => a.nd).filter(nd => nd))].sort((a, b) => parseND(a) - parseND(b));
+    let ndOptions = '<option value="">Todos</option>';
+    ndValues.forEach(nd => { ndOptions += `<option value="${nd}">ND ${nd}</option>`; });
+    
+    const fontes = [...new Set(ameacasOrdenadas.map(a => a.fonte || 'Outro'))].sort();
+    let fonteOptions = '<option value="">Todas as fontes</option>';
+    fontes.forEach(fonte => { fonteOptions += `<option value="${fonte}">${fonte}</option>`; });
+    
+    let html = `<div class="p-3">
+        <h5 class="text-danger mb-3">Selecione uma Ameaça Oficial</h5>
+        <input type="text" id="buscaAmeaca" class="form-control mb-2" placeholder="🔍 Buscar por nome..." oninput="filtrarAmeacas()">
+        <div class="row g-2 mb-3">
+            <div class="col-4">
+                <select id="filtroNd" class="form-select" onchange="filtrarAmeacas()">
+                    <option value="">Todos os ND</option>
+                    ${ndValues.map(nd => `<option value="${nd}">ND ${nd}</option>`).join('')}
+                </select>
+            </div>
+            <div class="col-4">
+                <select id="filtroFonte" class="form-select" onchange="filtrarAmeacas()">
+                    ${fonteOptions}
+                </select>
+            </div>
+            <div class="col-4">
+                <select id="filtroTipo" class="form-select" onchange="filtrarAmeacas()">
+                    <option value="">Todos os tipos</option>
+                    <option value="parceiro">Parceiro / Familiar</option>
+                </select>
+            </div>
+        </div>
+        <div id="listaAmeacas">`;
+    
+    ameacasOrdenadas.forEach((ameaca, index) => {
+        const fonte = ameaca.fonte || 'Outro';
+        const hasHabilidadePF = (ameaca.habilidades || []).some(h => h.nome === 'Parceiro' || h.nome === 'Familiar');
+        const isParceiro = ameaca.parceiro || hasHabilidadePF ? '<i class="bi bi-heart-fill text-danger ms-1" title="Pode ser parceiro"></i>' : '';
+        const dataTipo = ameaca.parceiro || hasHabilidadePF ? 'parceiro' : '';
+        html += `<button class="btn btn-outline-danger w-100 mb-2 text-start" data-nd="${ameaca.nd}" data-fonte="${fonte}" data-tipo="${dataTipo}" onclick="carregarAmeacaDoDB('${ameaca.nome.replace(/'/g, "\\'")}')">
+            <strong>${ameaca.nome}</strong>${isParceiro} <span class="text-muted">(${ameaca.tipo})</span>
+            <span class="badge bg-danger float-end">${ameaca.nd || '?'}</span>
+            ${fonte ? `<span class="badge bg-secondary float-end me-1" style="font-size:0.65rem;">${fonte}</span>` : ''}
+        </button>`;
+    });
+    
+    html += `</div></div><hr><button class="btn btn-outline-secondary w-100" onclick="fecharModalGeral();document.getElementById('fileInputAmeaca').click()"><i class="bi bi-upload"></i> Carregar arquivo JSON</button></div>`;
+    
+    document.getElementById('modalGeralBody').innerHTML = html;
+    document.getElementById('modalGeralLabel').textContent = 'Ameaças Oficiais';
+    document.getElementById('modalGeral').style.display = 'flex';
+}
+
+function filtrarAmeacas() {
+    const termo = document.getElementById('buscaAmeaca').value.toLowerCase();
+    const nd = document.getElementById('filtroNd').value;
+    const fonte = document.getElementById('filtroFonte').value;
+    const tipo = document.getElementById('filtroTipo').value;
+    const buttons = document.querySelectorAll('#listaAmeacas button');
+    buttons.forEach(btn => {
+        const nome = btn.querySelector('strong').textContent.toLowerCase();
+        const btnNd = btn.getAttribute('data-nd');
+        const btnFonte = btn.getAttribute('data-fonte') || 'Outro';
+        const btnTipo = btn.getAttribute('data-tipo') || '';
+        const matchNome = nome.includes(termo);
+        const matchNd = !nd || btnNd === nd;
+        const matchFonte = !fonte || btnFonte === fonte;
+        const matchTipo = !tipo || btnTipo === 'parceiro';
+        btn.style.display = (matchNome && matchNd && matchFonte && matchTipo) ? '' : 'none';
+    });
+}
+
+function carregarAmeacaDoDB(nome) {
+    const data = AMEACAS_DB.find(a => a.nome === nome);
+    if (!data) return;
+    localStorage.setItem('t20AmeacaData', JSON.stringify(data));
+    ['am-ataques-list', 'am-habilidades-list', 'am-pericias-list'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.innerHTML = '';
+    });
+    loadAmeaca();
+    fecharModalGeral();
+    mostrarToastAmeaca('✅ ' + data.nome + ' carregado!');
+}
 
 function saveAmeaca() {
     const ataques = [];
@@ -2548,7 +2652,8 @@ function saveAmeaca() {
         ataques,
         habilidades,
         pericias,
-        tesouro: document.getElementById('am-tesouro')?.value || ''
+        tesouro: document.getElementById('am-tesouro')?.value || '',
+        equipamento: document.getElementById('am-equipamento')?.value || ''
     };
 
     localStorage.setItem('t20AmeacaData', JSON.stringify(data));
@@ -2575,6 +2680,7 @@ function loadAmeaca() {
         set('am-pv', d.pv);
         set('am-desl', d.desl);
         set('am-pm', d.pm);
+        set('am-equipamento', d.equipamento || '');
         set('am-tesouro', d.tesouro);
 
         if (d.atributos) {
@@ -2669,7 +2775,7 @@ function limparAmeaca() {
     document.getElementById('am-pericias-list').innerHTML = '';
     ['am-nome', 'am-tipo', 'am-nd', 'am-iniciativa', 'am-percepcao', 'am-percepcao-obs',
         'am-defesa', 'am-fort', 'am-ref', 'am-von', 'am-defesa-obs', 'am-pv', 'am-desl', 'am-pm',
-        'am-for', 'am-des', 'am-con', 'am-int', 'am-sab', 'am-car', 'am-tesouro'
+        'am-for', 'am-des', 'am-con', 'am-int', 'am-sab', 'am-car', 'am-equipamento', 'am-tesouro'
     ].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     mostrarToastAmeaca('🗑️ Ameaça limpa.');
 }
@@ -2741,6 +2847,7 @@ function exportarAmeacaPDF() {
     <div class="atributos">${atributos}</div>
     <hr>
     ${pericias ? `<div class="bloco"><span class="chave">Perícias</span> ${pericias}</div><hr>` : ''}
+    ${g('am-equipamento') ? `<div class="bloco"><span class="chave">Equipamento</span> ${g('am-equipamento')}</div>` : ''}
     <div class="bloco"><span class="chave">Tesouro</span> ${g('am-tesouro')}</div>
     </body></html>`;
 
@@ -2824,6 +2931,7 @@ function copiarResumoAmeaca() {
     if (txtMagias) txt += txtMagias;
     txt += `FOR ${g('am-for')} · DES ${g('am-des')} · CON ${g('am-con')} · INT ${g('am-int')} · SAB ${g('am-sab')} · CAR ${g('am-car')}\n`;
     if (pericias) txt += `Perícias: ${pericias}\n`;
+    if (g('am-equipamento')) txt += `Equipamento: ${g('am-equipamento')}\n`;
     txt += `Tesouro: ${g('am-tesouro')}\n`;
     txt += `\`\`\``;
 
@@ -2869,6 +2977,78 @@ function importAmeacaArquivo(input) {
 
 // Exporta habilidades especiais da ameaça → abilitiesClassList da ficha
 function exportarHabilidadesParaFicha() {
+    if (!confirm('Exportar dados da Ameaça para a ficha do Personagem?\n\nIsso incluirá:\n• Nome e Tipo (como Raça)\n• PV, PM, Deslocamento\n• Atributos\n• Habilidades e Magias\n• Perícias: Iniciativa, Luta, Fortitude, Reflexos, Vontade + Relevantes\n• Equipamento e Tesouro\n• Ataques (importados da ameaça)\n• Defesa (somente o valor base)\n\nATENÇÃO: Tudo será LIMPO antes de exportar!')) return;
+
+    // Limpar dados existentes antes de exportar
+    document.getElementById('abilitiesRaceList').innerHTML = '';
+    document.getElementById('abilitiesClassList').innerHTML = '';
+    currentSkills.forEach(s => { s.trained = false; s.other = 0; });
+    currentSkills = currentSkills.filter(s => !s.isCustom || ['Iniciativa', 'Luta', 'Fortitude', 'Reflexos', 'Vontade', 'Atletismo', 'Acrobacia', 'Cavalgar', 'Furtividade', 'Ladinagem', 'Percepção', 'Sobrevivência'].includes(s.n));
+    document.getElementById('inventoryList').innerHTML = '';
+    document.getElementById('charCash').value = '';
+    document.getElementById('charCashTO').value = '';
+    document.getElementById('charNotes').value = '';
+    document.getElementById('attacksList').innerHTML = '';
+    document.getElementById('armorName').value = '';
+    document.getElementById('armorBonus').value = '';
+    document.getElementById('armorPenalty').value = '';
+    document.getElementById('armorType').value = 'light';
+    document.getElementById('armorDesc').value = '';
+    document.getElementById('shieldName').value = '';
+    document.getElementById('shieldBonus').value = '';
+    document.getElementById('shieldPenalty').value = '';
+    document.getElementById('shieldType').value = 'light';
+    document.getElementById('shieldDesc').value = '';
+    document.getElementById('defenseList').innerHTML = '';
+
+    const getAm = id => document.getElementById(id)?.value || '';
+
+    // Nome e Raça/Tipo
+    const nomeAmeaca = getAm('am-nome');
+    const tipoAmeaca = getAm('am-tipo');
+    if (nomeAmeaca) document.getElementById('charName').value = nomeAmeaca;
+    if (tipoAmeaca) document.getElementById('charRace').value = tipoAmeaca;
+
+    // ND para nível (se < 1, usar 1; se S ou S+, usar 20)
+    const ndAmeaca = getAm('am-nd');
+    if (ndAmeaca) {
+        let nivel = 1;
+        const ndUpper = ndAmeaca.toUpperCase().trim();
+        if (ndUpper === 'S' || ndUpper === 'S+') {
+            nivel = 20;
+        } else {
+            const ndNum = parseInt(ndUpper);
+            if (!isNaN(ndNum)) {
+                nivel = Math.max(1, ndNum);
+            }
+        }
+        document.getElementById('charLevel').value = nivel;
+    }
+
+    // PV e PM
+    const pvAmeaca = getAm('am-pv');
+    const pmAmeaca = getAm('am-pm');
+    if (pvAmeaca) {
+        document.getElementById('pvMax').value = pvAmeaca;
+        document.getElementById('pvCurrent').value = pvAmeaca;
+    }
+    if (pmAmeaca) {
+        document.getElementById('pmMax').value = pmAmeaca;
+        document.getElementById('pmCurrent').value = pmAmeaca;
+    }
+
+    // Deslocamento
+    const deslAmeaca = getAm('am-desl');
+    if (deslAmeaca) document.getElementById('charSpeed').value = deslAmeaca;
+
+    // Atributos
+    const attrMap = { 'for': 'FOR', 'des': 'DES', 'con': 'CON', 'int': 'INT', 'sab': 'SAB', 'car': 'CAR' };
+    Object.entries(attrMap).forEach(([id, attr]) => {
+        const val = getAm(`am-${id}`);
+        if (val) document.getElementById(`attr-${attr}`).value = val;
+    });
+
+    // Habilidades e Magias
     const habs = [];
     document.querySelectorAll('#am-habilidades-list .am-row').forEach(row => {
         const nome = row.querySelector('.am-hab-nome')?.value?.trim();
@@ -2879,23 +3059,121 @@ function exportarHabilidadesParaFicha() {
             habs.push({ name: nomeCompleto, desc: desc || '' });
         }
     });
-    if (habs.length === 0) { alert('Nenhuma habilidade para exportar.'); return; }
-
     const list = document.getElementById('abilitiesClassList');
-    if (!list) { alert('Aba de personagem não encontrada.'); return; }
-    const existing = new Set(Array.from(list.querySelectorAll('.inp-name')).map(el => el.value.trim().toLowerCase()));
-    let added = 0;
-    habs.forEach(h => {
-        if (!existing.has(h.name.toLowerCase())) {
-            addAbility('abilitiesClassList', h.name, h.desc);
-            existing.add(h.name.toLowerCase());
-            added++;
+    if (list && habs.length > 0) {
+        const existing = new Set(Array.from(list.querySelectorAll('.inp-name')).map(el => el.value.trim().toLowerCase()));
+        habs.forEach(h => {
+            if (!existing.has(h.name.toLowerCase())) {
+                addAbility('abilitiesClassList', h.name, h.desc);
+                existing.add(h.name.toLowerCase());
+            }
+        });
+    }
+
+    // Perícias: Iniciativa, Luta, Fortitude, Reflexos, Vontade + Relevantes
+    const periciasFixas = [
+        { nome: 'Iniciativa', valor: getAm('am-iniciativa') },
+        { nome: 'Luta', valor: null },
+        { nome: 'Fortitude', valor: getAm('am-fort') },
+        { nome: 'Reflexos', valor: getAm('am-ref') },
+        { nome: 'Vontade', valor: getAm('am-von') }
+    ];
+    const periciasRelevantes = [];
+    document.querySelectorAll('#am-pericias-list .am-per-row').forEach(row => {
+        const nome = row.querySelector('.am-per-nome')?.value?.trim();
+        const valor = row.querySelector('.am-per-val')?.value?.trim();
+        if (nome) periciasRelevantes.push({ nome, valor });
+    });
+    const periciasParaImportar = [...periciasFixas, ...periciasRelevantes];
+
+    const level = parseInt(document.getElementById('charLevel')?.value) || 1;
+    const halfLevel = Math.floor(level / 2);
+    const levelReduction = level >= 15 ? 6 : level >= 7 ? 4 : 2;
+    const skillToAttr = { 'Iniciativa': 'DES', 'Luta': 'FOR', 'Fortitude': 'CON', 'Reflexos': 'DES', 'Vontade': 'SAB' };
+
+    periciasParaImportar.forEach(p => {
+        let idx = currentSkills.findIndex(s => s.n === p.nome || (s.n === 'Ofício' && p.nome.startsWith('Ofício')));
+        
+        if (idx >= 0) {
+            currentSkills[idx].trained = true;
+            if (p.valor && p.valor !== '+0' && p.valor !== '0') {
+                const valNum = parseInt(p.valor.replace('+', '')) || 0;
+                const attr = skillToAttr[p.nome];
+                const attrVal = attr ? getInt('attr-' + attr) : 0;
+                currentSkills[idx].other = (currentSkills[idx].other || 0) + valNum - halfLevel - attrVal - levelReduction;
+            }
+        } else {
+            currentSkills.push({ n: p.nome, a: 'INT', trained: true, other: 0, isCustom: true });
         }
     });
+
+    renderSkills();
+
+    // Exportar ataques da ameaça
+    document.querySelectorAll('#am-ataques-list .am-ataque-row').forEach(row => {
+        const nome = row.querySelector('.am-atk-nome')?.value?.trim();
+        const bonus = row.querySelector('.am-atk-bonus')?.value?.trim();
+        const dano = row.querySelector('.am-atk-dano')?.value?.trim();
+        const desc = row.querySelector('.am-atk-desc')?.value?.trim();
+        if (nome) {
+            // Extrair dano e crítico do formato "1d8+5, 19"
+            let dmg = '', crit = 'x2', critRange = '20';
+            if (dano) {
+                const parts = dano.split(',');
+                dmg = parts[0].trim();
+                if (parts[1]) {
+                    critRange = parts[1].trim();
+                    crit = 'x2'; // padrão
+                }
+            }
+            // Usar skill vazio (Manual) e colocar o bônus como bônus extra
+            const bonusNum = parseInt(bonus?.replace('+', '').replace('-', '')) || 0;
+            addAttack({ name: nome, bonus: '', mod: bonusNum, dmg: dmg, crit: crit, critRange: critRange, desc: desc, skill: '' });
+        }
+    });
+
+    // Exportar defesa (somente o valor base)
+    const defAmeaca = getAm('am-defesa');
+    if (defAmeaca) {
+        // Calcular o bônus de armadura necessário para chegar à defesa informada
+        // Defesa = 10 + attr + arm + esc + other
+        // Armadura = Defesa - 10 - attr - esc - other
+        const defAtual = parseInt(document.getElementById('defenseTotal')?.textContent) || 10;
+        const defAttrVal = parseInt(document.getElementById('defAttrVal')?.textContent) || 0;
+        const escBonus = parseInt(document.getElementById('shieldBonus')?.value) || 0;
+        const defTarget = parseInt(defAmeaca) || 0;
+        let armBonus = defTarget - 10 - defAttrVal - escBonus;
+        if (armBonus < 0) armBonus = 0;
+        document.getElementById('armorBonus').value = armBonus;
+    }
+
+    // Exportar observações de percepção e defesa para Proficiências
+    const percepcaoObs = getAm('am-percepcao-obs');
+    const defesaObs = getAm('am-defesa-obs');
+    let profsText = '';
+    if (percepcaoObs && percepcaoObs !== '—') profsText += percepcaoObs + (defesaObs && defesaObs !== '—' ? '; ' : '');
+    if (defesaObs && defesaObs !== '—') profsText += defesaObs;
+    if (profsText) {
+        const profsAtuais = document.getElementById('charProfs').value || '';
+        document.getElementById('charProfs').value = profsText + (profsAtuais ? '; ' + profsAtuais : '');
+    }
+
+    // Exportar equipamento e tesouro para anotações
+    const equipAmeaca = getAm('am-equipamento');
+    const tresAmeaca = getAm('am-tesouro');
+    let notasExtras = '';
+    if (equipAmeaca) notasExtras += 'EQUIPAMENTO:\n' + equipAmeaca + '\n\n';
+    if (tresAmeaca) notasExtras += 'TESOURO:\n' + tresAmeaca;
+    if (notasExtras) {
+        const notasAtuais = document.getElementById('charNotes').value || '';
+        document.getElementById('charNotes').value = notasExtras + (notasAtuais ? '\n\n---\n\n' + notasAtuais : '');
+    }
+
+    document.getElementById('applyDefAttr').checked = false;
+
+    updateCalculations();
     saveData();
-    alert(`✅ ${added} habilidade(s) exportada(s) para Poderes & Habilidades.`);
-    // Vai para a aba personagem
-    document.getElementById('tab-personagem-btn')?.click();
+    alert('✅ Dados exportados para a ficha do Personagem!');
 }
 
 // Importa habilidades de classe/raça da ficha → Ficha de Ameaça
@@ -2928,9 +3206,13 @@ function importarHabilidadesDaFicha() {
 
 // Preenche campos básicos da ameaça usando dados da ficha atual (personagem)
 function preencherAmeacaDaFicha() {
-    if (!confirm('Preencher campos da Ameaça com os dados atuais da ficha do Personagem? Os campos existentes serão sobrescritos.')) return;
+    if (!confirm('Preencher campos da Ameaça com os dados atuais da ficha do Personagem?\n\nIsso incluirá:\n• Dados básicos (nome, tipo, PV, PM, defesa, etc.)\n• Habilidades e poderes\n• Magias\n• Perícias marcadas (exceto: Iniciativa, Fortitude, Reflexos, Vontade, Luta, Pontaria)\n\nATENÇÃO: Todas as habilidades, magias e perícias existentes serão removidas antes da importação!')) return;
 
     const get = id => document.getElementById(id)?.value || '';
+
+    // Limpar listas existentes antes de importar
+    document.getElementById('am-habilidades-list').innerHTML = '';
+    document.getElementById('am-pericias-list').innerHTML = '';
 
     // Nome e tipo
     const nome = get('charName'); if (nome) document.getElementById('am-nome').value = nome;
@@ -2956,8 +3238,78 @@ function preencherAmeacaDaFicha() {
         if (val) document.getElementById(`am-${a.toLowerCase()}`).value = val;
     });
 
+    // Importar habilidades/poderes
+    const habs = [];
+    ['#abilitiesRaceList', '#abilitiesClassList'].forEach(sel => {
+        document.querySelectorAll(`${sel} .ability-row`).forEach(row => {
+            const nomeHab = row.querySelector('.inp-name')?.value?.trim();
+            const descHab = row.querySelector('.inp-desc')?.value?.trim();
+            if (nomeHab) habs.push({ nome: nomeHab, desc: descHab || '' });
+        });
+    });
+    if (habs.length > 0) {
+        const existingHabs = new Set(Array.from(document.querySelectorAll('#am-habilidades-list .am-hab-nome')).map(el => el.value.trim().toLowerCase()));
+        habs.forEach(h => {
+            const m = h.nome.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+            const data = m ? { nome: m[1].trim(), tipo: m[2].trim(), desc: h.desc } : { nome: h.nome, tipo: '', desc: h.desc };
+            if (!existingHabs.has(data.nome.toLowerCase())) {
+                addAmeacaHabilidade(data);
+                existingHabs.add(data.nome.toLowerCase());
+            }
+        });
+    }
+
+    // Importar magias
+    const magias = [];
+    [1, 2, 3, 4, 5].forEach(circulo => {
+        document.querySelectorAll(`#spellsList${circulo} .spell-row`).forEach(row => {
+            const nomeMagia = row.querySelector('.inp-name')?.value?.trim();
+            const pmMagia = row.querySelector('.inp-pm')?.value?.trim();
+            const escola = row.querySelector('.inp-school')?.value?.trim();
+            const exec = row.querySelector('.inp-exec')?.value?.trim();
+            const alcance = row.querySelector('.inp-range')?.value?.trim();
+            const alvo = row.querySelector('.inp-target')?.value?.trim();
+            const dur = row.querySelector('.inp-dur')?.value?.trim();
+            const descMagia = row.querySelector('.inp-desc')?.value?.trim();
+            if (!nomeMagia) return;
+            const detalhes = [escola, exec && `Exec.: ${exec}`, alcance && `Alc.: ${alcance}`, alvo && `Alvo: ${alvo}`, dur && `Dur.: ${dur}`].filter(Boolean).join(' · ');
+            magias.push({ nome: `${nomeMagia}${pmMagia ? ` (${pmMagia} PM)` : ''}`, tipo: 'Passiva', desc: [detalhes, descMagia].filter(Boolean).join('\n') });
+        });
+    });
+    if (magias.length > 0) {
+        const existingMagias = new Set(Array.from(document.querySelectorAll('#am-habilidades-list .am-hab-nome')).map(el => el.value.trim().toLowerCase()));
+        magias.forEach(m => {
+            if (!existingMagias.has(m.nome.toLowerCase())) {
+                addAmeacaHabilidade(m);
+                existingMagias.add(m.nome.toLowerCase());
+            }
+        });
+    }
+
+    // Importar perícias marcadas (exceto as fixas)
+    const periciasFixas = ['Iniciativa', 'Percepção', 'Fortitude', 'Reflexos', 'Vontade', 'Luta', 'Pontaria'];
+    const periciasMarcadas = currentSkills
+        .filter(s => s.trained && !periciasFixas.includes(s.n) && !periciasFixas.includes(s.n.startsWith('Ofício') ? 'Ofício' : s.n))
+        .map((s, i) => ({
+            nome: s.n === 'Ofício' && s.specialty ? `Ofício (${s.specialty})` : s.n,
+            total: parseInt(document.getElementById(`skTotal${i}`)?.innerText) || 0
+        }));
+    if (periciasMarcadas.length > 0) {
+        const existingPer = new Set(Array.from(document.querySelectorAll('#am-pericias-list .am-per-nome')).map(el => el.value.trim().toLowerCase()));
+        periciasMarcadas.forEach(p => {
+            if (!existingPer.has(p.nome.toLowerCase())) {
+                addAmeacaPericia({ nome: p.nome, valor: (p.total >= 0 ? '+' : '') + p.total });
+                existingPer.add(p.nome.toLowerCase());
+            }
+        });
+    }
+
     saveAmeaca();
-    alert('✅ Campos preenchidos da ficha do Personagem!');
+    let msg = '✅ Campos preenchidos da ficha do Personagem!';
+    if (habs.length > 0 || magias.length > 0 || periciasMarcadas.length > 0) {
+        msg += `\n\nImportados: ${habs.length} poder(es), ${magias.length} magia(s), ${periciasMarcadas.length} perícia(s).`;
+    }
+    alert(msg);
 }
 
 // Inicialização da aba de ameaça
