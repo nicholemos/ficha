@@ -9577,7 +9577,7 @@ const AMEACAS_DB = [
     },
     {
         "nome": "Rival Espelho",
-        "tipo": "Constructo Médio",
+        "tipo": "Construto Médio",
         "nd": "?",
         "iniciativa": "+0",
         "percepcao": "+0",
@@ -32469,8 +32469,6 @@ const AMEACAS_DB = [
         "fonte": "Ameaças de Arton"
     },
     {
-        "nome": "Protetor-Refém",
-        "tipo": "Anão Médio",
         "nd": "5",
         "iniciativa": "+2",
         "percepcao": "+5",
@@ -38273,2091 +38271,2091 @@ const AMEACAS_DB = [
         "tesouro": "Padrão (Caneco de cerveja, clava)",
         "fonte": "Guia de NPCs"
     },
-    
-  {
-    "nome": "Acólito",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "1/2",
-    "iniciativa": "+1",
-    "percepcao": "+4",
-    "percepcaoObs": "normal",
-    "defesa": "11",
-    "fort": "+3",
-    "ref": "+0",
-    "von": "+5",
-    "defesaObs": "normal",
-    "pv": "11",
-    "desl": "9m (6q)",
-    "pm": "0",
-    "atributos": {
-      "for": "2",
-      "des": "0",
-      "con": "1",
-      "int": "0",
-      "sab": "2",
-      "car": "1"
+
+    {
+        "nome": "Acólito",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "1/2",
+        "iniciativa": "+1",
+        "percepcao": "+4",
+        "percepcaoObs": "normal",
+        "defesa": "11",
+        "fort": "+3",
+        "ref": "+0",
+        "von": "+5",
+        "defesaObs": "normal",
+        "pv": "11",
+        "desl": "9m (6q)",
+        "pm": "0",
+        "atributos": {
+            "for": "2",
+            "des": "0",
+            "con": "1",
+            "int": "0",
+            "sab": "2",
+            "car": "1"
+        },
+        "ataques": [
+            {
+                "nome": "Maça",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+5",
+                "dano": "1d8+3 impacto",
+                "desc": "Arma contundente básica de guarda clerical."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Prece",
+                "tipo": "Movimento",
+                "desc": "O acólito recebe +1d6 em seu próximo teste de perícia realizado neste mesmo turno. Esta habilidade só pode ser usada uma vez por cena."
+            }
+        ],
+        "pericias": [
+            { "nome": "Religião", "valor": "+4" }
+        ],
+        "tesouro": "Nenhum (Equipado com maça e símbolo sagrado)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Maça",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+5",
-        "dano": "1d8+3 impacto",
-        "desc": "Arma contundente básica de guarda clerical."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Prece",
-        "tipo": "Movimento",
-        "desc": "O acólito recebe +1d6 em seu próximo teste de perícia realizado neste mesmo turno. Esta habilidade só pode ser usada uma vez por cena."
-      }
-    ],
-    "pericias": [
-      { "nome": "Religião", "valor": "+4" }
-    ],
-    "tesouro": "Nenhum (Equipado com maça e símbolo sagrado)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Sacerdote",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "2",
-    "iniciativa": "+3",
-    "percepcao": "+6",
-    "percepcaoObs": "normal",
-    "defesa": "17",
-    "fort": "+7",
-    "ref": "+4",
-    "von": "+11",
-    "defesaObs": "resistência mental +2",
-    "pv": "47",
-    "desl": "9m (6q)",
-    "pm": "13",
-    "atributos": {
-      "for": "0",
-      "des": "0",
-      "con": "1",
-      "int": "2",
-      "sab": "3",
-      "car": "3"
+    {
+        "nome": "Sacerdote",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "2",
+        "iniciativa": "+3",
+        "percepcao": "+6",
+        "percepcaoObs": "normal",
+        "defesa": "17",
+        "fort": "+7",
+        "ref": "+4",
+        "von": "+11",
+        "defesaObs": "resistência mental +2",
+        "pv": "47",
+        "desl": "9m (6q)",
+        "pm": "13",
+        "atributos": {
+            "for": "0",
+            "des": "0",
+            "con": "1",
+            "int": "2",
+            "sab": "3",
+            "car": "3"
+        },
+        "ataques": [
+            {
+                "nome": "Bordão",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+7",
+                "dano": "1d6+3 impacto",
+                "desc": "Cajado litúrgico de madeira."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Autoridade Eclesiástica",
+                "tipo": "Qualidade",
+                "desc": "O sacerdote recebe +5 em testes de Diplomacia e Intimidação quando interage com devotos de sua própria divindade."
+            },
+            {
+                "nome": "Defesas do Templo",
+                "tipo": "Movimento",
+                "desc": "Custos: 2 PM. Evoca defesas divinas: funciona como o efeito básico da magia Arma Espiritual e concede +5 de bônus na Defesa do sacerdote. Restrito para uso estritamente dentro dos limites de seu templo."
+            },
+            {
+                "nome": "Paróquia",
+                "tipo": "Qualidade",
+                "desc": "Enquanto estiver em seu próprio templo, o sacerdote recebe +2 na Defesa e em testes de resistência, e a CD para resistir às suas magias aumenta em +2 (bônus não contabilizados na ficha)."
+            },
+            {
+                "nome": "Magia: Curar Ferimentos",
+                "tipo": "Padrão",
+                "desc": "Custos: 2 PM. Regenera 3d8+3 PV em uma criatura adjacente."
+            },
+            {
+                "nome": "Magia: Orientação",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM. Escolhe um atributo e um alvo curto. Até o fim da cena, quando o alvo testar uma perícia vinculada a esse atributo, rola dois dados e usa o melhor."
+            },
+            {
+                "nome": "Magia: Santuário",
+                "tipo": "Padrão",
+                "desc": "Custos: 1 PM. Toca um alvo; quem tentar atos hostis contra ele perde a ação (Von CD 18 evita). Expira se o protegido atacar."
+            }
+        ],
+        "pericias": [
+            { "nome": "Conhecimento", "valor": "+5" },
+            { "nome": "Cura", "valor": "+6" },
+            { "nome": "Diplomacia", "valor": "+6" },
+            { "nome": "Misticismo", "valor": "+5" },
+            { "nome": "Religião", "valor": "+12" }
+        ],
+        "tesouro": "Padrão (Bordão, manto eclesiástico, símbolo sagrado)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Bordão",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+7",
-        "dano": "1d6+3 impacto",
-        "desc": "Cajado litúrgico de madeira."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Autoridade Eclesiástica",
-        "tipo": "Qualidade",
-        "desc": "O sacerdote recebe +5 em testes de Diplomacia e Intimidação quando interage com devotos de sua própria divindade."
-      },
-      {
-        "nome": "Defesas do Templo",
-        "tipo": "Movimento",
-        "desc": "Custos: 2 PM. Evoca defesas divinas: funciona como o efeito básico da magia Arma Espiritual e concede +5 de bônus na Defesa do sacerdote. Restrito para uso estritamente dentro dos limites de seu templo."
-      },
-      {
-        "nome": "Paróquia",
-        "tipo": "Qualidade",
-        "desc": "Enquanto estiver em seu próprio templo, o sacerdote recebe +2 na Defesa e em testes de resistência, e a CD para resistir às suas magias aumenta em +2 (bônus não contabilizados na ficha)."
-      },
-      {
-        "nome": "Magia: Curar Ferimentos",
-        "tipo": "Padrão",
-        "desc": "Custos: 2 PM. Regenera 3d8+3 PV em uma criatura adjacente."
-      },
-      {
-        "nome": "Magia: Orientação",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM. Escolhe um atributo e um alvo curto. Até o fim da cena, quando o alvo testar uma perícia vinculada a esse atributo, rola dois dados e usa o melhor."
-      },
-      {
-        "nome": "Magia: Santuário",
-        "tipo": "Padrão",
-        "desc": "Custos: 1 PM. Toca um alvo; quem tentar atos hostis contra ele perde a ação (Von CD 18 evita). Expira se o protegido atacar."
-      }
-    ],
-    "pericias": [
-      { "nome": "Conhecimento", "valor": "+5" },
-      { "nome": "Cura", "valor": "+6" },
-      { "nome": "Diplomacia", "valor": "+6" },
-      { "nome": "Misticismo", "valor": "+5" },
-      { "nome": "Religião", "valor": "+12" }
-    ],
-    "tesouro": "Padrão (Bordão, manto eclesiástico, símbolo sagrado)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Alto Sacerdote",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "9",
-    "iniciativa": "+8",
-    "percepcao": "+13",
-    "percepcaoObs": "normal",
-    "defesa": "31",
-    "fort": "+15",
-    "ref": "+9",
-    "von": "+21",
-    "defesaObs": "resistência mental +2",
-    "pv": "250",
-    "desl": "9m (6q)",
-    "pm": "50",
-    "atributos": {
-      "for": "1",
-      "des": "0",
-      "con": "3",
-      "int": "3",
-      "sab": "5",
-      "car": "4"
+    {
+        "nome": "Alto Sacerdote",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "9",
+        "iniciativa": "+8",
+        "percepcao": "+13",
+        "percepcaoObs": "normal",
+        "defesa": "31",
+        "fort": "+15",
+        "ref": "+9",
+        "von": "+21",
+        "defesaObs": "resistência mental +2",
+        "pv": "250",
+        "desl": "9m (6q)",
+        "pm": "50",
+        "atributos": {
+            "for": "1",
+            "des": "0",
+            "con": "3",
+            "int": "3",
+            "sab": "5",
+            "car": "4"
+        },
+        "ataques": [
+            {
+                "nome": "Báculo da fé",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+25",
+                "dano": "2d6+10 impacto",
+                "desc": "Cetro sagrado. Adiciona +2d6 pontos de dano de energia por acerto."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Autoridade Eclesiástica",
+                "tipo": "Qualidade",
+                "desc": "Garante +5 em testes de Diplomacia e Intimidação contra devotos de sua própria divindade."
+            },
+            {
+                "nome": "Defesas do Templo",
+                "tipo": "Movimento",
+                "desc": "Custos: 2 PM. Ativa os perímetros divinos sagrados: replica o efeito de Arma Espiritual e garante +5 de bônus em sua Defesa. Uso restrito ao interior de seu próprio templo."
+            },
+            {
+                "nome": "Força da Fé",
+                "tipo": "Reação",
+                "desc": "Custos: 2 PM. Uma vez por cena, ao sofrer um ataque ou dano que o reduziria a menos de 1 PV, o alto sacerdote anula e ignora completamente esse dano."
+            },
+            {
+                "nome": "Paróquia",
+                "tipo": "Qualidade",
+                "desc": "Guarda bônus territoriais no templo: confere +2 na Defesa, +2 em resistências e aumenta em +2 a CD de suas magias (bônus não aplicados na ficha)."
+            },
+            {
+                "nome": "Magia: Comando",
+                "tipo": "Padrão",
+                "desc": "Custos: 4 PM. Ordena a duas criaturas curtas a se ajoelharem. Ficam caídas e impedidas de se levantar até o começo de seus próximos turnos (Von CD 30 evita)."
+            },
+            {
+                "nome": "Magia: Coluna de Chamas",
+                "tipo": "Padrão",
+                "desc": "Custos: 9 PM. Cilindro com 3m de raio e 15m de altura em alcance longo inflige 8d6 de fogo e 7d6 de luz na área afetada (Ref CD 30 metade)."
+            },
+            {
+                "nome": "Magia: Curar Ferimentos",
+                "tipo": "Padrão",
+                "desc": "Custos: 9 PM. Regenera 10d8+10 PV em criatura adjacente."
+            },
+            {
+                "nome": "Magia: Dissipar Magia",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM. Dissipa magias de alvo/área média com CD menor que o teste de Misticismo. Se desferido contra itens mágicos, anula suas propriedades tornando-os mundanos por 1d6 rodadas (Von CD 30 nega)."
+            },
+            {
+                "nome": "Magia: Orientação",
+                "tipo": "Padrão",
+                "desc": "Custos: 8 PM. Escolhe um atributo e qualquer número de alvos em alcance curto. Até o fim da cena, quando testarem perícias do atributo, rolam dois dados e escolhem o melhor."
+            },
+            {
+                "nome": "Magia: Santuário",
+                "tipo": "Padrão",
+                "desc": "Custos: 1 PM. Toca um alvo; quem tentar ações hostis contra ele perde a ação (Von CD 30 evita). Quebra se o alvo atacar."
+            }
+        ],
+        "pericias": [
+            { "nome": "Conhecimento", "valor": "+11" },
+            { "nome": "Cura", "valor": "+13" },
+            { "nome": "Diplomacia", "valor": "+14" },
+            { "nome": "Intuição", "valor": "+13" },
+            { "nome": "Misticismo", "valor": "+12" },
+            { "nome": "Religião", "valor": "+20" }
+        ],
+        "tesouro": "Dobro (Báculo da fé, batina consagrada, manto eclesiástico aprimorado, símbolo sagrado)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Báculo da fé",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+25",
-        "dano": "2d6+10 impacto",
-        "desc": "Cetro sagrado. Adiciona +2d6 pontos de dano de energia por acerto."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Autoridade Eclesiástica",
-        "tipo": "Qualidade",
-        "desc": "Garante +5 em testes de Diplomacia e Intimidação contra devotos de sua própria divindade."
-      },
-      {
-        "nome": "Defesas do Templo",
-        "tipo": "Movimento",
-        "desc": "Custos: 2 PM. Ativa os perímetros divinos sagrados: replica o efeito de Arma Espiritual e garante +5 de bônus em sua Defesa. Uso restrito ao interior de seu próprio templo."
-      },
-      {
-        "nome": "Força da Fé",
-        "tipo": "Reação",
-        "desc": "Custos: 2 PM. Uma vez por cena, ao sofrer um ataque ou dano que o reduziria a menos de 1 PV, o alto sacerdote anula e ignora completamente esse dano."
-      },
-      {
-        "nome": "Paróquia",
-        "tipo": "Qualidade",
-        "desc": "Guarda bônus territoriais no templo: confere +2 na Defesa, +2 em resistências e aumenta em +2 a CD de suas magias (bônus não aplicados na ficha)."
-      },
-      {
-        "nome": "Magia: Comando",
-        "tipo": "Padrão",
-        "desc": "Custos: 4 PM. Ordena a duas criaturas curtas a se ajoelharem. Ficam caídas e impedidas de se levantar até o começo de seus próximos turnos (Von CD 30 evita)."
-      },
-      {
-        "nome": "Magia: Coluna de Chamas",
-        "tipo": "Padrão",
-        "desc": "Custos: 9 PM. Cilindro com 3m de raio e 15m de altura em alcance longo inflige 8d6 de fogo e 7d6 de luz na área afetada (Ref CD 30 metade)."
-      },
-      {
-        "nome": "Magia: Curar Ferimentos",
-        "tipo": "Padrão",
-        "desc": "Custos: 9 PM. Regenera 10d8+10 PV em criatura adjacente."
-      },
-      {
-        "nome": "Magia: Dissipar Magia",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM. Dissipa magias de alvo/área média com CD menor que o teste de Misticismo. Se desferido contra itens mágicos, anula suas propriedades tornando-os mundanos por 1d6 rodadas (Von CD 30 nega)."
-      },
-      {
-        "nome": "Magia: Orientação",
-        "tipo": "Padrão",
-        "desc": "Custos: 8 PM. Escolhe um atributo e qualquer número de alvos em alcance curto. Até o fim da cena, quando testarem perícias do atributo, rolam dois dados e escolhem o melhor."
-      },
-      {
-        "nome": "Magia: Santuário",
-        "tipo": "Padrão",
-        "desc": "Custos: 1 PM. Toca um alvo; quem tentar ações hostis contra ele perde a ação (Von CD 30 evita). Quebra se o alvo atacar."
-      }
-    ],
-    "pericias": [
-      { "nome": "Conhecimento", "valor": "+11" },
-      { "nome": "Cura", "valor": "+13" },
-      { "nome": "Diplomacia", "valor": "+14" },
-      { "nome": "Intuição", "valor": "+13" },
-      { "nome": "Misticismo", "valor": "+12" },
-      { "nome": "Religião", "valor": "+20" }
-    ],
-    "tesouro": "Dobro (Báculo da fé, batina consagrada, manto eclesiástico aprimorado, símbolo sagrado)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Alcaide de Valkaria",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "4",
-    "iniciativa": "+6",
-    "percepcao": "+6",
-    "percepcaoObs": "normal",
-    "defesa": "23",
-    "fort": "+15",
-    "ref": "+10",
-    "von": "+6",
-    "defesaObs": "normal",
-    "pv": "70",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "3",
-      "des": "2",
-      "con": "2",
-      "int": "0",
-      "sab": "2",
-      "car": "0"
+    {
+        "nome": "Alcaide de Valkaria",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "4",
+        "iniciativa": "+6",
+        "percepcao": "+6",
+        "percepcaoObs": "normal",
+        "defesa": "23",
+        "fort": "+15",
+        "ref": "+10",
+        "von": "+6",
+        "defesaObs": "normal",
+        "pv": "70",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "3",
+            "des": "2",
+            "con": "2",
+            "int": "0",
+            "sab": "2",
+            "car": "0"
+        },
+        "ataques": [
+            {
+                "nome": "Espada longa x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+16",
+                "dano": "1d8+8 corte",
+                "desc": "19. Estilo de combate com duas espadas."
+            },
+            {
+                "nome": "Arco longo x2",
+                "tipo": "À Distância",
+                "bonus": "+16",
+                "dano": "1d8+8 perfuração",
+                "desc": "x3. Disparos duplos rápidos de patrulha."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Chamar Reforços",
+                "tipo": "Padrão",
+                "desc": "Sopra o apito invocando 1d4 Patrulheiros de Valkaria em espaços desocupados curtos. Os guardas agem a partir da rodada seguinte do alcaide. Recarga (1d4 rodadas)."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+7" },
+            { "nome": "Intuição", "valor": "+6" }
+        ],
+        "tesouro": "Metade (Arco longo, algemas, apito, cota de malha reforçada, espada longa, flechas x20, lampião)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Espada longa x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+16",
-        "dano": "1d8+8 corte",
-        "desc": "19. Estilo de combate com duas espadas."
-      },
-      {
-        "nome": "Arco longo x2",
-        "tipo": "À Distância",
-        "bonus": "+16",
-        "dano": "1d8+8 perfuração",
-        "desc": "x3. Disparos duplos rápidos de patrulha."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Chamar Reforços",
-        "tipo": "Padrão",
-        "desc": "Sopra o apito invocando 1d4 Patrulheiros de Valkaria em espaços desocupados curtos. Os guardas agem a partir da rodada seguinte do alcaide. Recarga (1d4 rodadas)."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+7" },
-      { "nome": "Intuição", "valor": "+6" }
-    ],
-    "tesouro": "Metade (Arco longo, algemas, apito, cota de malha reforçada, espada longa, flechas x20, lampião)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Besteiro",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "1",
-    "iniciativa": "+7",
-    "percepcao": "+5",
-    "percepcaoObs": "normal",
-    "defesa": "16",
-    "fort": "+5",
-    "ref": "+8",
-    "von": "+3",
-    "defesaObs": "normal",
-    "pv": "11",
-    "desl": "9m (6q)",
-    "pm": "0",
-    "atributos": {
-      "for": "1",
-      "des": "3",
-      "con": "1",
-      "int": "0",
-      "sab": "1",
-      "car": "-1"
+    {
+        "nome": "Besteiro",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "1",
+        "iniciativa": "+7",
+        "percepcao": "+5",
+        "percepcaoObs": "normal",
+        "defesa": "16",
+        "fort": "+5",
+        "ref": "+8",
+        "von": "+3",
+        "defesaObs": "normal",
+        "pv": "11",
+        "desl": "9m (6q)",
+        "pm": "0",
+        "atributos": {
+            "for": "1",
+            "des": "3",
+            "con": "1",
+            "int": "0",
+            "sab": "1",
+            "car": "-1"
+        },
+        "ataques": [
+            {
+                "nome": "Espada curta",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+9",
+                "dano": "1d6+2 perfuração",
+                "desc": "19. Lâmina reserva de curto alcance."
+            },
+            {
+                "nome": "Besta pesada",
+                "tipo": "À Distância",
+                "bonus": "+11",
+                "dano": "1d12+6 perfuração",
+                "desc": "19. Arma de longo alcance principal. Afetada por Besteiro Treinado e Saraivada."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Besteiro Treinado",
+                "tipo": "Qualidade",
+                "desc": "Permite disparar contra alvos envolvidos em combate corpo a corpo sem sofrer o redutor padrão de –5. Além disso, recarrega sua besta pesada gastando uma ação de movimento."
+            },
+            {
+                "nome": "Saraivada",
+                "tipo": "Padrão",
+                "desc": "Se dois ou mais besteiros estiverem adjacentes, podem coordenar tiros na mesma ação padrão contra um alvo médio. O alvo sofre 1d12+6 de perfuração, somando +1d12 extra para cada besteiro adicional participante (Ref CD 17 metade)."
+            }
+        ],
+        "pericias": [],
+        "tesouro": "Metade (Besta pesada, couro batido, espada curta, virotes x20)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Espada curta",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+9",
-        "dano": "1d6+2 perfuração",
-        "desc": "19. Lâmina reserva de curto alcance."
-      },
-      {
-        "nome": "Besta pesada",
-        "tipo": "À Distância",
-        "bonus": "+11",
-        "dano": "1d12+6 perfuração",
-        "desc": "19. Arma de longo alcance principal. Afetada por Besteiro Treinado e Saraivada."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Besteiro Treinado",
-        "tipo": "Qualidade",
-        "desc": "Permite disparar contra alvos envolvidos em combate corpo a corpo sem sofrer o redutor padrão de –5. Além disso, recarrega sua besta pesada gastando uma ação de movimento."
-      },
-      {
-        "nome": "Saraivada",
-        "tipo": "Padrão",
-        "desc": "Se dois ou mais besteiros estiverem adjacentes, podem coordenar tiros na mesma ação padrão contra um alvo médio. O alvo sofre 1d12+6 de perfuração, somando +1d12 extra para cada besteiro adicional participante (Ref CD 17 metade)."
-      }
-    ],
-    "pericias": [],
-    "tesouro": "Metade (Besta pesada, couro batido, espada curta, virotes x20)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Capitão da Guarda",
-    "tipo": "Humanoide (anão) Médio",
-    "nd": "6",
-    "iniciativa": "+5",
-    "percepcao": "+7",
-    "percepcaoObs": "visão no escuro",
-    "defesa": "27",
-    "fort": "+17",
-    "ref": "+7",
-    "von": "+12",
-    "defesaObs": "redução de dano 5, resistência a medo +2",
-    "pv": "195",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "4",
-      "des": "0",
-      "con": "5",
-      "int": "0",
-      "sab": "2",
-      "car": "1"
+    {
+        "nome": "Capitão da Guarda",
+        "tipo": "Humanoide (anão) Médio",
+        "nd": "6",
+        "iniciativa": "+5",
+        "percepcao": "+7",
+        "percepcaoObs": "visão no escuro",
+        "defesa": "27",
+        "fort": "+17",
+        "ref": "+7",
+        "von": "+12",
+        "defesaObs": "redução de dano 5, resistência a medo +2",
+        "pv": "195",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "4",
+            "des": "0",
+            "con": "5",
+            "int": "0",
+            "sab": "2",
+            "car": "1"
+        },
+        "ataques": [
+            {
+                "nome": "Machado anão x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+20",
+                "dano": "2d12+10 corte",
+                "desc": "x3. Ataques duplos pesados com machado racial."
+            },
+            {
+                "nome": "Azagaia",
+                "tipo": "À Distância",
+                "bonus": "+17",
+                "dano": "2d6+8 perfuração",
+                "desc": "Lança de arremesso."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Mexa-se, Soldado",
+                "tipo": "Movimento",
+                "desc": "Profe comando tático a um aliado em alcance médio. O lacaio ganha o direito de realizar uma ação padrão extra imediatamente."
+            },
+            {
+                "nome": "Ordens",
+                "tipo": "Movimento",
+                "desc": "Grita instruções para seus subordinados em alcance médio. Todos os aliados afetados recebem +2 em testes de perícia até o fim da cena."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+9" },
+            { "nome": "Guerra", "valor": "+5" },
+            { "nome": "Intuição", "valor": "+9" }
+        ],
+        "tesouro": "Metade (Apito, azagaia x2, enfeite de elmo, escudo pesado, machado anão, meia armadura)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Machado anão x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+20",
-        "dano": "2d12+10 corte",
-        "desc": "x3. Ataques duplos pesados com machado racial."
-      },
-      {
-        "nome": "Azagaia",
-        "tipo": "À Distância",
-        "bonus": "+17",
-        "dano": "2d6+8 perfuração",
-        "desc": "Lança de arremesso."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Mexa-se, Soldado",
-        "tipo": "Movimento",
-        "desc": "Profe comando tático a um aliado em alcance médio. O lacaio ganha o direito de realizar uma ação padrão extra imediatamente."
-      },
-      {
-        "nome": "Ordens",
-        "tipo": "Movimento",
-        "desc": "Grita instruções para seus subordinados em alcance médio. Todos os aliados afetados recebem +2 em testes de perícia até o fim da cena."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+9" },
-      { "nome": "Guerra", "valor": "+5" },
-      { "nome": "Intuição", "valor": "+9" }
-    ],
-    "tesouro": "Metade (Apito, azagaia x2, enfeite de elmo, escudo pesado, machado anão, meia armadura)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Golem Guardião",
-    "tipo": "Construto Grande",
-    "nd": "7",
-    "iniciativa": "+6",
-    "percepcao": "+12",
-    "percepcaoObs": "visão no escuro",
-    "defesa": "30",
-    "fort": "+18",
-    "ref": "+13",
-    "von": "+7",
-    "defesaObs": "imunidade a eletricidade, redução de dano 10",
-    "pv": "55",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "5",
-      "des": "-1",
-      "con": "4",
-      "int": "—",
-      "sab": "0",
-      "car": "-5"
+    {
+        "nome": "Golem Guardião",
+        "tipo": "Construto Grande",
+        "nd": "7",
+        "iniciativa": "+6",
+        "percepcao": "+12",
+        "percepcaoObs": "visão no escuro",
+        "defesa": "30",
+        "fort": "+18",
+        "ref": "+13",
+        "von": "+7",
+        "defesaObs": "imunidade a eletricidade, redução de dano 10",
+        "pv": "55",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "5",
+            "des": "-1",
+            "con": "4",
+            "int": "—",
+            "sab": "0",
+            "car": "-5"
+        },
+        "ataques": [
+            {
+                "nome": "Duas pancadas",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+25",
+                "dano": "2d10+15 impacto",
+                "desc": "Braços pesados metálicos. Adicionam +2d8 de eletricidade por acerto. Ativam Pancada Atordoante."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Pancada Atordoante",
+                "tipo": "Qualidade",
+                "desc": "Acertar a pancada deixa a vítima atordoadas por 1 rodada (Fort CD 24 evita; sucesso dá imunidade ao atordoamento deste membro até o fim da cena)."
+            },
+            {
+                "nome": "Raio",
+                "tipo": "Padrão",
+                "desc": "Dispara choque em alvo médio. Causa 10d8 de eletricidade e atordoa por 1 rodada (Ref CD 24 metade, nega a condição e garante imunidade ao atordoamento do raio na cena). Recarga (movimento)."
+            },
+            {
+                "nome": "Runas Divinatórias",
+                "tipo": "Movimento",
+                "desc": "Ativa inscrições místicas rúnicas: o golem passa a se valer do efeito pleno da magia Visão da Verdade até o fim da cena."
+            }
+        ],
+        "pericias": [],
+        "tesouro": "Fragmentos de runas (CD 21 extrair, valem T$ 200 para forja de catalisadores)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Duas pancadas",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+25",
-        "dano": "2d10+15 impacto",
-        "desc": "Braços pesados metálicos. Adicionam +2d8 de eletricidade por acerto. Ativam Pancada Atordoante."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Pancada Atordoante",
-        "tipo": "Qualidade",
-        "desc": "Acertar a pancada deixa a vítima atordoadas por 1 rodada (Fort CD 24 evita; sucesso dá imunidade ao atordoamento deste membro até o fim da cena)."
-      },
-      {
-        "nome": "Raio",
-        "tipo": "Padrão",
-        "desc": "Dispara choque em alvo médio. Causa 10d8 de eletricidade e atordoa por 1 rodada (Ref CD 24 metade, nega a condição e garante imunidade ao atordoamento do raio na cena). Recarga (movimento)."
-      },
-      {
-        "nome": "Runas Divinatórias",
-        "tipo": "Movimento",
-        "desc": "Ativa inscrições místicas rúnicas: o golem passa a se valer do efeito pleno da magia Visão da Verdade até o fim da cena."
-      }
-    ],
-    "pericias": [],
-    "tesouro": "Fragmentos de runas (CD 21 extrair, valem T$ 200 para forja de catalisadores)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Guarda Palaciano",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "3",
-    "iniciativa": "+6",
-    "percepcao": "+5",
-    "percepcaoObs": "normal",
-    "defesa": "21",
-    "fort": "+14",
-    "ref": "+4",
-    "von": "+9",
-    "defesaObs": "Sentinela Determinada",
-    "pv": "28",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "3",
-      "des": "1",
-      "con": "3",
-      "int": "0",
-      "sab": "2",
-      "car": "0"
+    {
+        "nome": "Guarda Palaciano",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "3",
+        "iniciativa": "+6",
+        "percepcao": "+5",
+        "percepcaoObs": "normal",
+        "defesa": "21",
+        "fort": "+14",
+        "ref": "+4",
+        "von": "+9",
+        "defesaObs": "Sentinela Determinada",
+        "pv": "28",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "3",
+            "des": "1",
+            "con": "3",
+            "int": "0",
+            "sab": "2",
+            "car": "0"
+        },
+        "ataques": [
+            {
+                "nome": "Espada longa x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+16",
+                "dano": "1d8+8 corte",
+                "desc": "19. Ataques duplos coordenados de patrulha de castelo."
+            },
+            {
+                "nome": "Besta pesada",
+                "tipo": "À Distância",
+                "bonus": "+16",
+                "dano": "1d12+4 perfuração",
+                "desc": "19. Disparo pesado de baluarte."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Sentinela Determinada",
+                "tipo": "Qualidade",
+                "desc": "Garante +2 em testes de perícia gerais sempre que estiver engajado lutando para salvaguardar ou defender o seu posto fixo (como fortificações, templos ou castelos)."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+6" },
+            { "nome": "Intuição", "valor": "+5" }
+        ],
+        "tesouro": "Metade (Besta pesada, escudo pesado, espada longa, meia armadura, virotes x20)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Espada longa x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+16",
-        "dano": "1d8+8 corte",
-        "desc": "19. Ataques duplos coordenados de patrulha de castelo."
-      },
-      {
-        "nome": "Besta pesada",
-        "tipo": "À Distância",
-        "bonus": "+16",
-        "dano": "1d12+4 perfuração",
-        "desc": "19. Disparo pesado de baluarte."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Sentinela Determinada",
-        "tipo": "Qualidade",
-        "desc": "Garante +2 em testes de perícia gerais sempre que estiver engajado lutando para salvaguardar ou defender o seu posto fixo (como fortificações, templos ou castelos)."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+6" },
-      { "nome": "Intuição", "valor": "+5" }
-    ],
-    "tesouro": "Metade (Besta pesada, escudo pesado, espada longa, meia armadura, virotes x20)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Milícia Arcana",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "5",
-    "iniciativa": "+7",
-    "percepcao": "+7",
-    "percepcaoObs": "normal, Visão Mística",
-    "defesa": "21",
-    "fort": "+11",
-    "ref": "+4",
-    "von": "+15",
-    "defesaObs": "imunidade a efeitos mentais",
-    "pv": "70",
-    "desl": "9m (6q)",
-    "pm": "27",
-    "atributos": {
-      "for": "2",
-      "des": "3",
-      "con": "2",
-      "int": "3",
-      "sab": "1",
-      "car": "-1"
+    {
+        "nome": "Milícia Arcana",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "5",
+        "iniciativa": "+7",
+        "percepcao": "+7",
+        "percepcaoObs": "normal, Visão Mística",
+        "defesa": "21",
+        "fort": "+11",
+        "ref": "+4",
+        "von": "+15",
+        "defesaObs": "imunidade a efeitos mentais",
+        "pv": "70",
+        "desl": "9m (6q)",
+        "pm": "27",
+        "atributos": {
+            "for": "2",
+            "des": "3",
+            "con": "2",
+            "int": "3",
+            "sab": "1",
+            "car": "-1"
+        },
+        "ataques": [
+            {
+                "nome": "Espada longa",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+12",
+                "dano": "1d8+7 corte",
+                "desc": "19. Sob efeito de Arma Mágica, ataca usando Inteligência (bônus vira +14), a arma ganha propriedades mágicas e inflige +1d6 de fogo."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Arcano de Batalha",
+                "tipo": "Qualidade",
+                "desc": "Adiciona o seu modificador de Inteligência (+3) diretamente nas rolagens de dano de suas magias ofensivas (já embutido nas descrições)."
+            },
+            {
+                "nome": "Magia: Amarras Etéreas",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM (CD 21). Três laços de energia agarram criatura em alcance médio (Ref nega). Alvo solta-se com Atletismo; laços individuais detêm Defesa 10, 10 PV, RD 5 e imunidade a dano mágico. Dissipa se todos os laços forem destruídos."
+            },
+            {
+                "nome": "Magia: Arma Mágica",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM. Arma empunhada vira mágica pela cena: fornece +1 em ataques/dano e adiciona +1d6 de fogo. Permite usar Inteligência no ataque (total +14)."
+            },
+            {
+                "nome": "Magia: Dissipar Magia",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM. Limpa efeitos de alvo médio com CD menor que seu teste de Misticismo. Itens mágicos alvejados perdem propriedades por 1d6 rodadas (Von CD 21 nega)."
+            },
+            {
+                "nome": "Magia: Seta Infalível de Talude",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM. Dispara três projéteis mágicos teleguiados em até três alvos médios. Cada dardo causa 1d4+1 de essência pura (um deles recebe +3 de dano bônus)."
+            },
+            {
+                "nome": "Magia: Visão Mística",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM. Enxerga invisíveis e mapeia auras mágicas em alcance médio de forma passiva. Ação de movimento descobre se um alvo pode conjurar magias e revela a natureza de sua aura."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+6" },
+            { "nome": "Intuição", "valor": "+7" },
+            { "nome": "Misticismo", "valor": "+10" }
+        ],
+        "tesouro": "Metade (Essência de mana, espada longa, robe místico, varinha arcana)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Espada longa",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+12",
-        "dano": "1d8+7 corte",
-        "desc": "19. Sob efeito de Arma Mágica, ataca usando Inteligência (bônus vira +14), a arma ganha propriedades mágicas e inflige +1d6 de fogo."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Arcano de Batalha",
-        "tipo": "Qualidade",
-        "desc": "Adiciona o seu modificador de Inteligência (+3) diretamente nas rolagens de dano de suas magias ofensivas (já embutido nas descrições)."
-      },
-      {
-        "nome": "Magia: Amarras Etéreas",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM (CD 21). Três laços de energia agarram criatura em alcance médio (Ref nega). Alvo solta-se com Atletismo; laços individuais detêm Defesa 10, 10 PV, RD 5 e imunidade a dano mágico. Dissipa se todos os laços forem destruídos."
-      },
-      {
-        "nome": "Magia: Arma Mágica",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM. Arma empunhada vira mágica pela cena: fornece +1 em ataques/dano e adiciona +1d6 de fogo. Permite usar Inteligência no ataque (total +14)."
-      },
-      {
-        "nome": "Magia: Dissipar Magia",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM. Limpa efeitos de alvo médio com CD menor que seu teste de Misticismo. Itens mágicos alvejados perdem propriedades por 1d6 rodadas (Von CD 21 nega)."
-      },
-      {
-        "nome": "Magia: Seta Infalível de Talude",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM. Dispara três projéteis mágicos teleguiados em até três alvos médios. Cada dardo causa 1d4+1 de essência pura (um deles recebe +3 de dano bônus)."
-      },
-      {
-        "nome": "Magia: Visão Mística",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM. Enxerga invisíveis e mapeia auras mágicas em alcance médio de forma passiva. Ação de movimento descobre se um alvo pode conjurar magias e revela a natureza de sua aura."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+6" },
-      { "nome": "Intuição", "valor": "+7" },
-      { "nome": "Misticismo", "valor": "+10" }
-    ],
-    "tesouro": "Metade (Essência de mana, espada longa, robe místico, varinha arcana)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Patrulheiro de Valkaria",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "2",
-    "iniciativa": "+5",
-    "percepcao": "+4",
-    "percepcaoObs": "normal",
-    "defesa": "18",
-    "fort": "+11",
-    "ref": "+7",
-    "von": "+4",
-    "defesaObs": "Guardião Urbano",
-    "pv": "17",
-    "desl": "9m (6q)",
-    "pm": "0",
-    "atributos": {
-      "for": "2",
-      "des": "2",
-      "con": "2",
-      "int": "0",
-      "sab": "1",
-      "car": "0"
+    {
+        "nome": "Patrulheiro de Valkaria",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "2",
+        "iniciativa": "+5",
+        "percepcao": "+4",
+        "percepcaoObs": "normal",
+        "defesa": "18",
+        "fort": "+11",
+        "ref": "+7",
+        "von": "+4",
+        "defesaObs": "Guardião Urbano",
+        "pv": "17",
+        "desl": "9m (6q)",
+        "pm": "0",
+        "atributos": {
+            "for": "2",
+            "des": "2",
+            "con": "2",
+            "int": "0",
+            "sab": "1",
+            "car": "0"
+        },
+        "ataques": [
+            {
+                "nome": "Espada longa x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+13",
+                "dano": "1d8+5 corte",
+                "desc": "19. Ataques duplos com espada."
+            },
+            {
+                "nome": "Porrete x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+13",
+                "dano": "1d6+5 não letal",
+                "desc": "Bastão tático de contenção urbana. Inflige dano não letal."
+            },
+            {
+                "nome": "Arco longo",
+                "tipo": "À Distância",
+                "bonus": "+13",
+                "dano": "1d8+5 perfuração",
+                "desc": "x3. Apoio à distância."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Guardião Urbano",
+                "tipo": "Qualidade",
+                "desc": "Quando operando especificamente dentro dos limites da metrópole de Valkaria, recebe +2 de bônus em testes de ataque, Atletismo, Intuição e Percepção (bônus não aplicados na ficha)."
+            },
+            {
+                "nome": "Manter a Ordem",
+                "tipo": "Qualidade",
+                "desc": "Garante +2 de bônus cumulativo em todos os testes focados nas manobras agarrar, derrubar ou desarmar."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+5" },
+            { "nome": "Intuição", "valor": "+4" }
+        ],
+        "tesouro": "Metade (Arco longo, algemas, apito, couro batido reforçado, espada longa, flechas x20, lampião, porrete)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Espada longa x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+13",
-        "dano": "1d8+5 corte",
-        "desc": "19. Ataques duplos com espada."
-      },
-      {
-        "nome": "Porrete x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+13",
-        "dano": "1d6+5 não letal",
-        "desc": "Bastão tático de contenção urbana. Inflige dano não letal."
-      },
-      {
-        "nome": "Arco longo",
-        "tipo": "À Distância",
-        "bonus": "+13",
-        "dano": "1d8+5 perfuração",
-        "desc": "x3. Apoio à distância."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Guardião Urbano",
-        "tipo": "Qualidade",
-        "desc": "Quando operando especificamente dentro dos limites da metrópole de Valkaria, recebe +2 de bônus em testes de ataque, Atletismo, Intuição e Percepção (bônus não aplicados na ficha)."
-      },
-      {
-        "nome": "Manter a Ordem",
-        "tipo": "Qualidade",
-        "desc": "Garante +2 de bônus cumulativo em todos os testes focados nas manobras agarrar, derrubar ou desarmar."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+5" },
-      { "nome": "Intuição", "valor": "+4" }
-    ],
-    "tesouro": "Metade (Arco longo, algemas, apito, couro batido reforçado, espada longa, flechas x20, lampião, porrete)",
-    "fonte": "Guia de NPCs"
-  },
-  
-  {
-    "nome": "Assassino",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "3",
-    "iniciativa": "+9",
-    "percepcao": "+3",
-    "percepcaoObs": "normal",
-    "defesa": "19",
-    "fort": "+9",
-    "ref": "+15",
-    "von": "+3",
-    "defesaObs": "evasão",
-    "pv": "51",
-    "desl": "9m (6q)",
-    "pm": "0",
-    "atributos": {
-      "for": "0",
-      "des": "4",
-      "con": "2",
-      "int": "2",
-      "sab": "0",
-      "car": "0"
+
+    {
+        "nome": "Assassino",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "3",
+        "iniciativa": "+9",
+        "percepcao": "+3",
+        "percepcaoObs": "normal",
+        "defesa": "19",
+        "fort": "+9",
+        "ref": "+15",
+        "von": "+3",
+        "defesaObs": "evasão",
+        "pv": "51",
+        "desl": "9m (6q)",
+        "pm": "0",
+        "atributos": {
+            "for": "0",
+            "des": "4",
+            "con": "2",
+            "int": "2",
+            "sab": "0",
+            "car": "0"
+        },
+        "ataques": [
+            {
+                "nome": "Duas espadas curtas",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+12",
+                "dano": "1d6+4 corte",
+                "desc": "19. Estilo de duas armas. Inocula Peçonha Concentrada e permite somar Ataque Furtivo."
+            },
+            {
+                "nome": "Adaga",
+                "tipo": "À Distância",
+                "bonus": "+12",
+                "dano": "1d4+4 perfuração",
+                "desc": "19. Lâmina de arremesso. Inocula Peçonha Concentrada e aplica Ataque Furtivo."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Assassinar",
+                "tipo": "Movimento",
+                "desc": "Analisa uma criatura em alcance curto. Até o fim de seu próximo turno, ele dobra os dados de dano extras por Ataque Furtivo (+6d6) em seu primeiro Ataque Furtivo que causar dano contra essa criatura."
+            },
+            {
+                "nome": "Ataque Furtivo",
+                "tipo": "Qualidade",
+                "desc": "Adiciona +3d6 pontos de dano extra contra alvos flanqueados ou desprevenidos."
+            },
+            {
+                "nome": "Veneno",
+                "tipo": "Qualidade",
+                "desc": "Peçonha concentrada (veneno de naja): faz o alvo perder 1d12 pontos de vida por rodada durante 3 rodadas (Fort CD 19 reduz a duração para 1 rodada)."
+            }
+        ],
+        "pericias": [
+            { "nome": "Acrobacia", "valor": "+9" },
+            { "nome": "Atletismo", "valor": "+5" },
+            { "nome": "Enganação", "valor": "+5" },
+            { "nome": "Furtividade", "valor": "+9" },
+            { "nome": "Ladinagem", "valor": "+9" }
+        ],
+        "tesouro": "Padrão (Adaga x2, couro batido ajustado, espada curta x2, estojo de disfarces, gazua, veneno de naja x3)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Duas espadas curtas",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+12",
-        "dano": "1d6+4 corte",
-        "desc": "19. Estilo de duas armas. Inocula Peçonha Concentrada e permite somar Ataque Furtivo."
-      },
-      {
-        "nome": "Adaga",
-        "tipo": "À Distância",
-        "bonus": "+12",
-        "dano": "1d4+4 perfuração",
-        "desc": "19. Lâmina de arremesso. Inocula Peçonha Concentrada e aplica Ataque Furtivo."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Assassinar",
-        "tipo": "Movimento",
-        "desc": "Analisa uma criatura em alcance curto. Até o fim de seu próximo turno, ele dobra os dados de dano extras por Ataque Furtivo (+6d6) em seu primeiro Ataque Furtivo que causar dano contra essa criatura."
-      },
-      {
-        "nome": "Ataque Furtivo",
-        "tipo": "Qualidade",
-        "desc": "Adiciona +3d6 pontos de dano extra contra alvos flanqueados ou desprevenidos."
-      },
-      {
-        "nome": "Veneno",
-        "tipo": "Qualidade",
-        "desc": "Peçonha concentrada (veneno de naja): faz o alvo perder 1d12 pontos de vida por rodada durante 3 rodadas (Fort CD 19 reduz a duração para 1 rodada)."
-      }
-    ],
-    "pericias": [
-      { "nome": "Acrobacia", "valor": "+9" },
-      { "nome": "Atletismo", "valor": "+5" },
-      { "nome": "Enganação", "valor": "+5" },
-      { "nome": "Furtividade", "valor": "+9" },
-      { "nome": "Ladinagem", "valor": "+9" }
-    ],
-    "tesouro": "Padrão (Adaga x2, couro batido ajustado, espada curta x2, estojo de disfarces, gazua, veneno de naja x3)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Brucutu",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "1/2",
-    "iniciativa": "+2",
-    "percepcao": "+2",
-    "percepcaoObs": "normal",
-    "defesa": "13",
-    "fort": "+5",
-    "ref": "+3",
-    "von": "+0",
-    "defesaObs": "normal",
-    "pv": "7",
-    "desl": "9m (6q)",
-    "pm": "0",
-    "atributos": {
-      "for": "2",
-      "des": "0",
-      "con": "2",
-      "int": "-1",
-      "sab": "0",
-      "car": "-1"
+    {
+        "nome": "Brucutu",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "1/2",
+        "iniciativa": "+2",
+        "percepcao": "+2",
+        "percepcaoObs": "normal",
+        "defesa": "13",
+        "fort": "+5",
+        "ref": "+3",
+        "von": "+0",
+        "defesaObs": "normal",
+        "pv": "7",
+        "desl": "9m (6q)",
+        "pm": "0",
+        "atributos": {
+            "for": "2",
+            "des": "0",
+            "con": "2",
+            "int": "-1",
+            "sab": "0",
+            "car": "-1"
+        },
+        "ataques": [
+            {
+                "nome": "Clava",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+9",
+                "dano": "1d6+6 impacto",
+                "desc": "Porrete pesado. Sofre modificação por Valentão."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Valentão",
+                "tipo": "Qualidade",
+                "desc": "Recebe +2 de bônus em testes de ataque e nas rolagens de dano contra oponentes que estejam caídos, desprevenidos, enredados, flanqueados ou indefesos."
+            },
+            {
+                "nome": "Parceiro",
+                "tipo": "Qualidade",
+                "desc": "Ajudante/Carregador (impõe penalidade de –2 em Diplomacia para o mestre). Iniciante: expande o inventário do dono em 2 espaços de itens e concede +1d6 pontos de dano corpo a corpo uma vez por rodada. Veterano: capacidade de carga aumenta para 5 espaços e o dano bônus corpo a corpo sobe para +1d8. Mestre: capacidade de carga vai para 10 espaços e o bônus de dano na rodada passa a ser de +1d10."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+4" },
+            { "nome": "Intimidação", "valor": "+3" }
+        ],
+        "tesouro": "Nenhum (Equipado com andrajos de aldeão, bandana e clava)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Clava",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+9",
-        "dano": "1d6+6 impacto",
-        "desc": "Porrete pesado. Sofre modificação por Valentão."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Valentão",
-        "tipo": "Qualidade",
-        "desc": "Recebe +2 de bônus em testes de ataque e nas rolagens de dano contra oponentes que estejam caídos, desprevenidos, enredados, flanqueados ou indefesos."
-      },
-      {
-        "nome": "Parceiro",
-        "tipo": "Qualidade",
-        "desc": "Ajudante/Carregador (impõe penalidade de –2 em Diplomacia para o mestre). Iniciante: expande o inventário do dono em 2 espaços de itens e concede +1d6 pontos de dano corpo a corpo uma vez por rodada. Veterano: capacidade de carga aumenta para 5 espaços e o dano bônus corpo a corpo sobe para +1d8. Mestre: capacidade de carga vai para 10 espaços e o bônus de dano na rodada passa a ser de +1d10."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+4" },
-      { "nome": "Intimidação", "valor": "+3" }
-    ],
-    "tesouro": "Nenhum (Equipado com andrajos de aldeão, bandana e clava)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Charlatão",
-    "tipo": "Humanoide (hynne) Pequeno",
-    "nd": "1/2",
-    "iniciativa": "+7",
-    "percepcao": "+3",
-    "percepcaoObs": "normal",
-    "defesa": "13",
-    "fort": "-1",
-    "ref": "+6",
-    "von": "+3",
-    "defesaObs": "Aparência Inofensiva",
-    "pv": "9",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "-1",
-      "des": "3",
-      "con": "-1",
-      "int": "1",
-      "sab": "-1",
-      "car": "4"
+    {
+        "nome": "Charlatão",
+        "tipo": "Humanoide (hynne) Pequeno",
+        "nd": "1/2",
+        "iniciativa": "+7",
+        "percepcao": "+3",
+        "percepcaoObs": "normal",
+        "defesa": "13",
+        "fort": "-1",
+        "ref": "+6",
+        "von": "+3",
+        "defesaObs": "Aparência Inofensiva",
+        "pv": "9",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "-1",
+            "des": "3",
+            "con": "-1",
+            "int": "1",
+            "sab": "-1",
+            "car": "4"
+        },
+        "ataques": [
+            {
+                "nome": "Adaga",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+5",
+                "dano": "1d4+3 perfuração",
+                "desc": "19. Canivete de defesa rápida."
+            },
+            {
+                "nome": "Funda",
+                "tipo": "À Distância",
+                "bonus": "+10",
+                "dano": "1d6+3 impacto",
+                "desc": "Arremesso de pedras à distância."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Aparência Inofensiva",
+                "tipo": "Reação",
+                "desc": "A primeira criatura inteligente (Int –3 ou maior) que tentar agredir ou atacar o charlatão em uma cena deve fazer um teste de Vontade (CD 16). Se falhar, perde a respectiva ação."
+            },
+            {
+                "nome": "Engambelar",
+                "tipo": "Completa",
+                "desc": "Sua lábia ardilosa simula perfeitamente os efeitos da magia Enfeitiçar, porém espalha-se e afeta absolutamente todos os humanoides localizados em alcance curto simultaneamente (Von CD 16 evita)."
+            },
+            {
+                "nome": "Sorte Salvadora",
+                "tipo": "Reação",
+                "desc": "Uma vez por rodada, ao realizar qualquer tipo de teste de resistência, o charlatão pode rolar novamente o dado."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+5" },
+            { "nome": "Diplomacia", "valor": "+8" },
+            { "nome": "Enganação", "valor": "+14" },
+            { "nome": "Furtividade", "valor": "+9" },
+            { "nome": "Jogatina", "valor": "+8" },
+            { "nome": "Ladinagem", "valor": "+7" }
+        ],
+        "tesouro": "Padrão (Adaga, capa esvoaçante, funda, gazua, pedras x20, poção de curar ferimentos [2d8+2], poção falsa)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Adaga",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+5",
-        "dano": "1d4+3 perfuração",
-        "desc": "19. Canivete de defesa rápida."
-      },
-      {
-        "nome": "Funda",
-        "tipo": "À Distância",
-        "bonus": "+10",
-        "dano": "1d6+3 impacto",
-        "desc": "Arremesso de pedras à distância."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Aparência Inofensiva",
-        "tipo": "Reação",
-        "desc": "A primeira criatura inteligente (Int –3 ou maior) que tentar agredir ou atacar o charlatão em uma cena deve fazer um teste de Vontade (CD 16). Se falhar, perde a respectiva ação."
-      },
-      {
-        "nome": "Engambelar",
-        "tipo": "Completa",
-        "desc": "Sua lábia ardilosa simula perfeitamente os efeitos da magia Enfeitiçar, porém espalha-se e afeta absolutamente todos os humanoides localizados em alcance curto simultaneamente (Von CD 16 evita)."
-      },
-      {
-        "nome": "Sorte Salvadora",
-        "tipo": "Reação",
-        "desc": "Uma vez por rodada, ao realizar qualquer tipo de teste de resistência, o charlatão pode rolar novamente o dado."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+5" },
-      { "nome": "Diplomacia", "valor": "+8" },
-      { "nome": "Enganação", "valor": "+14" },
-      { "nome": "Furtividade", "valor": "+9" },
-      { "nome": "Jogatina", "valor": "+8" },
-      { "nome": "Ladinagem", "valor": "+7" }
-    ],
-    "tesouro": "Padrão (Adaga, capa esvoaçante, funda, gazua, pedras x20, poção de curar ferimentos [2d8+2], poção falsa)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Mercador Desonesto",
-    "tipo": "Humanoide (tritão) Médio",
-    "nd": "5",
-    "iniciativa": "+8",
-    "percepcao": "+5",
-    "percepcaoObs": "normal",
-    "defesa": "23",
-    "fort": "+6",
-    "ref": "+12",
-    "von": "+15",
-    "defesaObs": "evasão",
-    "pv": "95",
-    "desl": "9m (6q), natação 12m",
-    "pm": "0",
-    "atributos": {
-      "for": "-1",
-      "des": "4",
-      "con": "0",
-      "int": "2",
-      "sab": "1",
-      "car": "4"
+    {
+        "nome": "Mercador Desonesto",
+        "tipo": "Humanoide (tritão) Médio",
+        "nd": "5",
+        "iniciativa": "+8",
+        "percepcao": "+5",
+        "percepcaoObs": "normal",
+        "defesa": "23",
+        "fort": "+6",
+        "ref": "+12",
+        "von": "+15",
+        "defesaObs": "evasão",
+        "pv": "95",
+        "desl": "9m (6q), natação 12m",
+        "pm": "0",
+        "atributos": {
+            "for": "-1",
+            "des": "4",
+            "con": "0",
+            "int": "2",
+            "sab": "1",
+            "car": "4"
+        },
+        "ataques": [
+            {
+                "nome": "Tridente",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+15",
+                "dano": "1d8+12 perfuração",
+                "desc": "Farpas marinhas. Sujeito a bônus de Língua dos Tolos."
+            },
+            {
+                "nome": "Azagaia",
+                "tipo": "À Distância",
+                "bonus": "+17",
+                "dano": "1d6+12 perfuração",
+                "desc": "Lança leve de arremesso."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Canção dos Mares",
+                "tipo": "Padrão",
+                "desc": "Uma vez por cena, utiliza cantos tritônicos para lançar as magias Enfeitiçar ou Sono (CD 20 de resistência)."
+            },
+            {
+                "nome": "Chamar Empregados",
+                "tipo": "Movimento",
+                "desc": "Invoca 1d4+1 capangas em espaços desocupados em alcance médio. Eles agem na rodada seguinte (Desl 9m, gastam ação padrão para dar 1d10+5 pontos de impacto adjacente. Dados: For 2, Des 1, Defesa 13, 1 PV, falham em resistências automaticamente). Recarga (1d4 rodadas)."
+            },
+            {
+                "nome": "Língua dos Tolos",
+                "tipo": "Qualidade",
+                "desc": "Usa a perícia Enganação no lugar de Diplomacia para fins de barganha, recebendo +5 de bônus (já incluso). Se o comprador perder a disputa de barganha, o preço muda a favor do mercador e o alvo passa a acreditar piamente que fez um negócio excelente (Vontade CD 25 quebra a ilusão mundana)."
+            },
+            {
+                "nome": "Tudo que Você Precisa",
+                "tipo": "Qualidade",
+                "desc": "Rege seu estoque de itens superiores de até T$ 1.000. Para cada item vendido, role 1d6 para ditar a falcatrua: 1-2 (o item é completamente falso e inútil); 3-4 (o item está danificado/defeituoso e exige reparo); 5-6 (funciona normalmente). Notar o vício do produto antes da compra requer passar em Percepção ou Ofício apropriado CD 25."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+8" },
+            { "nome": "Diplomacia", "valor": "+8" },
+            { "nome": "Enganação", "valor": "+13" },
+            { "nome": "Intuição", "valor": "+5" },
+            { "nome": "Ladinagem", "valor": "+10" },
+            { "nome": "Misticismo", "valor": "+6" }
+        ],
+        "tesouro": "Padrão (Azagaia x2, capa esvoaçante, gazua, luva de pelica, tridente)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Tridente",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+15",
-        "dano": "1d8+12 perfuração",
-        "desc": "Farpas marinhas. Sujeito a bônus de Língua dos Tolos."
-      },
-      {
-        "nome": "Azagaia",
-        "tipo": "À Distância",
-        "bonus": "+17",
-        "dano": "1d6+12 perfuração",
-        "desc": "Lança leve de arremesso."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Canção dos Mares",
-        "tipo": "Padrão",
-        "desc": "Uma vez por cena, utiliza cantos tritônicos para lançar as magias Enfeitiçar ou Sono (CD 20 de resistência)."
-      },
-      {
-        "nome": "Chamar Empregados",
-        "tipo": "Movimento",
-        "desc": "Invoca 1d4+1 capangas em espaços desocupados em alcance médio. Eles agem na rodada seguinte (Desl 9m, gastam ação padrão para dar 1d10+5 pontos de impacto adjacente. Dados: For 2, Des 1, Defesa 13, 1 PV, falham em resistências automaticamente). Recarga (1d4 rodadas)."
-      },
-      {
-        "nome": "Língua dos Tolos",
-        "tipo": "Qualidade",
-        "desc": "Usa a perícia Enganação no lugar de Diplomacia para fins de barganha, recebendo +5 de bônus (já incluso). Se o comprador perder a disputa de barganha, o preço muda a favor do mercador e o alvo passa a acreditar piamente que fez um negócio excelente (Vontade CD 25 quebra a ilusão mundana)."
-      },
-      {
-        "nome": "Tudo que Você Precisa",
-        "tipo": "Qualidade",
-        "desc": "Rege seu estoque de itens superiores de até T$ 1.000. Para cada item vendido, role 1d6 para ditar a falcatrua: 1-2 (o item é completamente falso e inútil); 3-4 (o item está danificado/defeituoso e exige reparo); 5-6 (funciona normalmente). Notar o vício do produto antes da compra requer passar em Percepção ou Ofício apropriado CD 25."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+8" },
-      { "nome": "Diplomacia", "valor": "+8" },
-      { "nome": "Enganação", "valor": "+13" },
-      { "nome": "Intuição", "valor": "+5" },
-      { "nome": "Ladinagem", "valor": "+10" },
-      { "nome": "Misticismo", "valor": "+6" }
-    ],
-    "tesouro": "Padrão (Azagaia x2, capa esvoaçante, gazua, luva de pelica, tridente)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Mestre Assassino",
-    "tipo": "Humanoide (elfo) Médio",
-    "nd": "9",
-    "iniciativa": "+16",
-    "percepcao": "+11",
-    "percepcaoObs": "visão na penumbra",
-    "defesa": "32",
-    "fort": "+15",
-    "ref": "+21",
-    "von": "+9",
-    "defesaObs": "evasão aprimorada",
-    "pv": "152",
-    "desl": "12m (8q)",
-    "pm": "0",
-    "atributos": {
-      "for": "0",
-      "des": "6",
-      "con": "3",
-      "int": "4",
-      "sab": "1",
-      "car": "0"
+    {
+        "nome": "Mestre Assassino",
+        "tipo": "Humanoide (elfo) Médio",
+        "nd": "9",
+        "iniciativa": "+16",
+        "percepcao": "+11",
+        "percepcaoObs": "visão na penumbra",
+        "defesa": "32",
+        "fort": "+15",
+        "ref": "+21",
+        "von": "+9",
+        "defesaObs": "evasão aprimorada",
+        "pv": "152",
+        "desl": "12m (8q)",
+        "pm": "0",
+        "atributos": {
+            "for": "0",
+            "des": "6",
+            "con": "3",
+            "int": "4",
+            "sab": "1",
+            "car": "0"
+        },
+        "ataques": [
+            {
+                "nome": "Duas cimitarras",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+25",
+                "dano": "2d6+12 corte",
+                "desc": "17. Lâminas certeiras duplas. Inoculam Peçonha Potente e aplicam Ataque Furtivo/Assassinar."
+            },
+            {
+                "nome": "Besta pesada",
+                "tipo": "À Distância",
+                "bonus": "+25",
+                "dano": "3d6+9 perfuração",
+                "desc": "19. Besta certeira com mira telescópica e virotes de adamante. Inocula Peçonha Potente e aplica Ataque Furtivo."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Assassinar",
+                "tipo": "Movimento",
+                "desc": "Analisa uma criatura em alcance curto. Até o fim de seu próximo turno, dobra os dados de dano extras por Ataque Furtivo (+18d8) em seu primeiro ataque furtivo bem-sucedido que infligir dano contra o alvo marcado."
+            },
+            {
+                "nome": "Ataque Furtivo",
+                "tipo": "Qualidade",
+                "desc": "Adiciona +9d8 pontos de dano extra contra alvos flanqueados ou desprevenidos."
+            },
+            {
+                "nome": "Dança da Morte",
+                "tipo": "Movimento",
+                "desc": "Uma vez por cena, move-se em velocidade estonteante obliterando-se do espectro visível. Fica sob efeito de invisibilidade por 1d4+1 rodadas."
+            },
+            {
+                "nome": "Mão na Boca",
+                "tipo": "Livre",
+                "desc": "Recebe +2 em testes de agarrar (modificador total +27 incluso). Ao deferir um Ataque Furtivo contra criatura desprevenida, pode iniciar uma manobra agarrar como ação livre imediata; o alvo agarrado fica asfixiado, impedido de falar ou emitir sons."
+            },
+            {
+                "nome": "Veneno",
+                "tipo": "Qualidade",
+                "desc": "Peçonha potente: causa perda contínua de 2d12 pontos de vida por rodada durante 3 rodadas (Fort CD 30 reduz a duração para 1 rodada)."
+            }
+        ],
+        "pericias": [
+            { "nome": "Acrobacia", "valor": "+16" },
+            { "nome": "Atletismo", "valor": "+10" },
+            { "nome": "Enganação", "valor": "+10" },
+            { "nome": "Furtividade", "valor": "+16" },
+            { "nome": "Ladinagem", "valor": "+16" }
+        ],
+        "tesouro": "Padrão (Besta pesada certeira com mira telescópica, cimitarra certeira x2, couraça sob medida, gazua aprimorada, virote de adamante x20)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Duas cimitarras",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+25",
-        "dano": "2d6+12 corte",
-        "desc": "17. Lâminas certeiras duplas. Inoculam Peçonha Potente e aplicam Ataque Furtivo/Assassinar."
-      },
-      {
-        "nome": "Besta pesada",
-        "tipo": "À Distância",
-        "bonus": "+25",
-        "dano": "3d6+9 perfuração",
-        "desc": "19. Besta certeira com mira telescópica e virotes de adamante. Inocula Peçonha Potente e aplica Ataque Furtivo."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Assassinar",
-        "tipo": "Movimento",
-        "desc": "Analisa uma criatura em alcance curto. Até o fim de seu próximo turno, dobra os dados de dano extras por Ataque Furtivo (+18d8) em seu primeiro ataque furtivo bem-sucedido que infligir dano contra o alvo marcado."
-      },
-      {
-        "nome": "Ataque Furtivo",
-        "tipo": "Qualidade",
-        "desc": "Adiciona +9d8 pontos de dano extra contra alvos flanqueados ou desprevenidos."
-      },
-      {
-        "nome": "Dança da Morte",
-        "tipo": "Movimento",
-        "desc": "Uma vez por cena, move-se em velocidade estonteante obliterando-se do espectro visível. Fica sob efeito de invisibilidade por 1d4+1 rodadas."
-      },
-      {
-        "nome": "Mão na Boca",
-        "tipo": "Livre",
-        "desc": "Recebe +2 em testes de agarrar (modificador total +27 incluso). Ao deferir um Ataque Furtivo contra criatura desprevenida, pode iniciar uma manobra agarrar como ação livre imediata; o alvo agarrado fica asfixiado, impedido de falar ou emitir sons."
-      },
-      {
-        "nome": "Veneno",
-        "tipo": "Qualidade",
-        "desc": "Peçonha potente: causa perda contínua de 2d12 pontos de vida por rodada durante 3 rodadas (Fort CD 30 reduz a duração para 1 rodada)."
-      }
-    ],
-    "pericias": [
-      { "nome": "Acrobacia", "valor": "+16" },
-      { "nome": "Atletismo", "valor": "+10" },
-      { "nome": "Enganação", "valor": "+10" },
-      { "nome": "Furtividade", "valor": "+16" },
-      { "nome": "Ladinagem", "valor": "+16" }
-    ],
-    "tesouro": "Padrão (Besta pesada certeira com mira telescópica, cimitarra certeira x2, couraça sob medida, gazua aprimorada, virote de adamante x20)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Punguista",
-    "tipo": "Humanoide (goblin) Pequeno",
-    "nd": "1/2",
-    "iniciativa": "+8",
-    "percepcao": "+3",
-    "percepcaoObs": "visão no escuro",
-    "defesa": "14",
-    "fort": "+1",
-    "ref": "+6",
-    "von": "+3",
-    "defesaObs": "normal",
-    "pv": "11",
-    "desl": "12m (8q), escalada 12m (8q)",
-    "pm": "0",
-    "atributos": {
-      "for": "0",
-      "des": "4",
-      "con": "0",
-      "int": "2",
-      "sab": "0",
-      "car": "-2"
+    {
+        "nome": "Punguista",
+        "tipo": "Humanoide (goblin) Pequeno",
+        "nd": "1/2",
+        "iniciativa": "+8",
+        "percepcao": "+3",
+        "percepcaoObs": "visão no escuro",
+        "defesa": "14",
+        "fort": "+1",
+        "ref": "+6",
+        "von": "+3",
+        "defesaObs": "normal",
+        "pv": "11",
+        "desl": "12m (8q), escalada 12m (8q)",
+        "pm": "0",
+        "atributos": {
+            "for": "0",
+            "des": "4",
+            "con": "0",
+            "int": "2",
+            "sab": "0",
+            "car": "-2"
+        },
+        "ataques": [
+            {
+                "nome": "Adaga",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+5",
+                "dano": "1d4+4 perfuração",
+                "desc": "19. Lâmina pequena de bueiro."
+            }
+        ],
+        "habilidades": [],
+        "pericias": [
+            { "nome": "Acrobacia", "valor": "+6" },
+            { "nome": "Atletismo", "valor": "+6" },
+            { "nome": "Furtividade", "valor": "+10" },
+            { "nome": "Ladinagem", "valor": "+10" }
+        ],
+        "tesouro": "Metade (Adaga, gazua)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Adaga",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+5",
-        "dano": "1d4+4 perfuração",
-        "desc": "19. Lâmina pequena de bueiro."
-      }
-    ],
-    "habilidades": [],
-    "pericias": [
-      { "nome": "Acrobacia", "valor": "+6" },
-      { "nome": "Atletismo", "valor": "+6" },
-      { "nome": "Furtividade", "valor": "+10" },
-      { "nome": "Ladinagem", "valor": "+10" }
-    ],
-    "tesouro": "Metade (Adaga, gazua)",
-    "fonte": "Guia de NPCs"
-  },
-  
-  {
-    "nome": "Barão",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "7",
-    "iniciativa": "+8",
-    "percepcao": "+9",
-    "percepcaoObs": "normal",
-    "defesa": "32",
-    "fort": "+21",
-    "ref": "+7",
-    "von": "+14",
-    "defesaObs": "redução de dano 10, resistência a medo +2, Presença Aristocrática",
-    "pv": "220",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "3",
-      "des": "1",
-      "con": "3",
-      "int": "2",
-      "sab": "2",
-      "car": "3"
+
+    {
+        "nome": "Barão",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "7",
+        "iniciativa": "+8",
+        "percepcao": "+9",
+        "percepcaoObs": "normal",
+        "defesa": "32",
+        "fort": "+21",
+        "ref": "+7",
+        "von": "+14",
+        "defesaObs": "redução de dano 10, resistência a medo +2, Presença Aristocrática",
+        "pv": "220",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "3",
+            "des": "1",
+            "con": "3",
+            "int": "2",
+            "sab": "2",
+            "car": "3"
+        },
+        "ataques": [
+            {
+                "nome": "Espada bastarda certeira de adamante x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+24",
+                "dano": "3d6+20 corte",
+                "desc": "18. Lâmina da alta nobreza de adamante maciço. Desfere dois ataques."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Guarda Pessoal",
+                "tipo": "Qualidade",
+                "desc": "O barão está sempre escoltado por dois guardas palacianos adjacentes. Esses defensores adicionais não são contabilizados no cálculo de XP e recompensas de tesouro do encontro."
+            },
+            {
+                "nome": "Presença Aristocrática",
+                "tipo": "Reação",
+                "desc": "Quando uma criatura inteligente (Int –3 ou maior) tenta machucar ou desferir dano contra o barão, deve passar em um teste de Vontade (CD 24). Se falhar, é subjugada por sua imponência, perde a ação e não consegue feri-lo. Uso restrito a uma vez por cena contra cada criatura."
+            }
+        ],
+        "pericias": [
+            { "nome": "Diplomacia", "valor": "+17" },
+            { "nome": "Guerra", "valor": "+14" },
+            { "nome": "Intimidação", "valor": "+10" },
+            { "nome": "Intuição", "valor": "+14" },
+            { "nome": "Nobreza", "valor": "+14" }
+        ],
+        "tesouro": "Dobro (Armadura completa reforçada, escudo pesado, espada bastarda certeira de adamante, tabardo aprimorado)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Espada bastarda certeira de adamante x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+24",
-        "dano": "3d6+20 corte",
-        "desc": "18. Lâmina da alta nobreza de adamante maciço. Desfere dois ataques."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Guarda Pessoal",
-        "tipo": "Qualidade",
-        "desc": "O barão está sempre escoltado por dois guardas palacianos adjacentes. Esses defensores adicionais não são contabilizados no cálculo de XP e recompensas de tesouro do encontro."
-      },
-      {
-        "nome": "Presença Aristocrática",
-        "tipo": "Reação",
-        "desc": "Quando uma criatura inteligente (Int –3 ou maior) tenta machucar ou desferir dano contra o barão, deve passar em um teste de Vontade (CD 24). Se falhar, é subjugada por sua imponência, perde a ação e não consegue feri-lo. Uso restrito a uma vez por cena contra cada criatura."
-      }
-    ],
-    "pericias": [
-      { "nome": "Diplomacia", "valor": "+17" },
-      { "nome": "Guerra", "valor": "+14" },
-      { "nome": "Intimidação", "valor": "+10" },
-      { "nome": "Intuição", "valor": "+14" },
-      { "nome": "Nobreza", "valor": "+14" }
-    ],
-    "tesouro": "Dobro (Armadura completa reforçada, escudo pesado, espada bastarda certeira de adamante, tabardo aprimorado)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Castelão",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "4",
-    "iniciativa": "+4",
-    "percepcao": "+7",
-    "percepcaoObs": "normal",
-    "defesa": "22",
-    "fort": "+10",
-    "ref": "+4",
-    "von": "+16",
-    "defesaObs": "normal",
-    "pv": "90",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "2",
-      "des": "0",
-      "con": "3",
-      "int": "2",
-      "sab": "3",
-      "car": "2"
+    {
+        "nome": "Castelão",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "4",
+        "iniciativa": "+4",
+        "percepcao": "+7",
+        "percepcaoObs": "normal",
+        "defesa": "22",
+        "fort": "+10",
+        "ref": "+4",
+        "von": "+16",
+        "defesaObs": "normal",
+        "pv": "90",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "2",
+            "des": "0",
+            "con": "3",
+            "int": "2",
+            "sab": "3",
+            "car": "2"
+        },
+        "ataques": [
+            {
+                "nome": "Maça certeira x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+15",
+                "dano": "1d8+7 impacto",
+                "desc": "Ataques duplos com porrete de armas de ferro."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Chamar Reforços",
+                "tipo": "Padrão",
+                "desc": "Invoca 1d4 guardas palacianos que surgem em espaços desocupados em alcance curto. Os soldados agem a partir da próxima rodada do castelão. Recarga (1d4 rodadas)."
+            },
+            {
+                "nome": "Desconfiar",
+                "tipo": "Qualidade",
+                "desc": "Uma vez por cena, permite ao castelão rolar novamente um teste de Intuição ou Percepção recém-realizado."
+            },
+            {
+                "nome": "Gritar Ordens",
+                "tipo": "Padrão",
+                "desc": "Esbraveja comandos táticos: todos os aliados em alcance médio recebem +2 de bônus em testes de perícia até o fim da rodada."
+            }
+        ],
+        "pericias": [
+            { "nome": "Conhecimento", "valor": "+6" },
+            { "nome": "Diplomacia", "valor": "+6" },
+            { "nome": "Intimidação", "valor": "+6" },
+            { "nome": "Intuição", "valor": "+7" },
+            { "nome": "Nobreza", "valor": "+8" }
+        ],
+        "tesouro": "Padrão (Cota de malha, escudo pesado, maça certeira)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Maça certeira x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+15",
-        "dano": "1d8+7 impacto",
-        "desc": "Ataques duplos com porrete de armas de ferro."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Chamar Reforços",
-        "tipo": "Padrão",
-        "desc": "Invoca 1d4 guardas palacianos que surgem em espaços desocupados em alcance curto. Os soldados agem a partir da próxima rodada do castelão. Recarga (1d4 rodadas)."
-      },
-      {
-        "nome": "Desconfiar",
-        "tipo": "Qualidade",
-        "desc": "Uma vez por cena, permite ao castelão rolar novamente um teste de Intuição ou Percepção recém-realizado."
-      },
-      {
-        "nome": "Gritar Ordens",
-        "tipo": "Padrão",
-        "desc": "Esbraveja comandos táticos: todos os aliados em alcance médio recebem +2 de bônus em testes de perícia até o fim da rodada."
-      }
-    ],
-    "pericias": [
-      { "nome": "Conhecimento", "valor": "+6" },
-      { "nome": "Diplomacia", "valor": "+6" },
-      { "nome": "Intimidação", "valor": "+6" },
-      { "nome": "Intuição", "valor": "+7" },
-      { "nome": "Nobreza", "valor": "+8" }
-    ],
-    "tesouro": "Padrão (Cota de malha, escudo pesado, maça certeira)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Cavaleiro",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "5",
-    "iniciativa": "+5",
-    "percepcao": "+5",
-    "percepcaoObs": "normal",
-    "defesa": "26",
-    "fort": "+17",
-    "ref": "+9",
-    "von": "+7",
-    "defesaObs": "resistência a medo +5, Corcel de Batalha",
-    "pv": "145",
-    "desl": "6m (4q) [15m montado]",
-    "pm": "0",
-    "atributos": {
-      "for": "3",
-      "des": "1",
-      "con": "3",
-      "int": "0",
-      "sab": "1",
-      "car": "3"
+    {
+        "nome": "Cavaleiro",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "5",
+        "iniciativa": "+5",
+        "percepcao": "+5",
+        "percepcaoObs": "normal",
+        "defesa": "26",
+        "fort": "+17",
+        "ref": "+9",
+        "von": "+7",
+        "defesaObs": "resistência a medo +5, Corcel de Batalha",
+        "pv": "145",
+        "desl": "6m (4q) [15m montado]",
+        "pm": "0",
+        "atributos": {
+            "for": "3",
+            "des": "1",
+            "con": "3",
+            "int": "0",
+            "sab": "1",
+            "car": "3"
+        },
+        "ataques": [
+            {
+                "nome": "Lança montada",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+16",
+                "dano": "1d8+12 perfuração",
+                "desc": "x3. Alcance 3m. Arma de carga. Adiciona +2d8 e permite continuar movimento se usada sob uma investida montada (Cavaleiro Experiente)."
+            },
+            {
+                "nome": "Espada longa",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+16",
+                "dano": "1d8+12 corte",
+                "desc": "19. Lâmina tradicional de nobreza. Soma bônus de Duelo e Corcel de Batalha se montado."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Cavaleiro Experiente",
+                "tipo": "Qualidade",
+                "desc": "Passa automaticamente em testes de Cavalgar para não cair do selim ao sofrer dano, e não sofre penalidades para desferir ataques à distância enquanto montado. Ao realizar uma investida montada, causa +2d8 pontos de dano e pode continuar se movendo depois do ataque em linha reta (limite de movimento total igual ao dobro de seu deslocamento)."
+            },
+            {
+                "nome": "Corcel de Batalha",
+                "tipo": "Qualidade",
+                "desc": "Cavalga um cavalo de guerra leal (conforme p. 262). Enquanto estiver montado, seu deslocamento se torna 15m, recebe uma ação de movimento extra por turno (restrita a se deslocar) e adiciona +2 de bônus em testes de ataque corpo a corpo (bônus já inclusos nos ataques)."
+            },
+            {
+                "nome": "Duelo",
+                "tipo": "Livre",
+                "desc": "Uma vez por rodada, escolhe um oponente em alcance curto e recebe +2 em testes de ataque e rolagens de dano contra ele até o fim da cena ou até atacar outro oponente."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+7" },
+            { "nome": "Cavalgar", "valor": "+7" },
+            { "nome": "Diplomacia", "valor": "+9" },
+            { "nome": "Guerra", "valor": "+4" },
+            { "nome": "Nobreza", "valor": "+4" }
+        ],
+        "tesouro": "Padrão (Cavalo de guerra, escudo pesado, espada longa, lança montada, meia armadura, tabardo aprimorado)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Lança montada",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+16",
-        "dano": "1d8+12 perfuração",
-        "desc": "x3. Alcance 3m. Arma de carga. Adiciona +2d8 e permite continuar movimento se usada sob uma investida montada (Cavaleiro Experiente)."
-      },
-      {
-        "nome": "Espada longa",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+16",
-        "dano": "1d8+12 corte",
-        "desc": "19. Lâmina tradicional de nobreza. Soma bônus de Duelo e Corcel de Batalha se montado."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Cavaleiro Experiente",
-        "tipo": "Qualidade",
-        "desc": "Passa automaticamente em testes de Cavalgar para não cair do selim ao sofrer dano, e não sofre penalidades para desferir ataques à distância enquanto montado. Ao realizar uma investida montada, causa +2d8 pontos de dano e pode continuar se movendo depois do ataque em linha reta (limite de movimento total igual ao dobro de seu deslocamento)."
-      },
-      {
-        "nome": "Corcel de Batalha",
-        "tipo": "Qualidade",
-        "desc": "Cavalga um cavalo de guerra leal (conforme p. 262). Enquanto estiver montado, seu deslocamento se torna 15m, recebe uma ação de movimento extra por turno (restrita a se deslocar) e adiciona +2 de bônus em testes de ataque corpo a corpo (bônus já inclusos nos ataques)."
-      },
-      {
-        "nome": "Duelo",
-        "tipo": "Livre",
-        "desc": "Uma vez por rodada, escolhe um oponente em alcance curto e recebe +2 em testes de ataque e rolagens de dano contra ele até o fim da cena ou até atacar outro oponente."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+7" },
-      { "nome": "Cavalgar", "valor": "+7" },
-      { "nome": "Diplomacia", "valor": "+9" },
-      { "nome": "Guerra", "valor": "+4" },
-      { "nome": "Nobreza", "valor": "+4" }
-    ],
-    "tesouro": "Padrão (Cavalo de guerra, escudo pesado, espada longa, lança montada, meia armadura, tabardo aprimorado)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Cortesão",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "1",
-    "iniciativa": "+3",
-    "percepcao": "+3",
-    "percepcaoObs": "normal",
-    "defesa": "14",
-    "fort": "+1",
-    "ref": "+5",
-    "von": "+10",
-    "defesaObs": "Desprezo",
-    "pv": "24",
-    "desl": "9m (6q)",
-    "pm": "0",
-    "atributos": {
-      "for": "0",
-      "des": "1",
-      "con": "1",
-      "int": "1",
-      "sab": "1",
-      "car": "4"
+    {
+        "nome": "Cortesão",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "1",
+        "iniciativa": "+3",
+        "percepcao": "+3",
+        "percepcaoObs": "normal",
+        "defesa": "14",
+        "fort": "+1",
+        "ref": "+5",
+        "von": "+10",
+        "defesaObs": "Desprezo",
+        "pv": "24",
+        "desl": "9m (6q)",
+        "pm": "0",
+        "atributos": {
+            "for": "0",
+            "des": "1",
+            "con": "1",
+            "int": "1",
+            "sab": "1",
+            "car": "4"
+        },
+        "ataques": [
+            {
+                "nome": "Adaga",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+7",
+                "dano": "1d4+4 perfuração",
+                "desc": "19. Lâmina dissimulada. Inocula Peçonha Concentrada."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Desprezo",
+                "tipo": "Qualidade",
+                "desc": "Recebe +2 de bônus na Defesa e em todos os testes de perícia contra criaturas inteligentes (Int –3 ou maior) cujo modificador de Carisma seja menor do que o dele."
+            },
+            {
+                "nome": "Veneno",
+                "tipo": "Qualidade",
+                "desc": "Peçonha concentrada: drena e causa perda de 1d12 pontos de vida por rodada por 3 rodadas (Fort CD 16 reduz a duração para 1 rodada)."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atuação", "valor": "+8" },
+            { "nome": "Diplomacia", "valor": "+8" },
+            { "nome": "Intimidação", "valor": "+8" },
+            { "nome": "Intuição", "valor": "+5" },
+            { "nome": "Nobreza", "valor": "+8" }
+        ],
+        "tesouro": "Padrão (Adaga, peçonha concentrada x3, traje da corte)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Adaga",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+7",
-        "dano": "1d4+4 perfuração",
-        "desc": "19. Lâmina dissimulada. Inocula Peçonha Concentrada."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Desprezo",
-        "tipo": "Qualidade",
-        "desc": "Recebe +2 de bônus na Defesa e em todos os testes de perícia contra criaturas inteligentes (Int –3 ou maior) cujo modificador de Carisma seja menor do que o dele."
-      },
-      {
-        "nome": "Veneno",
-        "tipo": "Qualidade",
-        "desc": "Peçonha concentrada: drena e causa perda de 1d12 pontos de vida por rodada por 3 rodadas (Fort CD 16 reduz a duração para 1 rodada)."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atuação", "valor": "+8" },
-      { "nome": "Diplomacia", "valor": "+8" },
-      { "nome": "Intimidação", "valor": "+8" },
-      { "nome": "Intuição", "valor": "+5" },
-      { "nome": "Nobreza", "valor": "+8" }
-    ],
-    "tesouro": "Padrão (Adaga, peçonha concentrada x3, traje da corte)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Guarda-costas Real",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "8",
-    "iniciativa": "+8",
-    "percepcao": "+16",
-    "percepcaoObs": "imunidade a desprevenido e surpreendido",
-    "defesa": "33",
-    "fort": "+20",
-    "ref": "+9",
-    "von": "+15",
-    "defesaObs": "imunidade a desprevenido e surpreendido, redução de dano 5",
-    "pv": "70",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "4",
-      "des": "0",
-      "con": "4",
-      "int": "0",
-      "sab": "2",
-      "car": "0"
+    {
+        "nome": "Guarda-costas Real",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "8",
+        "iniciativa": "+8",
+        "percepcao": "+16",
+        "percepcaoObs": "imunidade a desprevenido e surpreendido",
+        "defesa": "33",
+        "fort": "+20",
+        "ref": "+9",
+        "von": "+15",
+        "defesaObs": "imunidade a desprevenido e surpreendido, redução de dano 5",
+        "pv": "70",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "4",
+            "des": "0",
+            "con": "4",
+            "int": "0",
+            "sab": "2",
+            "car": "0"
+        },
+        "ataques": [
+            {
+                "nome": "Alabarda aumentada x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+27",
+                "dano": "4d6+20 corte",
+                "desc": "x4. Lâmina pesada de cabo longo de elite. Desfere dois ataques corporais. Sofre bônus de Golpe Punitivo."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Antecipar Perigo",
+                "tipo": "Qualidade",
+                "desc": "Sua guarda e vigilância impecáveis concedem imunidade total contra as condições desprevenido e surpreendido para todos os aliados posicionados adjacentes a ele."
+            },
+            {
+                "nome": "Golpe Punitivo",
+                "tipo": "Qualidade",
+                "desc": "Recebe +5 de bônus na margem de ameaça de seus ataques contra criaturas que tenham atacado a ele próprio ou a um de seus aliados durante a presente cena."
+            },
+            {
+                "nome": "Retaliar",
+                "tipo": "Reação",
+                "desc": "Uma vez por rodada, quando o guarda-costas ou um aliado adjacente é alvo de um ataque corpo a corpo, pode desferir um ataque imediato em resposta contra o agressor."
+            },
+            {
+                "nome": "Zeloso",
+                "tipo": "Reação",
+                "desc": "Uma vez por rodada, se um aliado adjacente for alvo de um ataque vindo de qualquer fonte, o guarda-costas real pode se interpor e se tornar o novo alvo do ataque, resolvendo o golpe contra sua própria Defesa."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+13" },
+            { "nome": "Intuição", "valor": "+12" }
+        ],
+        "tesouro": "Padrão (Alabarda aumentada, armadura completa)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Alabarda aumentada x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+27",
-        "dano": "4d6+20 corte",
-        "desc": "x4. Lâmina pesada de cabo longo de elite. Desfere dois ataques corporais. Sofre bônus de Golpe Punitivo."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Antecipar Perigo",
-        "tipo": "Qualidade",
-        "desc": "Sua guarda e vigilância impecáveis concedem imunidade total contra as condições desprevenido e surpreendido para todos os aliados posicionados adjacentes a ele."
-      },
-      {
-        "nome": "Golpe Punitivo",
-        "tipo": "Qualidade",
-        "desc": "Recebe +5 de bônus na margem de ameaça de seus ataques contra criaturas que tenham atacado a ele próprio ou a um de seus aliados durante a presente cena."
-      },
-      {
-        "nome": "Retaliar",
-        "tipo": "Reação",
-        "desc": "Uma vez por rodada, quando o guarda-costas ou um aliado adjacente é alvo de um ataque corpo a corpo, pode desferir um ataque imediato em resposta contra o agressor."
-      },
-      {
-        "nome": "Zeloso",
-        "tipo": "Reação",
-        "desc": "Uma vez por rodada, se um aliado adjacente for alvo de um ataque vindo de qualquer fonte, o guarda-costas real pode se interpor e se tornar o novo alvo do ataque, resolvendo o golpe contra sua própria Defesa."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+13" },
-      { "nome": "Intuição", "valor": "+12" }
-    ],
-    "tesouro": "Padrão (Alabarda aumentada, armadura completa)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Falcão",
-    "tipo": "Animal Minúsculo",
-    "nd": "1/4",
-    "iniciativa": "+5",
-    "percepcao": "+9",
-    "percepcaoObs": "visão na penumbra",
-    "defesa": "13",
-    "fort": "+2",
-    "ref": "+5",
-    "von": "+2",
-    "defesaObs": "normal",
-    "pv": "5",
-    "desl": "3m (2q), voo 18m (12q)",
-    "pm": "0",
-    "atributos": {
-      "for": "-2",
-      "des": "3",
-      "con": "0",
-      "int": "-4",
-      "sab": "2",
-      "car": "-2"
+    {
+        "nome": "Falcão",
+        "tipo": "Animal Minúsculo",
+        "nd": "1/4",
+        "iniciativa": "+5",
+        "percepcao": "+9",
+        "percepcaoObs": "visão na penumbra",
+        "defesa": "13",
+        "fort": "+2",
+        "ref": "+5",
+        "von": "+2",
+        "defesaObs": "normal",
+        "pv": "5",
+        "desl": "3m (2q), voo 18m (12q)",
+        "pm": "0",
+        "atributos": {
+            "for": "-2",
+            "des": "3",
+            "con": "0",
+            "int": "-4",
+            "sab": "2",
+            "car": "-2"
+        },
+        "ataques": [
+            {
+                "nome": "Garras",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+6",
+                "dano": "1d4 corte",
+                "desc": "18. Ataque aéreo rápido. Ativa Rasgar o Rosto em críticos."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Mergulho",
+                "tipo": "Qualidade",
+                "desc": "Permite ao falcão continuar se movendo no mesmo sentido original após golpear durante uma investida alada."
+            },
+            {
+                "nome": "Rasgar o Rosto",
+                "tipo": "Qualidade",
+                "desc": "Uma criatura que sofra dano decorrente de um acerto crítico das garras do falcão fica sob a condição cega por 1d4 rodadas."
+            },
+            {
+                "nome": "Parceiro",
+                "tipo": "Qualidade",
+                "desc": "Especial (perseguidor). Iniciante: uma vez por cena, o dono gasta ação de movimento e testa Adestramento CD 10; sucesso dá +1 em ataques, Percepção e Sobrevivência até o fim da cena, bônus este que aumenta em +1 para cada 10 pontos pelos quais superou a CD. Veterano: concede o uso da habilidade Sentidos Aguçados para o dono. Mestre: uma vez por rodada, permite gastar 1 PM para deixar uma criatura em alcance médio cega por 1d4 rodadas (Ref nega por CD baseada em Carisma do dono)."
+            }
+        ],
+        "pericias": [],
+        "tesouro": "Nenhum",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Garras",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+6",
-        "dano": "1d4 corte",
-        "desc": "18. Ataque aéreo rápido. Ativa Rasgar o Rosto em críticos."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Mergulho",
-        "tipo": "Qualidade",
-        "desc": "Permite ao falcão continuar se movendo no mesmo sentido original após golpear durante uma investida alada."
-      },
-      {
-        "nome": "Rasgar o Rosto",
-        "tipo": "Qualidade",
-        "desc": "Uma criatura que sofra dano decorrente de um acerto crítico das garras do falcão fica sob a condição cega por 1d4 rodadas."
-      },
-      {
-        "nome": "Parceiro",
-        "tipo": "Qualidade",
-        "desc": "Especial (perseguidor). Iniciante: uma vez por cena, o dono gasta ação de movimento e testa Adestramento CD 10; sucesso dá +1 em ataques, Percepção e Sobrevivência até o fim da cena, bônus este que aumenta em +1 para cada 10 pontos pelos quais superou a CD. Veterano: concede o uso da habilidade Sentidos Aguçados para o dono. Mestre: uma vez por rodada, permite gastar 1 PM para deixar uma criatura em alcance médio cega por 1d4 rodadas (Ref nega por CD baseada em Carisma do dono)."
-      }
-    ],
-    "pericias": [],
-    "tesouro": "Nenhum",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Mago da Corte",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "10",
-    "iniciativa": "+10",
-    "percepcao": "+11",
-    "percepcaoObs": "imunidade a desprevenido e surpreendido",
-    "defesa": "33",
-    "fort": "+16",
-    "ref": "+10",
-    "von": "+22",
-    "defesaObs": "imunidade a desprevenido e surpreendido, redução de dano 5",
-    "pv": "220",
-    "desl": "9m (6q)",
-    "pm": "77",
-    "atributos": {
-      "for": "0",
-      "des": "1",
-      "con": "3",
-      "int": "5",
-      "sab": "2",
-      "car": "2"
+    {
+        "nome": "Mago da Corte",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "10",
+        "iniciativa": "+10",
+        "percepcao": "+11",
+        "percepcaoObs": "imunidade a desprevenido e surpreendido",
+        "defesa": "33",
+        "fort": "+16",
+        "ref": "+10",
+        "von": "+22",
+        "defesaObs": "imunidade a desprevenido e surpreendido, redução de dano 5",
+        "pv": "220",
+        "desl": "9m (6q)",
+        "pm": "77",
+        "atributos": {
+            "for": "0",
+            "des": "1",
+            "con": "3",
+            "int": "5",
+            "sab": "2",
+            "car": "2"
+        },
+        "ataques": [
+            {
+                "nome": "Bordão",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+24",
+                "dano": "1d6+5 impacto",
+                "desc": "Cajado catalisador místico arcanista."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Arcano de Batalha",
+                "tipo": "Qualidade",
+                "desc": "Soma o modificador de Inteligência (+5) nas rolagens de dano de suas magias ofensivas (já embutido nos valores listados)."
+            },
+            {
+                "nome": "Biblioteca Mágica",
+                "tipo": "Padrão",
+                "desc": "Custos: 1 PM. Saca e ativa um pergaminho contendo uma magia arcana qualquer de até 3º círculo, conjurando-a normalmente como se fizesse parte de sua lista de magias conhecidas."
+            },
+            {
+                "nome": "Magia Acelerada",
+                "tipo": "Livre",
+                "desc": "Custos: +4 PM. Uma vez por rodada, altera o tempo de execução de uma magia de ação completa ou menor para uma ação livre."
+            },
+            {
+                "nome": "Magia: Bola de Fogo",
+                "tipo": "Padrão",
+                "desc": "Custos: 10 PM. Explosão esférica de 6m em alcance médio inflige 12d6+5 pontos de dano de fogo (Ref CD 32 metade)."
+            },
+            {
+                "nome": "Magia: Campo de Força",
+                "tipo": "Reação",
+                "desc": "Custos: 7 PM. Ao sofrer dano, adquire redução de dano 50 contra o respectivo ataque sofrido."
+            },
+            {
+                "nome": "Magia: Dissipar Magia",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM. Alvo ou esfera de 3m em alcance médio desfaz magias com CD menor que seu teste de Misticismo. Transforma itens mágicos afetados em mundanos por 1d6 rodadas (Von CD 32 anula)."
+            },
+            {
+                "nome": "Magia: Lendas e Histórias",
+                "tipo": "Padrão",
+                "desc": "Custos: 6 PM. Desvenda conhecimentos históricos, segredos e informações detalhadas sobre uma criatura, objeto ou local sob seu toque."
+            },
+            {
+                "nome": "Magia: Runa de Proteção",
+                "tipo": "Qualidade",
+                "desc": "Custos: 10 PM (Tempo de inscrição: 1 hora). Forja runa guardiã em uma passagem. Quando uma criatura viola o espaço, explode desferindo 20d6 de fogo em área de até 6m de raio."
+            },
+            {
+                "nome": "Magia: Seta Infalível de Talude",
+                "tipo": "Padrão",
+                "desc": "Custos: 7 PM. Projeta cinco projéteis de energia divididos em até cinco seres em alcance médio. Cada dardo causa 1d8+1 de essência (uma das setas recebe +5 na rolagem de dano de forma bônus)."
+            }
+        ],
+        "pericias": [
+            { "nome": "Conhecimento", "valor": "+14" },
+            { "nome": "Misticismo", "valor": "+18" },
+            { "nome": "Nobreza", "valor": "+14" },
+            { "nome": "Ofício (alquimista)", "valor": "+14" }
+        ],
+        "tesouro": "Dobro (Bordão, chapéu arcano, essência de mana, medalhão de prata, poção de curar ferimentos [7d8+7 PV], robe místico aprimorado)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Bordão",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+24",
-        "dano": "1d6+5 impacto",
-        "desc": "Cajado catalisador místico arcanista."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Arcano de Batalha",
-        "tipo": "Qualidade",
-        "desc": "Soma o modificador de Inteligência (+5) nas rolagens de dano de suas magias ofensivas (já embutido nos valores listados)."
-      },
-      {
-        "nome": "Biblioteca Mágica",
-        "tipo": "Padrão",
-        "desc": "Custos: 1 PM. Saca e ativa um pergaminho contendo uma magia arcana qualquer de até 3º círculo, conjurando-a normalmente como se fizesse parte de sua lista de magias conhecidas."
-      },
-      {
-        "nome": "Magia Acelerada",
-        "tipo": "Livre",
-        "desc": "Custos: +4 PM. Uma vez por rodada, altera o tempo de execução de uma magia de ação completa ou menor para uma ação livre."
-      },
-      {
-        "nome": "Magia: Bola de Fogo",
-        "tipo": "Padrão",
-        "desc": "Custos: 10 PM. Explosão esférica de 6m em alcance médio inflige 12d6+5 pontos de dano de fogo (Ref CD 32 metade)."
-      },
-      {
-        "nome": "Magia: Campo de Força",
-        "tipo": "Reação",
-        "desc": "Custos: 7 PM. Ao sofrer dano, adquire redução de dano 50 contra o respectivo ataque sofrido."
-      },
-      {
-        "nome": "Magia: Dissipar Magia",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM. Alvo ou esfera de 3m em alcance médio desfaz magias com CD menor que seu teste de Misticismo. Transforma itens mágicos afetados em mundanos por 1d6 rodadas (Von CD 32 anula)."
-      },
-      {
-        "nome": "Magia: Lendas e Histórias",
-        "tipo": "Padrão",
-        "desc": "Custos: 6 PM. Desvenda conhecimentos históricos, segredos e informações detalhadas sobre uma criatura, objeto ou local sob seu toque."
-      },
-      {
-        "nome": "Magia: Runa de Proteção",
-        "tipo": "Qualidade",
-        "desc": "Custos: 10 PM (Tempo de inscrição: 1 hora). Forja runa guardiã em uma passagem. Quando uma criatura viola o espaço, explode desferindo 20d6 de fogo em área de até 6m de raio."
-      },
-      {
-        "nome": "Magia: Seta Infalível de Talude",
-        "tipo": "Padrão",
-        "desc": "Custos: 7 PM. Projeta cinco projéteis de energia divididos em até cinco seres em alcance médio. Cada dardo causa 1d8+1 de essência (uma das setas recebe +5 na rolagem de dano de forma bônus)."
-      }
-    ],
-    "pericias": [
-      { "nome": "Conhecimento", "valor": "+14" },
-      { "nome": "Misticismo", "valor": "+18" },
-      { "nome": "Nobreza", "valor": "+14" },
-      { "nome": "Ofício (alquimista)", "valor": "+14" }
-    ],
-    "tesouro": "Dobro (Bordão, chapéu arcano, essência de mana, medalhão de prata, poção de curar ferimentos [7d8+7 PV], robe místico aprimorado)",
-    "fonte": "Guia de NPCs"
-  },
-  
-  {
-    "nome": "Arquivista",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "6",
-    "iniciativa": "+5",
-    "percepcao": "+9",
-    "percepcaoObs": "visão no escuro, Voz da Civilização",
-    "defesa": "24",
-    "fort": "+12",
-    "ref": "+6",
-    "von": "+18",
-    "defesaObs": "normal",
-    "pv": "145",
-    "desl": "6m (4q)",
-    "pm": "29",
-    "atributos": {
-      "for": "1",
-      "des": "0",
-      "con": "1",
-      "int": "3",
-      "sab": "4",
-      "car": "1"
+
+    {
+        "nome": "Arquivista",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "6",
+        "iniciativa": "+5",
+        "percepcao": "+9",
+        "percepcaoObs": "visão no escuro, Voz da Civilização",
+        "defesa": "24",
+        "fort": "+12",
+        "ref": "+6",
+        "von": "+18",
+        "defesaObs": "normal",
+        "pv": "145",
+        "desl": "6m (4q)",
+        "pm": "29",
+        "atributos": {
+            "for": "1",
+            "des": "0",
+            "con": "1",
+            "int": "3",
+            "sab": "4",
+            "car": "1"
+        },
+        "ataques": [
+            {
+                "nome": "Bordão x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+16",
+                "dano": "1d6+6 impacto",
+                "desc": "Ataques duplos com bastão clerical. Soma +2d6 pontos de dano de luz por acerto."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Histórias da Companhia",
+                "tipo": "Padrão",
+                "desc": "Uma vez por cena, o arquivista relembra uma missão bem-sucedida. O arquivista e seus aliados em alcance médio recebem +5 de bônus em testes de uma perícia específica à escolha (exceto testes de ataque) até o fim da cena."
+            },
+            {
+                "nome": "Símbolo Sagrado Energizado",
+                "tipo": "Movimento",
+                "desc": "Custos: 1 PM. Energiza seu símbolo místico pela cena, emanando luz prateada (como uma tocha). Enquanto o empunhar, o custo de todas as suas magias divinas é reduzido em –1 PM (descontos já aplicados nas descrições)."
+            },
+            {
+                "nome": "Voz da Civilização",
+                "tipo": "Qualidade",
+                "desc": "Permanece permanentemente sob os efeitos básicos e contínuos da magia Compreensão."
+            },
+            {
+                "nome": "Magia: Arma Espiritual",
+                "tipo": "Padrão",
+                "desc": "Custos: 5 PM (Sustentada). Uma vez por rodada, com uma ação livre, causa 3d6 de impacto automaticamente em um alvo adjacente. Se for alvo de ataque corporal na rodada e não tiver usado o dano livre, pode descarregar os 3d6 de impacto no atacante em reação."
+            },
+            {
+                "nome": "Magia: Bênção",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM. Concede +2 de bônus em testes de ataque e rolagens de dano para todos os aliados em alcance curto até o fim da cena."
+            },
+            {
+                "nome": "Magia: Curar Ferimentos",
+                "tipo": "Padrão",
+                "desc": "Custos: 5 PM. Regenera 6d8+6 PV em uma criatura adjacente."
+            },
+            {
+                "nome": "Magia: Oração",
+                "tipo": "Padrão",
+                "desc": "Custos: 3 PM (Sustentada). Concede +2 em perícias e jogadas de dano para aliados em alcance curto, enquanto penaliza inimigos em alcance curto com –2 nesses mesmos testes. Cumulativo com outras magias."
+            }
+        ],
+        "pericias": [
+            { "nome": "Conhecimento", "valor": "+8" },
+            { "nome": "Diplomacia", "valor": "+6" },
+            { "nome": "Guerra", "valor": "+8" },
+            { "nome": "Intuição", "valor": "+9" },
+            { "nome": "Investigação", "valor": "+8" },
+            { "nome": "Misticismo", "valor": "+8" },
+            { "nome": "Nobreza", "valor": "+8" },
+            { "nome": "Ofício (escriba)", "valor": "+8" },
+            { "nome": "Religião", "valor": "+9" }
+        ],
+        "tesouro": "Padrão (Bordão, cota de malha, essência de mana, símbolo sagrado de Tanna-Toh)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Bordão x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+16",
-        "dano": "1d6+6 impacto",
-        "desc": "Ataques duplos com bastão clerical. Soma +2d6 pontos de dano de luz por acerto."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Histórias da Companhia",
-        "tipo": "Padrão",
-        "desc": "Uma vez por cena, o arquivista relembra uma missão bem-sucedida. O arquivista e seus aliados em alcance médio recebem +5 de bônus em testes de uma perícia específica à escolha (exceto testes de ataque) até o fim da cena."
-      },
-      {
-        "nome": "Símbolo Sagrado Energizado",
-        "tipo": "Movimento",
-        "desc": "Custos: 1 PM. Energiza seu símbolo místico pela cena, emanando luz prateada (como uma tocha). Enquanto o empunhar, o custo de todas as suas magias divinas é reduzido em –1 PM (descontos já aplicados nas descrições)."
-      },
-      {
-        "nome": "Voz da Civilização",
-        "tipo": "Qualidade",
-        "desc": "Permanece permanentemente sob os efeitos básicos e contínuos da magia Compreensão."
-      },
-      {
-        "nome": "Magia: Arma Espiritual",
-        "tipo": "Padrão",
-        "desc": "Custos: 5 PM (Sustentada). Uma vez por rodada, com uma ação livre, causa 3d6 de impacto automaticamente em um alvo adjacente. Se for alvo de ataque corporal na rodada e não tiver usado o dano livre, pode descarregar os 3d6 de impacto no atacante em reação."
-      },
-      {
-        "nome": "Magia: Bênção",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM. Concede +2 de bônus em testes de ataque e rolagens de dano para todos os aliados em alcance curto até o fim da cena."
-      },
-      {
-        "nome": "Magia: Curar Ferimentos",
-        "tipo": "Padrão",
-        "desc": "Custos: 5 PM. Regenera 6d8+6 PV em uma criatura adjacente."
-      },
-      {
-        "nome": "Magia: Oração",
-        "tipo": "Padrão",
-        "desc": "Custos: 3 PM (Sustentada). Concede +2 em perícias e jogadas de dano para aliados em alcance curto, enquanto penaliza inimigos em alcance curto com –2 nesses mesmos testes. Cumulativo com outras magias."
-      }
-    ],
-    "pericias": [
-      { "nome": "Conhecimento", "valor": "+8" },
-      { "nome": "Diplomacia", "valor": "+6" },
-      { "nome": "Guerra", "valor": "+8" },
-      { "nome": "Intuição", "valor": "+9" },
-      { "nome": "Investigação", "valor": "+8" },
-      { "nome": "Misticismo", "valor": "+8" },
-      { "nome": "Nobreza", "valor": "+8" },
-      { "nome": "Ofício (escriba)", "valor": "+8" },
-      { "nome": "Religião", "valor": "+9" }
-    ],
-    "tesouro": "Padrão (Bordão, cota de malha, essência de mana, símbolo sagrado de Tanna-Toh)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Carcereiro",
-    "tipo": "Morto-vivo (osteon) Médio",
-    "nd": "5",
-    "iniciativa": "+7",
-    "percepcao": "+5",
-    "percepcaoObs": "visão no escuro",
-    "defesa": "24",
-    "fort": "+5",
-    "ref": "+11",
-    "von": "+17",
-    "defesaObs": "imunidade a medo, redução de corte, frio e perfuração 5",
-    "pv": "180",
-    "desl": "9m (6q)",
-    "pm": "0",
-    "atributos": {
-      "for": "3",
-      "des": "3",
-      "con": "2",
-      "int": "0",
-      "sab": "1",
-      "car": "3"
+    {
+        "nome": "Carcereiro",
+        "tipo": "Morto-vivo (osteon) Médio",
+        "nd": "5",
+        "iniciativa": "+7",
+        "percepcao": "+5",
+        "percepcaoObs": "visão no escuro",
+        "defesa": "24",
+        "fort": "+5",
+        "ref": "+11",
+        "von": "+17",
+        "defesaObs": "imunidade a medo, redução de corte, frio e perfuração 5",
+        "pv": "180",
+        "desl": "9m (6q)",
+        "pm": "0",
+        "atributos": {
+            "for": "3",
+            "des": "3",
+            "con": "2",
+            "int": "0",
+            "sab": "1",
+            "car": "3"
+        },
+        "ataques": [
+            {
+                "nome": "Ferro em brasa",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+13",
+                "dano": "2d6+8 impacto",
+                "desc": "Equivalente a uma maça. Adiciona +1d6 de fogo por acerto. Goza de bônus por Saborear o Tormento."
+            },
+            {
+                "nome": "Gancho de carne",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+13",
+                "dano": "2d8+8 corte",
+                "desc": "x3. Equivalente a uma foice. Goza de bônus por Saborear o Tormento."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Encarcerar a Coragem",
+                "tipo": "Padrão",
+                "desc": "Criaturas em alcance curto ficam abaladas (Von CD 20 reduz a duração para 1 rodada e concede imunidade à habilidade até o fim da cena). Recarga (movimento)."
+            },
+            {
+                "nome": "Saborear o Tormento",
+                "tipo": "Qualidade",
+                "desc": "O carcajeiro recebe +2 em testes de ataque e rolagens de dano contra qualquer criatura que esteja sob o efeito de uma condição de medo."
+            }
+        ],
+        "pericias": [
+            { "nome": "Cura", "valor": "+5" },
+            { "nome": "Intimidação", "valor": "+12" }
+        ],
+        "tesouro": "Padrão (Couraça, ferro em brasa, gancho de carne)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Ferro em brasa",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+13",
-        "dano": "2d6+8 impacto",
-        "desc": "Equivalente a uma maça. Adiciona +1d6 de fogo por acerto. Goza de bônus por Saborear o Tormento."
-      },
-      {
-        "nome": "Gancho de carne",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+13",
-        "dano": "2d8+8 corte",
-        "desc": "x3. Equivalente a uma foice. Goza de bônus por Saborear o Tormento."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Encarcerar a Coragem",
-        "tipo": "Padrão",
-        "desc": "Criaturas em alcance curto ficam abaladas (Von CD 20 reduz a duração para 1 rodada e concede imunidade à habilidade até o fim da cena). Recarga (movimento)."
-      },
-      {
-        "nome": "Saborear o Tormento",
-        "tipo": "Qualidade",
-        "desc": "O carcajeiro recebe +2 em testes de ataque e rolagens de dano contra qualquer criatura que esteja sob o efeito de uma condição de medo."
-      }
-    ],
-    "pericias": [
-      { "nome": "Cura", "valor": "+5" },
-      { "nome": "Intimidação", "valor": "+12" }
-    ],
-    "tesouro": "Padrão (Couraça, ferro em brasa, gancho de carne)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Condotiero",
-    "tipo": "Humanoide (centauro) Grande",
-    "nd": "9",
-    "iniciativa": "+9",
-    "percepcao": "+9",
-    "percepcaoObs": "normal",
-    "defesa": "34",
-    "fort": "+21",
-    "ref": "+15",
-    "von": "+9",
-    "defesaObs": "redução de dano 5, resistência a efeitos mentais e medo +5, Medo de Altura",
-    "pv": "365",
-    "desl": "12m (8q)",
-    "pm": "0",
-    "atributos": {
-      "for": "5",
-      "des": "1",
-      "con": "4",
-      "int": "1",
-      "sab": "1",
-      "car": "2"
+    {
+        "nome": "Condotiero",
+        "tipo": "Humanoide (centauro) Grande",
+        "nd": "9",
+        "iniciativa": "+9",
+        "percepcao": "+9",
+        "percepcaoObs": "normal",
+        "defesa": "34",
+        "fort": "+21",
+        "ref": "+15",
+        "von": "+9",
+        "defesaObs": "redução de dano 5, resistência a efeitos mentais e medo +5, Medo de Altura",
+        "pv": "365",
+        "desl": "12m (8q)",
+        "pm": "0",
+        "atributos": {
+            "for": "5",
+            "des": "1",
+            "con": "4",
+            "int": "1",
+            "sab": "1",
+            "car": "2"
+        },
+        "ataques": [
+            {
+                "nome": "Lança montada x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+26",
+                "dano": "2d8+18 perfuração",
+                "desc": "x3. Lança aumentada. Ataques duplos. Ativa Investida Galopante."
+            },
+            {
+                "nome": "Espada longa x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+26",
+                "dano": "2d6+18 corte",
+                "desc": "19. Espada aumentada. Ataques duplos."
+            },
+            {
+                "nome": "Cascos",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+26",
+                "dano": "2d8+18 impacto",
+                "desc": "Patada natural secundária."
+            },
+            {
+                "nome": "Azagaia",
+                "tipo": "À Distância",
+                "bonus": "+26",
+                "dano": "2d8+18 perfuração",
+                "desc": "Lança aumentada de arremesso."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Formação de Ataque",
+                "tipo": "Movimento",
+                "desc": "Comanda aliados em alcance médio. Até o início do seu próximo turno, sempre que um desses aliados realizar um ataque, rola dois dados e usa o melhor resultado (Vantagem)."
+            },
+            {
+                "nome": "Formação de Defesa",
+                "tipo": "Movimento",
+                "desc": "Comanda aliados em alcance médio. Até o início do seu próximo turno, cada aliado afetado recebe redução de dano 5."
+            },
+            {
+                "nome": "Investida Galopante",
+                "tipo": "Completa",
+                "desc": "Realiza uma investida. Pode cruzar espaços de criaturas menores, continuar se movendo após golpear e, se acertar, causa +4d8 de dano extra. Inimigos no trajeto sofrem 1d8+9 de impacto e caem (Ref CD 28 evita)."
+            },
+            {
+                "nome": "Medo de Altura",
+                "tipo": "Qualidade",
+                "desc": "Se estiver posicionado adjacente a uma queda livre ou despenhadeiro de 3m ou mais de altura, o condotiero fica sob a condição abalado."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+13" },
+            { "nome": "Diplomacia", "valor": "+10" },
+            { "nome": "Guerra", "valor": "+11" },
+            { "nome": "Intimidação", "valor": "+10" }
+        ],
+        "tesouro": "Padrão (Azagaia aumentada x3, couraça reforçada, escudo pesado, espada longa aumentada, lança montada aumentada)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Lança montada x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+26",
-        "dano": "2d8+18 perfuração",
-        "desc": "x3. Lança aumentada. Ataques duplos. Ativa Investida Galopante."
-      },
-      {
-        "nome": "Espada longa x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+26",
-        "dano": "2d6+18 corte",
-        "desc": "19. Espada aumentada. Ataques duplos."
-      },
-      {
-        "nome": "Cascos",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+26",
-        "dano": "2d8+18 impacto",
-        "desc": "Patada natural secundária."
-      },
-      {
-        "nome": "Azagaia",
-        "tipo": "À Distância",
-        "bonus": "+26",
-        "dano": "2d8+18 perfuração",
-        "desc": "Lança aumentada de arremesso."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Formação de Ataque",
-        "tipo": "Movimento",
-        "desc": "Comanda aliados em alcance médio. Até o início do seu próximo turno, sempre que um desses aliados realizar um ataque, rola dois dados e usa o melhor resultado (Vantagem)."
-      },
-      {
-        "nome": "Formação de Defesa",
-        "tipo": "Movimento",
-        "desc": "Comanda aliados em alcance médio. Até o início do seu próximo turno, cada aliado afetado recebe redução de dano 5."
-      },
-      {
-        "nome": "Investida Galopante",
-        "tipo": "Completa",
-        "desc": "Realiza uma investida. Pode cruzar espaços de criaturas menores, continuar se movendo após golpear e, se acertar, causa +4d8 de dano extra. Inimigos no trajeto sofrem 1d8+9 de impacto e caem (Ref CD 28 evita)."
-      },
-      {
-        "nome": "Medo de Altura",
-        "tipo": "Qualidade",
-        "desc": "Se estiver posicionado adjacente a uma queda livre ou despenhadeiro de 3m ou mais de altura, o condotiero fica sob a condição abalado."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+13" },
-      { "nome": "Diplomacia", "valor": "+10" },
-      { "nome": "Guerra", "valor": "+11" },
-      { "nome": "Intimidação", "valor": "+10" }
-    ],
-    "tesouro": "Padrão (Azagaia aumentada x3, couraça reforçada, escudo pesado, espada longa aumentada, lança montada aumentada)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Espião",
-    "tipo": "Humanoide (nezumi) Médio",
-    "nd": "3",
-    "iniciativa": "+9",
-    "percepcao": "+4",
-    "percepcaoObs": "faro, visão no escuro",
-    "defesa": "20",
-    "fort": "+5",
-    "ref": "+13",
-    "von": "+9",
-    "defesaObs": "esquiva sobrenatural, evasão, resistência a medo de criaturas maiores +5",
-    "pv": "75",
-    "desl": "9m (6q)",
-    "pm": "0",
-    "atributos": {
-      "for": "2",
-      "des": "4",
-      "con": "3",
-      "int": "-1",
-      "sab": "1",
-      "car": "0"
+    {
+        "nome": "Espião",
+        "tipo": "Humanoide (nezumi) Médio",
+        "nd": "3",
+        "iniciativa": "+9",
+        "percepcao": "+4",
+        "percepcaoObs": "faro, visão no escuro",
+        "defesa": "20",
+        "fort": "+5",
+        "ref": "+13",
+        "von": "+9",
+        "defesaObs": "esquiva sobrenatural, evasão, resistência a medo de criaturas maiores +5",
+        "pv": "75",
+        "desl": "9m (6q)",
+        "pm": "0",
+        "atributos": {
+            "for": "2",
+            "des": "4",
+            "con": "3",
+            "int": "-1",
+            "sab": "1",
+            "car": "0"
+        },
+        "ataques": [
+            {
+                "nome": "Espada curta",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+12",
+                "dano": "1d8+4 perfuração",
+                "desc": "19. Lâmina nezumi aumentada. Inocula Veneno e permite somar Ataque Furtivo."
+            },
+            {
+                "nome": "Mordida",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+12",
+                "dano": "1d6+4 corte",
+                "desc": "Ataque natural. Ativa a habilidade Roedor em acertos críticos."
+            },
+            {
+                "nome": "Besta leve",
+                "tipo": "À Distância",
+                "bonus": "+12",
+                "dano": "1d8+4 perfuração",
+                "desc": "19. Inocula Veneno e permite somar Ataque Furtivo."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Ataque Furtivo",
+                "tipo": "Qualidade",
+                "desc": "Causa +2d6 pontos de dano extra contra alvos flanqueados ou desprevenidos."
+            },
+            {
+                "nome": "Emboscar",
+                "tipo": "Livre",
+                "desc": "Ganha uma ação padrão adicional em seu turno. Restrito para uso exclusivo na primeiríssima rodada de um combate."
+            },
+            {
+                "nome": "Roedor",
+                "tipo": "Qualidade",
+                "desc": "Ao desferir um acerto crítico com sua mordida, deixa a armadura do alvo avariada (impõe –5 na Defesa). Se o alvo estiver sem armadura, aumenta o multiplicador do crítico da mordida em +1."
+            },
+            {
+                "nome": "Rolamento Defensivo",
+                "tipo": "Reação",
+                "desc": "Uma vez por rodada, ao sofrer dano de qualquer fonte, reduz esse dano à metade e fica caído no chão."
+            },
+            {
+                "nome": "Veneno",
+                "tipo": "Qualidade",
+                "desc": "Inoculação tóxica: faz a criatura ferida perder 1d12 pontos de vida por envenenamento."
+            }
+        ],
+        "pericias": [
+            { "nome": "Acrobacia", "valor": "+8" },
+            { "nome": "Atletismo", "valor": "+5" },
+            { "nome": "Enganação", "valor": "+3" },
+            { "nome": "Furtividade", "valor": "+9" },
+            { "nome": "Intimidação", "valor": "+6" },
+            { "nome": "Investigação", "valor": "+2" },
+            { "nome": "Ladinagem", "valor": "+9" }
+        ],
+        "tesouro": "Padrão (Bandana, besta leve, espada curta aumentada, gazua, sapatos de camurça, virotes x20)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Espada curta",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+12",
-        "dano": "1d8+4 perfuração",
-        "desc": "19. Lâmina nezumi aumentada. Inocula Veneno e permite somar Ataque Furtivo."
-      },
-      {
-        "nome": "Mordida",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+12",
-        "dano": "1d6+4 corte",
-        "desc": "Ataque natural. Ativa a habilidade Roedor em acertos críticos."
-      },
-      {
-        "nome": "Besta leve",
-        "tipo": "À Distância",
-        "bonus": "+12",
-        "dano": "1d8+4 perfuração",
-        "desc": "19. Inocula Veneno e permite somar Ataque Furtivo."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Ataque Furtivo",
-        "tipo": "Qualidade",
-        "desc": "Causa +2d6 pontos de dano extra contra alvos flanqueados ou desprevenidos."
-      },
-      {
-        "nome": "Emboscar",
-        "tipo": "Livre",
-        "desc": "Ganha uma ação padrão adicional em seu turno. Restrito para uso exclusivo na primeiríssima rodada de um combate."
-      },
-      {
-        "nome": "Roedor",
-        "tipo": "Qualidade",
-        "desc": "Ao desferir um acerto crítico com sua mordida, deixa a armadura do alvo avariada (impõe –5 na Defesa). Se o alvo estiver sem armadura, aumenta o multiplicador do crítico da mordida em +1."
-      },
-      {
-        "nome": "Rolamento Defensivo",
-        "tipo": "Reação",
-        "desc": "Uma vez por rodada, ao sofrer dano de qualquer fonte, reduz esse dano à metade e fica caído no chão."
-      },
-      {
-        "nome": "Veneno",
-        "tipo": "Qualidade",
-        "desc": "Inoculação tóxica: faz a criatura ferida perder 1d12 pontos de vida por envenenamento."
-      }
-    ],
-    "pericias": [
-      { "nome": "Acrobacia", "valor": "+8" },
-      { "nome": "Atletismo", "valor": "+5" },
-      { "nome": "Enganação", "valor": "+3" },
-      { "nome": "Furtividade", "valor": "+9" },
-      { "nome": "Intimidação", "valor": "+6" },
-      { "nome": "Investigação", "valor": "+2" },
-      { "nome": "Ladinagem", "valor": "+9" }
-    ],
-    "tesouro": "Padrão (Bandana, besta leve, espada curta aumentada, gazua, sapatos de camurça, virotes x20)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Guarda do Portão",
-    "tipo": "Humanoide (gigante) Grande",
-    "nd": "6",
-    "iniciativa": "+5",
-    "percepcao": "+6",
-    "percepcaoObs": "visão na penumbra",
-    "defesa": "26",
-    "fort": "+17",
-    "ref": "+12",
-    "von": "+2",
-    "defesaObs": "Esperto o Suficiente…, …Para Montar Guarda",
-    "pv": "52",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "8",
-      "des": "0",
-      "con": "5",
-      "int": "-3",
-      "sab": "-1",
-      "car": "-2"
+    {
+        "nome": "Guarda do Portão",
+        "tipo": "Humanoide (gigante) Grande",
+        "nd": "6",
+        "iniciativa": "+5",
+        "percepcao": "+6",
+        "percepcaoObs": "visão na penumbra",
+        "defesa": "26",
+        "fort": "+17",
+        "ref": "+12",
+        "von": "+2",
+        "defesaObs": "Esperto o Suficiente…, …Para Montar Guarda",
+        "pv": "52",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "8",
+            "des": "0",
+            "con": "5",
+            "int": "-3",
+            "sab": "-1",
+            "car": "-2"
+        },
+        "ataques": [
+            {
+                "nome": "Machado de guerra x2",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+24",
+                "dano": "4d6+17 corte",
+                "desc": "x3. Lâminas gigantes duplas aumentadas."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Esperto o Suficiente…",
+                "tipo": "Qualidade",
+                "desc": "Sua mente limitada impõe uma penalidade de –5 em testes de Vontade (redutor já contabilizado em sua ficha)."
+            },
+            {
+                "nome": "…Para Montar Guarda",
+                "tipo": "Qualidade",
+                "desc": "Todo dano de corte, impacto e perfuração recebido pelo ogro é reduzido à metade automaticamente e ele é imune à condição surpreendido."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+13" }
+        ],
+        "tesouro": "Metade (Loriga segmentada, machado de guerra aumentado)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Machado de guerra x2",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+24",
-        "dano": "4d6+17 corte",
-        "desc": "x3. Lâminas gigantes duplas aumentadas."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Esperto o Suficiente…",
-        "tipo": "Qualidade",
-        "desc": "Sua mente limitada impõe uma penalidade de –5 em testes de Vontade (redutor já contabilizado em sua ficha)."
-      },
-      {
-        "nome": "…Para Montar Guarda",
-        "tipo": "Qualidade",
-        "desc": "Todo dano de corte, impacto e perfuração recebido pelo ogro é reduzido à metade automaticamente e ele é imune à condição surpreendido."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+13" }
-    ],
-    "tesouro": "Metade (Loriga segmentada, machado de guerra aumentado)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Gorlogg de Estimação",
-    "tipo": "Animal Grande",
-    "nd": "2",
-    "iniciativa": "+5",
-    "percepcao": "+4",
-    "percepcaoObs": "visão na penumbra",
-    "defesa": "20",
-    "fort": "+10",
-    "ref": "+7",
-    "von": "+5",
-    "defesaObs": "resistência a mental +2",
-    "pv": "72",
-    "desl": "9m (6q)",
-    "pm": "0",
-    "atributos": {
-      "for": "5",
-      "des": "2",
-      "con": "5",
-      "int": "-4",
-      "sab": "1",
-      "car": "-4"
+    {
+        "nome": "Gorlogg de Estimação",
+        "tipo": "Animal Grande",
+        "nd": "2",
+        "iniciativa": "+5",
+        "percepcao": "+4",
+        "percepcaoObs": "visão na penumbra",
+        "defesa": "20",
+        "fort": "+10",
+        "ref": "+7",
+        "von": "+5",
+        "defesaObs": "resistência a mental +2",
+        "pv": "72",
+        "desl": "9m (6q)",
+        "pm": "0",
+        "atributos": {
+            "for": "5",
+            "des": "2",
+            "con": "5",
+            "int": "-4",
+            "sab": "1",
+            "car": "-4"
+        },
+        "ataques": [
+            {
+                "nome": "Mordida",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+12",
+                "dano": "2d8+8 perfuração",
+                "desc": "x3. Mordida poderosa. Ativa Agarrar Aprimorado."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Agarrar Aprimorado",
+                "tipo": "Livre",
+                "desc": "Ao acertar a mordida, inicia a manobra agarrar com teste de bônus +16. A presa agarrada sofre 5 pontos de dano de perfuração automáticos no momento do agarre e no início de cada um dos turnos do gorlogg."
+            }
+        ],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+10" }
+        ],
+        "tesouro": "Nenhum (Equipado com cota de malha espinhosa)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Mordida",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+12",
-        "dano": "2d8+8 perfuração",
-        "desc": "x3. Mordida poderosa. Ativa Agarrar Aprimorado."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Agarrar Aprimorado",
-        "tipo": "Livre",
-        "desc": "Ao acertar a mordida, inicia a manobra agarrar com teste de bônus +16. A presa agarrada sofre 5 pontos de dano de perfuração automáticos no momento do agarre e no início de cada um dos turnos do gorlogg."
-      }
-    ],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+10" }
-    ],
-    "tesouro": "Nenhum (Equipado com cota de malha espinhosa)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Sargento",
-    "tipo": "Humanoide (anão) Médio",
-    "nd": "3",
-    "iniciativa": "+2",
-    "percepcao": "+5",
-    "percepcaoObs": "+7 em subterrâneo, visão no escuro",
-    "defesa": "20",
-    "fort": "+14",
-    "ref": "+4",
-    "von": "+9",
-    "defesaObs": "resistência a encantamento +2",
-    "pv": "80",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "4",
-      "des": "-1",
-      "con": "5",
-      "int": "0",
-      "sab": "2",
-      "car": "0"
+    {
+        "nome": "Sargento",
+        "tipo": "Humanoide (anão) Médio",
+        "nd": "3",
+        "iniciativa": "+2",
+        "percepcao": "+5",
+        "percepcaoObs": "+7 em subterrâneo, visão no escuro",
+        "defesa": "20",
+        "fort": "+14",
+        "ref": "+4",
+        "von": "+9",
+        "defesaObs": "resistência a encantamento +2",
+        "pv": "80",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "4",
+            "des": "-1",
+            "con": "5",
+            "int": "0",
+            "sab": "2",
+            "car": "0"
+        },
+        "ataques": [
+            {
+                "nome": "Machado anão",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+17",
+                "dano": "2d10+12 corte",
+                "desc": "x3. Lâmina tradicional anã robusta. Sofre bônus de Lutem, Infelizes!"
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "De Pé, Preguiçoso!",
+                "tipo": "Movimento",
+                "desc": "Reanima um aliado vivo caído com 0 ou menos PV em alcance curto. O alvo desperta estável e recupera 2d6 PV. Restrito a uma ativação por criatura por cena."
+            },
+            {
+                "nome": "Lutem, Infelizes!",
+                "tipo": "Movimento",
+                "desc": "Grita berros de ordem em alcance médio. Aliados afetados recebem +2 em testes de ataque e rolagens de dano até o fim da cena."
+            },
+            {
+                "nome": "Mexam-se!",
+                "tipo": "Movimento",
+                "desc": "Coordenando a marcha, aumenta o deslocamento de todos os seus aliados em alcance curto em +6m até o início de seu próximo turno."
+            }
+        ],
+        "pericias": [
+            { "nome": "Guerra", "valor": "+5" },
+            { "nome": "Intimidação", "valor": "+5" }
+        ],
+        "tesouro": "Padrão (Escudo pesado, machado anão, meia armadura)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Machado anão",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+17",
-        "dano": "2d10+12 corte",
-        "desc": "x3. Lâmina tradicional anã robusta. Sofre bônus de Lutem, Infelizes!"
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "De Pé, Preguiçoso!",
-        "tipo": "Movimento",
-        "desc": "Reanima um aliado vivo caído com 0 ou menos PV em alcance curto. O alvo desperta estável e recupera 2d6 PV. Restrito a uma ativação por criatura por cena."
-      },
-      {
-        "nome": "Lutem, Infelizes!",
-        "tipo": "Movimento",
-        "desc": "Grita berros de ordem em alcance médio. Aliados afetados recebem +2 em testes de ataque e rolagens de dano até o fim da cena."
-      },
-      {
-        "nome": "Mexam-se!",
-        "tipo": "Movimento",
-        "desc": "Coordenando a marcha, aumenta o deslocamento de todos os seus aliados em alcance curto em +6m até o início de seu próximo turno."
-      }
-    ],
-    "pericias": [
-      { "nome": "Guerra", "valor": "+5" },
-      { "nome": "Intimidação", "valor": "+5" }
-    ],
-    "tesouro": "Padrão (Escudo pesado, machado anão, meia armadura)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Soldado da Fortuna",
-    "tipo": "Humanoide (humano) Médio",
-    "nd": "1",
-    "iniciativa": "+3",
-    "percepcao": "+2",
-    "percepcaoObs": "normal",
-    "defesa": "16",
-    "fort": "+10",
-    "ref": "+5",
-    "von": "+1",
-    "defesaObs": "normal",
-    "pv": "10",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "3",
-      "des": "1",
-      "con": "2",
-      "int": "-1",
-      "sab": "0",
-      "car": "-1"
+    {
+        "nome": "Soldado da Fortuna",
+        "tipo": "Humanoide (humano) Médio",
+        "nd": "1",
+        "iniciativa": "+3",
+        "percepcao": "+2",
+        "percepcaoObs": "normal",
+        "defesa": "16",
+        "fort": "+10",
+        "ref": "+5",
+        "von": "+1",
+        "defesaObs": "normal",
+        "pv": "10",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "3",
+            "des": "1",
+            "con": "2",
+            "int": "-1",
+            "sab": "0",
+            "car": "-1"
+        },
+        "ataques": [
+            {
+                "nome": "Alabarda",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+11",
+                "dano": "1d12+10 corte",
+                "desc": "x3. Lâmina de haste longa de infantaria mercenária."
+            },
+            {
+                "nome": "Arco longo",
+                "tipo": "À Distância",
+                "bonus": "+5",
+                "dano": "1d8+6 perfuração",
+                "desc": "x3. Disparo de apoio."
+            }
+        ],
+        "habilidades": [],
+        "pericias": [
+            { "nome": "Atletismo", "valor": "+5" }
+        ],
+        "tesouro": "Metade (Alabarda, arco longo, cota de malha, flechas x20)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Alabarda",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+11",
-        "dano": "1d12+10 corte",
-        "desc": "x3. Lâmina de haste longa de infantaria mercenária."
-      },
-      {
-        "nome": "Arco longo",
-        "tipo": "À Distância",
-        "bonus": "+5",
-        "dano": "1d8+6 perfuração",
-        "desc": "x3. Disparo de apoio."
-      }
-    ],
-    "habilidades": [],
-    "pericias": [
-      { "nome": "Atletismo", "valor": "+5" }
-    ],
-    "tesouro": "Metade (Alabarda, arco longo, cota de malha, flechas x20)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Tenente",
-    "tipo": "Humanoide (minotauro) Médio",
-    "nd": "5",
-    "iniciativa": "+6",
-    "percepcao": "+3",
-    "percepcaoObs": "faro",
-    "defesa": "24",
-    "fort": "+17",
-    "ref": "+5",
-    "von": "+11",
-    "defesaObs": "resistência a efeitos mentais e medo +2, Medo de Altura",
-    "pv": "180",
-    "desl": "6m (4q)",
-    "pm": "0",
-    "atributos": {
-      "for": "5",
-      "des": "1",
-      "con": "4",
-      "int": "2",
-      "sab": "0",
-      "car": "1"
+    {
+        "nome": "Tenente",
+        "tipo": "Humanoide (minotauro) Médio",
+        "nd": "5",
+        "iniciativa": "+6",
+        "percepcao": "+3",
+        "percepcaoObs": "faro",
+        "defesa": "24",
+        "fort": "+17",
+        "ref": "+5",
+        "von": "+11",
+        "defesaObs": "resistência a efeitos mentais e medo +2, Medo de Altura",
+        "pv": "180",
+        "desl": "6m (4q)",
+        "pm": "0",
+        "atributos": {
+            "for": "5",
+            "des": "1",
+            "con": "4",
+            "int": "2",
+            "sab": "0",
+            "car": "1"
+        },
+        "ataques": [
+            {
+                "nome": "Espada longa",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+17",
+                "dano": "2d8+12 corte",
+                "desc": "19. Lâmina pesada mercenária."
+            },
+            {
+                "nome": "Chifres",
+                "tipo": "Corpo a Corpo",
+                "bonus": "+17",
+                "dano": "2d6+12 perfuração",
+                "desc": "Ataque natural de cabeçada."
+            },
+            {
+                "nome": "Azagaia",
+                "tipo": "À Distância",
+                "bonus": "+16",
+                "dano": "1d6+10 perfuração",
+                "desc": "Lança de arremesso. Causa +1d6 de perfuração extra por balística (já incluso)."
+            }
+        ],
+        "habilidades": [
+            {
+                "nome": "Bloqueio com Escudo",
+                "tipo": "Reação",
+                "desc": "Uma vez por rodada, ao sofrer dano decorrente de um ataque bem-sucedido, o tenente absorve o impacto e reduz o dano sofrido em 5."
+            },
+            {
+                "nome": "De Pé, Preguiçoso!",
+                "tipo": "Movimento",
+                "desc": "Reanima um subordinado vivo caídos com 0 ou menos PV em alcance curto. O aliado acorda estável e recupera 3d6 PV. Restrito a um uso por criatura por cena."
+            },
+            {
+                "nome": "Medo de Altura",
+                "tipo": "Qualidade",
+                "desc": "Caso esteja posicionado adjacente a uma queda livre ou barranco de 3m ou mais de altura, o minotauro fica sob a condição abalado."
+            }
+        ],
+        "pericias": [
+            { "nome": "Campanha/Guerra", "valor": "+8" },
+            { "nome": "Intimidação", "valor": "+7" },
+            { "nome": "Marcial/Atletismo", "valor": "+11" }
+        ],
+        "tesouro": "Padrão (Azagaia x3, cota de malha, escudo pesado, espada longa)",
+        "fonte": "Guia de NPCs"
     },
-    "ataques": [
-      {
-        "nome": "Espada longa",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+17",
-        "dano": "2d8+12 corte",
-        "desc": "19. Lâmina pesada mercenária."
-      },
-      {
-        "nome": "Chifres",
-        "tipo": "Corpo a Corpo",
-        "bonus": "+17",
-        "dano": "2d6+12 perfuração",
-        "desc": "Ataque natural de cabeçada."
-      },
-      {
-        "nome": "Azagaia",
-        "tipo": "À Distância",
-        "bonus": "+16",
-        "dano": "1d6+10 perfuração",
-        "desc": "Lança de arremesso. Causa +1d6 de perfuração extra por balística (já incluso)."
-      }
-    ],
-    "habilidades": [
-      {
-        "nome": "Bloqueio com Escudo",
-        "tipo": "Reação",
-        "desc": "Uma vez por rodada, ao sofrer dano decorrente de um ataque bem-sucedido, o tenente absorve o impacto e reduz o dano sofrido em 5."
-      },
-      {
-        "nome": "De Pé, Preguiçoso!",
-        "tipo": "Movimento",
-        "desc": "Reanima um subordinado vivo caídos com 0 ou menos PV em alcance curto. O aliado acorda estável e recupera 3d6 PV. Restrito a um uso por criatura por cena."
-      },
-      {
-        "nome": "Medo de Altura",
-        "tipo": "Qualidade",
-        "desc": "Caso esteja posicionado adjacente a uma queda livre ou barranco de 3m ou mais de altura, o minotauro fica sob a condição abalado."
-      }
-    ],
-    "pericias": [
-      { "nome": "Campanha/Guerra", "valor": "+8" },
-      { "nome": "Intimidação", "valor": "+7" },
-      { "nome": "Marcial/Atletismo", "valor": "+11" }
-    ],
-    "tesouro": "Padrão (Azagaia x3, cota de malha, escudo pesado, espada longa)",
-    "fonte": "Guia de NPCs"
-  },
-  {
-    "nome": "Vidente",
-    "tipo": "Espírito (sulfure) Médio",
-    "nd": "5",
-    "iniciativa": "+7",
-    "percepcao": "+5",
-    "percepcaoObs": "visão no escuro",
-    "defesa": "22",
-    "fort": "+5",
-    "ref": "+11",
-    "von": "+17",
-    "defesaObs": "normal",
-    "pv": "99",
-    "desl": "9m (6q)",
-    "pm": "39",
-    "atributos": {
-      "for": "0",
-      "des": "3",
-      "con": "3",
-      "int": "4",
-      "sab": "1",
-      "car": "1"
-    },
-    "ataques": [],
-    "habilidades": [
-      {
-        "nome": "Diabretes Sombrios",
-        "tipo": "Padrão",
-        "desc": "Uma vez por cena, invoca 1d4+1 diabretes sombrios em espaços desocupados curtos. Agem na rodada seguinte (Voo/Desl 9m, atacam com ação padrão causando 1d6+2 de trevas adjacente. Dados: Espírito, For 2, Des 2, Defesa 14, 1 PV, falham em testes automaticamente e somem no fim da cena)."
-      },
-      {
-        "nome": "Magia Acelerada",
-        "tipo": "Livre",
-        "desc": "Custos: +4 PM. Uma vez por rodada, ao desferir seu Raio Arcano ou conjurar uma magia de ação completa ou menor, altera a execução para ação livre."
-      },
-      {
-        "nome": "Raio Arcano",
-        "tipo": "Padrão",
-        "desc": "Dispara descarga mística em alvo médio, infligindo 2d12 pontos de dano de essência pura (Ref CD 28 metade)."
-      },
-      {
-        "nome": "Magia: Escuridão",
-        "tipo": "Padrão",
-        "desc": "Custos: 2 PM (Bruxo, –1 PM de desconto incluso). Objeto curto emana trevas totais em raio de 6m até o encerramento da cena, vedando visões normais e mágicas."
-      },
-      {
-        "nome": "Magia: Imagem Espelhada",
-        "tipo": "Padrão",
-        "desc": "Custos: 5 PM (Bruxo). Forja quatro cópias ilusórias dando +8 na Defesa. Erros dissipam réplicas (bônus cai em –2), e deixam o agressor sob a condição ofuscado por 1 rodada."
-      },
-      {
-        "nome": "Magia: Relâmpago",
-        "tipo": "Padrão",
-        "desc": "Custos: 5 PM (Bruxo). Traça uma linha de 30m eletrocutando alvos e causando 8d6 de eletricidade (Ref CD 23 metade)."
-      },
-      {
-        "nome": "Magia: Seta Infalível de Talude",
-        "tipo": "Padrão",
-        "desc": "Custos: 5 PM (Bruxo). Projeta cinco dardos teleguiados divididos em até 5 seres em alcance médio. Cada dardo inflige 1d4+1 de essência automaticamente."
-      }
-    ],
-    "pericias": [
-      { "nome": "Enganação", "valor": "+7" },
-      { "nome": "Furtividade", "valor": "+9" },
-      { "nome": "Guerra", "valor": "+8" },
-      { "nome": "Intuição", "valor": "+5" },
-      { "nome": "Misticismo", "valor": "+8" }
-    ],
-    "tesouro": "Padrão (Essência de mana, varinha arcana [foco])",
-    "fonte": "Guia de NPCs"
-  }
+    {
+        "nome": "Vidente",
+        "tipo": "Espírito (sulfure) Médio",
+        "nd": "5",
+        "iniciativa": "+7",
+        "percepcao": "+5",
+        "percepcaoObs": "visão no escuro",
+        "defesa": "22",
+        "fort": "+5",
+        "ref": "+11",
+        "von": "+17",
+        "defesaObs": "normal",
+        "pv": "99",
+        "desl": "9m (6q)",
+        "pm": "39",
+        "atributos": {
+            "for": "0",
+            "des": "3",
+            "con": "3",
+            "int": "4",
+            "sab": "1",
+            "car": "1"
+        },
+        "ataques": [],
+        "habilidades": [
+            {
+                "nome": "Diabretes Sombrios",
+                "tipo": "Padrão",
+                "desc": "Uma vez por cena, invoca 1d4+1 diabretes sombrios em espaços desocupados curtos. Agem na rodada seguinte (Voo/Desl 9m, atacam com ação padrão causando 1d6+2 de trevas adjacente. Dados: Espírito, For 2, Des 2, Defesa 14, 1 PV, falham em testes automaticamente e somem no fim da cena)."
+            },
+            {
+                "nome": "Magia Acelerada",
+                "tipo": "Livre",
+                "desc": "Custos: +4 PM. Uma vez por rodada, ao desferir seu Raio Arcano ou conjurar uma magia de ação completa ou menor, altera a execução para ação livre."
+            },
+            {
+                "nome": "Raio Arcano",
+                "tipo": "Padrão",
+                "desc": "Dispara descarga mística em alvo médio, infligindo 2d12 pontos de dano de essência pura (Ref CD 28 metade)."
+            },
+            {
+                "nome": "Magia: Escuridão",
+                "tipo": "Padrão",
+                "desc": "Custos: 2 PM (Bruxo, –1 PM de desconto incluso). Objeto curto emana trevas totais em raio de 6m até o encerramento da cena, vedando visões normais e mágicas."
+            },
+            {
+                "nome": "Magia: Imagem Espelhada",
+                "tipo": "Padrão",
+                "desc": "Custos: 5 PM (Bruxo). Forja quatro cópias ilusórias dando +8 na Defesa. Erros dissipam réplicas (bônus cai em –2), e deixam o agressor sob a condição ofuscado por 1 rodada."
+            },
+            {
+                "nome": "Magia: Relâmpago",
+                "tipo": "Padrão",
+                "desc": "Custos: 5 PM (Bruxo). Traça uma linha de 30m eletrocutando alvos e causando 8d6 de eletricidade (Ref CD 23 metade)."
+            },
+            {
+                "nome": "Magia: Seta Infalível de Talude",
+                "tipo": "Padrão",
+                "desc": "Custos: 5 PM (Bruxo). Projeta cinco dardos teleguiados divididos em até 5 seres em alcance médio. Cada dardo inflige 1d4+1 de essência automaticamente."
+            }
+        ],
+        "pericias": [
+            { "nome": "Enganação", "valor": "+7" },
+            { "nome": "Furtividade", "valor": "+9" },
+            { "nome": "Guerra", "valor": "+8" },
+            { "nome": "Intuição", "valor": "+5" },
+            { "nome": "Misticismo", "valor": "+8" }
+        ],
+        "tesouro": "Padrão (Essência de mana, varinha arcana [foco])",
+        "fonte": "Guia de NPCs"
+    }
 
 ];
